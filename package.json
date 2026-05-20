@@ -1,0 +1,54 @@
+{
+  "name": "kxco-post-quantum",
+  "version": "0.1.0",
+  "description": "Production-tested post-quantum cryptography patterns: deterministic key derivation, hybrid webhook signing, and kid fingerprinting. Built on @noble/post-quantum. Used in production at KXCO.",
+  "keywords": [
+    "post-quantum",
+    "pqc",
+    "ml-dsa",
+    "ml-kem",
+    "dilithium",
+    "kyber",
+    "nist",
+    "fips-203",
+    "fips-204",
+    "webhook-signing",
+    "quantum-resistant",
+    "armature"
+  ],
+  "license": "MIT",
+  "author": "KXCO by Knightsbridge <hello@kxco.ai>",
+  "homepage": "https://kxco.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kxco/post-quantum.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kxco/post-quantum/issues"
+  },
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".":          "./src/index.js",
+    "./ml-dsa":   "./src/ml-dsa.js",
+    "./ml-kem":   "./src/ml-kem.js",
+    "./derive":   "./src/derive.js",
+    "./webhook":  "./src/webhook.js",
+    "./kid":      "./src/kid.js"
+  },
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@noble/post-quantum": "^0.2.1"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  }
+}
