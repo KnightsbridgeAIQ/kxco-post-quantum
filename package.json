@@ -1,6 +1,6 @@
 {
   "name": "kxco-post-quantum",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Production-tested post-quantum cryptography patterns: deterministic key derivation, hybrid webhook signing, and kid fingerprinting. Built on @noble/post-quantum. Used in production at KXCO.",
   "keywords": [
     "post-quantum",
@@ -38,9 +38,13 @@
   },
   "files": [
     "src/",
+    "test/vectors.json",
+    "test/run-vectors.js",
     "README.md",
     "LICENSE",
-    "SECURITY.md"
+    "SECURITY.md",
+    "AUDIT.md",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=18"
@@ -49,6 +53,8 @@
     "@noble/post-quantum": "^0.2.1"
   },
   "scripts": {
-    "test": "node --test test/"
+    "test":             "node --test test/basic.test.js && node test/run-vectors.js",
+    "test:vectors":     "node test/run-vectors.js",
+    "generate:vectors": "node test/generate-vectors.js > test/vectors.json"
   }
 }

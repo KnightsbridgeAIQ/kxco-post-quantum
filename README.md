@@ -9,6 +9,22 @@
 
 ---
 
+## Used in production at
+
+This is not a sample library. It runs in production at KXCO across multiple products. You can verify this yourself without any cooperation from us:
+
+```bash
+# Fetch the live platform PQ identity key from production
+curl https://chain.kxco.ai/wallet/api/.well-known/kxco-pq-pubkey
+
+# Returns a JSON document with alg=ML-DSA-65, the public key (3904 hex chars),
+# and a kid fingerprint. The kid is fingerprint(publicKey) using this library.
+```
+
+The wallet at `chain.kxco.ai` imports `kxco-post-quantum` directly from npm. The platform identity signing module ([src/lib/pqSigner.js in kxco-bank](https://chain.kxco.ai/wallet/dev-docs)) delegates to `mlDsa.keypairFromMaster`, `mlDsa.sign`, and `fingerprint` from this package. Every outbound webhook from the KXCO platform is signed using `webhook.signDelivery`. You can pin the kid returned above, install this library, and verify any webhook from the production fleet offline.
+
+Other KXCO products on the same package: KnightsVault (institutional custody), KnightsBot (universal trading — every order signed), The Exchequer (compliance intelligence), Armature L1 (the permissioned chain underneath everything).
+
 ## What this is
 
 A higher-level package that wraps [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) — the audited, dependency-free TypeScript reference implementation of NIST's August 2024 post-quantum standards — with the integration patterns we run in production:
@@ -182,6 +198,31 @@ Constant-time string compare. Use this when comparing user-supplied kids.
 - **Receive raw bodies byte-for-byte.** Re-stringifying JSON before verifying changes the signature input.
 - **Enforce timestamp windows.** Defaults to 5 minutes. Set lower for higher-security paths.
 - **Constant-time compare strings.** Use `kidEquals` and `verifyHmac`, not `===`.
+
+## Reproducibility
+
+Every public output is pinned in `test/vectors.json`. Run them:
+
+```bash
+git clone <repo>
+cd kxco-post-quantum
+npm install
+npm test          # 9 functional tests + 29 vector checks
+npm run test:vectors   # vectors only
+```
+
+Expected output: `✓ All 29 checks pass — library output matches pinned vectors bit-for-bit.`
+
+If any check fails on a release version, file an issue. The vectors are the tripwire for cryptographic regressions.
+
+## Audit posture
+
+See [AUDIT.md](./AUDIT.md) for the full statement. Short version:
+
+- **Underlying primitives** (`@noble/post-quantum@0.2.1`) — audited by Cure53, 2024
+- **This wrapper** — no third-party audit yet. Roadmap: external audit Q3 2026, public bug bounty Q4 2026, FIPS 140-3 CMVP application 2027
+- **Internal review** — KXCO Engineering + Cybersecurity (lead: Sean O'Coiligh, ex-DTCC Offensive Cyber)
+- **Production deployment** — live at chain.kxco.ai since 2025-11
 
 ## References
 
