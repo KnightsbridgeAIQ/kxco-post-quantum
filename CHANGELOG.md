@@ -2,6 +2,11 @@
 
 All notable changes to `kxco-post-quantum` are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] — 2026-05-21
+
+### Changed
+- Repository URL on the npm package now points to `github.com/JackKXCO/kxco-post-quantum`. No code change.
+
 ## [1.0.1] — 2026-05-21
 
 Substance additions to the v1.0 release. No API changes. Same code on the cryptographic path; auditability and reproducibility infrastructure expanded.

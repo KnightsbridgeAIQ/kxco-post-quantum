@@ -60,7 +60,7 @@ You do not have to trust us. Run these to verify:
 
 ```bash
 # Clone and install
-git clone https://github.com/<destination-tbd>/kxco-post-quantum   # repo URL on npm page
+git clone https://github.com/JackKXCO/kxco-post-quantum
 npm install
 
 # Run the full test suite — primitives + vectors

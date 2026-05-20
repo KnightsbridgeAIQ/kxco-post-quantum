@@ -1,0 +1,223 @@
+openapi: 3.1.0
+info:
+  title: KXCO Webhook Contract
+  version: "1.0"
+  summary: Hybrid HMAC + ML-DSA-65 signed webhook delivery
+  description: |
+    KXCO platform webhook delivery format. Every webhook from any KXCO product
+    (KnightsVault, KXCO Bank, KnightsBot, The Exchequer, Armature L1) follows
+    this contract. Receivers can verify deliveries in any language using the
+    same wire format.
+
+    ## Wire format
+
+    Every delivery carries two independent signatures over the same envelope:
+    a classical HMAC-SHA-256 for compatibility, and a post-quantum ML-DSA-65
+    (NIST FIPS 204) for non-repudiation. Receivers can verify either alone;
+    verifying both is defence-in-depth.
+
+    The signed envelope is `${timestamp}.${raw_body}` — exactly the bytes,
+    not a re-serialised parse.
+
+    ## Platform identity
+
+    Fetch the platform's ML-DSA-65 public key from
+    `https://chain.kxco.ai/wallet/api/.well-known/kxco-pq-pubkey`. Pin both
+    `kid` and `publicKey` once. Verify all subsequent deliveries offline.
+
+    ## Verifier libraries
+
+    | Language    | Package                  | Source                                        |
+    |-------------|--------------------------|-----------------------------------------------|
+    | JavaScript  | `kxco-post-quantum`      | https://www.npmjs.com/package/kxco-post-quantum |
+    | Go          | `kxco-verify`            | github.com/kxco/post-quantum-verifiers/go     |
+    | Python      | `kxco-verify`            | pypi.org/project/kxco-verify                  |
+    | Rust        | `kxco-verify`            | crates.io/crates/kxco-verify                  |
+  contact:
+    name: KXCO Engineering
+    email: hello@kxco.ai
+    url: https://kxco.ai
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  x-spec-status: stable
+  x-effective: "2026-05-21"
+
+servers:
+  - url: https://your-service.example.com
+    description: Your service hosting the webhook receiver
+
+components:
+  parameters:
+    XKxcoTimestamp:
+      name: X-KXCO-Timestamp
+      in: header
+      required: true
+      description: |
+        Unix seconds when the platform generated the delivery. Receivers MUST
+        reject deliveries outside a configurable window (default ±300 seconds)
+        to prevent replay attacks. Echoed in the verification envelope.
+      schema:
+        type: string
+        pattern: "^[0-9]+$"
+        example: "1748000000"
+    XKxcoEvent:
+      name: X-KXCO-Event
+      in: header
+      required: true
+      description: Event name. Determines payload schema.
+      schema:
+        type: string
+        example: payment.settled
+    XKxcoDelivery:
+      name: X-KXCO-Delivery
+      in: header
+      required: true
+      description: Unique delivery ID for idempotency and debugging.
+      schema:
+        type: string
+        format: uuid
+    XKxcoSignature:
+      name: X-KXCO-Signature
+      in: header
+      required: true
+      description: |
+        HMAC-SHA-256 of `${X-KXCO-Timestamp}.${raw_body}` using the per-endpoint
+        shared secret. Prefixed with `sha256=`.
+      schema:
+        type: string
+        pattern: "^sha256=[0-9a-f]{64}$"
+        example: "sha256=63ed31450be6c8771c2eb9a92888aecd814431360ac06aaac95faa94cf5bd665"
+    XKxcoPqSignature:
+      name: X-KXCO-PQ-Signature
+      in: header
+      required: true
+      description: |
+        ML-DSA-65 (NIST FIPS 204) signature of `${X-KXCO-Timestamp}.${raw_body}`.
+        Hex-encoded. Prefixed with `ml-dsa-65=`. 6618 hex characters
+        (3309 bytes raw).
+      schema:
+        type: string
+        pattern: "^ml-dsa-65=[0-9a-f]{6618}$"
+    XKxcoPqKid:
+      name: X-KXCO-PQ-Kid
+      in: header
+      required: true
+      description: |
+        16-hex-character fingerprint of the platform ML-DSA-65 public key.
+        First 8 bytes of `SHA-256(public_key)`. Stable for the lifetime of
+        the platform master key. Receivers MUST compare against a pinned kid.
+      schema:
+        type: string
+        pattern: "^[0-9a-f]{16}$"
+        example: "4a7c9e2f1b3d5680"
+
+  schemas:
+    DiscoveryDocument:
+      type: object
+      required: [alg, spec, publicKey, kid, sigEncoding, msgFormat]
+      properties:
+        alg:
+          type: string
+          const: ML-DSA-65
+        spec:
+          type: string
+          const: NIST FIPS 204
+        publicKey:
+          type: string
+          pattern: "^[0-9a-f]{3904}$"
+          description: 1952-byte ML-DSA-65 public key, hex-encoded
+        kid:
+          type: string
+          pattern: "^[0-9a-f]{16}$"
+        sigEncoding:
+          type: string
+          const: hex
+        msgFormat:
+          type: string
+          const: "{X-KXCO-Timestamp}.{raw_request_body}"
+      example:
+        alg: ML-DSA-65
+        spec: NIST FIPS 204
+        publicKey: "648b1e9b142ce625..."
+        kid: "648b1e9b142ce625"
+        sigEncoding: hex
+        msgFormat: "{X-KXCO-Timestamp}.{raw_request_body}"
+
+paths:
+  /webhooks/kxco:
+    post:
+      summary: Receive a KXCO platform webhook
+      description: |
+        This is the contract the **receiver** implements. KXCO sends deliveries
+        to a URL the platform operator registered for the institution. The
+        receiver verifies the signatures and, on success, processes the event.
+      parameters:
+        - $ref: '#/components/parameters/XKxcoTimestamp'
+        - $ref: '#/components/parameters/XKxcoEvent'
+        - $ref: '#/components/parameters/XKxcoDelivery'
+        - $ref: '#/components/parameters/XKxcoSignature'
+        - $ref: '#/components/parameters/XKxcoPqSignature'
+        - $ref: '#/components/parameters/XKxcoPqKid'
+      requestBody:
+        required: true
+        description: |
+          Event payload. Schema varies by `X-KXCO-Event`. The receiver MUST
+          capture the body bytes byte-for-byte before parsing — re-serialising
+          a parsed JSON object will produce different bytes and signature
+          verification will fail.
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Delivery accepted and processed
+        '401':
+          description: Signature verification failed or timestamp out of window
+        '410':
+          description: Endpoint deactivated
+        '429':
+          description: Rate-limited — the platform may slow retry attempts
+
+  /api/.well-known/kxco-pq-pubkey:
+    get:
+      summary: KXCO platform PQ identity discovery
+      description: |
+        Hosted by KXCO. Returns the current ML-DSA-65 public key any receiver
+        can pin to verify webhook deliveries offline. Cacheable for one hour.
+      servers:
+        - url: https://chain.kxco.ai/wallet
+          description: Production KXCO platform
+      responses:
+        '200':
+          description: Discovery document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiscoveryDocument'
+
+x-verification-pseudocode: |
+  // Receiver-side pseudocode applicable to any language
+  envelope = headers["X-KXCO-Timestamp"] + "." + raw_body
+
+  // Replay window
+  if abs(now() - parse_int(headers["X-KXCO-Timestamp"])) > 300:
+      reject("stale or future timestamp")
+
+  // Pin check
+  if headers["X-KXCO-PQ-Kid"] != PINNED_KID:
+      reject("unknown signing key")
+
+  // Either signature alone is sufficient
+  hmac_expected = "sha256=" + hex(HMAC_SHA256(shared_secret, envelope))
+  hmac_ok = constant_time_eq(headers["X-KXCO-Signature"], hmac_expected)
+
+  pq_sig = headers["X-KXCO-PQ-Signature"].removeprefix("ml-dsa-65=")
+  pq_ok = ML_DSA_65_verify(PINNED_PUBLIC_KEY, envelope, hex_decode(pq_sig))
+
+  if not (hmac_ok or pq_ok):
+      reject("invalid signature")
+
+  accept()

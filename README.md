@@ -204,7 +204,7 @@ Constant-time string compare. Use this when comparing user-supplied kids.
 Every public output is pinned in `test/vectors.json`. Run them:
 
 ```bash
-git clone <repo>
+git clone https://github.com/JackKXCO/kxco-post-quantum
 cd kxco-post-quantum
 npm install
 npm test          # 9 functional tests + 29 vector checks
