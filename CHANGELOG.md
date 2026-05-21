@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-05-21
+
+Same API. Same byte-for-byte outputs (all 29 pinned vectors still match).
+The package now runs in **browsers** as well as Node.
+
+### Added
+- Isomorphic runtime — every module works identically in modern browsers
+  (Chromium, Firefox, Safari) and Node, served from CDNs like esm.sh
+  with zero polyfill burden
+- `test/browser-smoke.test.js` runs the public API with `globalThis.Buffer`
+  removed, asserts plain `Uint8Array` outputs and a clean hybrid-signing
+  round trip — proves browser compatibility in CI
+
+### Changed
+- HKDF-SHA-512 now sourced from `@noble/hashes/hkdf` (was `node:crypto`)
+- HMAC-SHA-256 now sourced from `@noble/hashes/hmac` (was `node:crypto`)
+- SHA-256 for kid fingerprints now sourced from `@noble/hashes/sha256`
+  (was `node:crypto`)
+- Constant-time comparisons are portable byte loops (replaces
+  `node:crypto.timingSafeEqual`) — identical security property,
+  runs in browsers
+- Functions return `Buffer` on Node (when `globalThis.Buffer` is defined)
+  and plain `Uint8Array` in browsers. **Backwards compatible** for Node
+  callers; `Buffer extends Uint8Array` so any code accepting `Uint8Array`
+  already works.
+- `engines.node` bumped to `>=20.19` to match the underlying
+  `@noble/hashes@2` requirement (Node 18 is past EOL)
+
+### Dependencies
+- Added `@noble/hashes ^2.2.0` (peer of `@noble/post-quantum`)
+- `@noble/post-quantum ^0.2.1` unchanged
+
+### Verification
+- 9 node tests pass
+- 6 browser-smoke tests pass
+- 29 pinned vectors still match — no cryptographic surface changes,
+  bit-for-bit identical to 1.0.3 in Node
+
 ## [1.0.3] — 2026-05-21
 
 First release ships with SLSA Level 2 provenance attestation tied to a
