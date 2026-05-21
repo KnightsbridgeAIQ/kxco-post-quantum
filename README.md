@@ -1,4 +1,4 @@
-# @kxco/post-quantum
+# kxco-post-quantum
 
 **Production-tested post-quantum cryptography patterns.** Deterministic key derivation, hybrid webhook signing, and kid fingerprinting — the integration patterns KXCO uses in production across KnightsVault, KXCO Bank, KnightsBot, The Exchequer, and Armature L1.
 
