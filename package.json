@@ -1,6 +1,6 @@
 {
   "name": "kxco-post-quantum",
-  "version": "1.0.3",
+  "version": "1.0.2",
   "description": "Production-tested post-quantum cryptography patterns: deterministic key derivation, hybrid webhook signing, and kid fingerprinting. Built on @noble/post-quantum. Used in production at KXCO.",
   "keywords": [
     "post-quantum",
@@ -19,7 +19,6 @@
   "license": "MIT",
   "author": "KXCO by Knightsbridge <hello@kxco.ai>",
   "homepage": "https://kxco.ai",
-  "funding": "https://kxco.ai",
   "repository": {
     "type": "git",
     "url": "https://github.com/JackKXCO/kxco-post-quantum.git"
@@ -27,45 +26,53 @@
   "bugs": {
     "url": "https://github.com/JackKXCO/kxco-post-quantum/issues"
   },
+  "funding": "https://kxco.ai",
   "type": "module",
   "sideEffects": false,
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "exports": {
     ".": {
-      "types":  "./src/index.d.ts",
-      "import": "./src/index.js"
+      "types":   "./src/index.d.ts",
+      "default": "./src/index.js"
     },
     "./ml-dsa": {
-      "types":  "./src/ml-dsa.d.ts",
-      "import": "./src/ml-dsa.js"
+      "types":   "./src/ml-dsa.d.ts",
+      "default": "./src/ml-dsa.js"
     },
     "./ml-kem": {
-      "types":  "./src/ml-kem.d.ts",
-      "import": "./src/ml-kem.js"
+      "types":   "./src/ml-kem.d.ts",
+      "default": "./src/ml-kem.js"
     },
     "./derive": {
-      "types":  "./src/derive.d.ts",
-      "import": "./src/derive.js"
+      "types":   "./src/derive.d.ts",
+      "default": "./src/derive.js"
     },
     "./webhook": {
-      "types":  "./src/webhook.d.ts",
-      "import": "./src/webhook.js"
+      "types":   "./src/webhook.d.ts",
+      "default": "./src/webhook.js"
     },
     "./kid": {
-      "types":  "./src/kid.d.ts",
-      "import": "./src/kid.js"
+      "types":   "./src/kid.d.ts",
+      "default": "./src/kid.js"
     }
   },
   "files": [
-    "src",
+    "src/",
+    "test/vectors.json",
+    "test/run-vectors.js",
     "README.md",
     "LICENSE",
     "SECURITY.md",
+    "AUDIT.md",
     "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
   },
   "dependencies": {
     "@noble/post-quantum": "^0.2.1"
@@ -74,9 +81,5 @@
     "test":             "node --test test/basic.test.js && node test/run-vectors.js",
     "test:vectors":     "node test/run-vectors.js",
     "generate:vectors": "node test/generate-vectors.js > test/vectors.json"
-  },
-  "publishConfig": {
-    "provenance": true,
-    "access": "public"
   }
 }
