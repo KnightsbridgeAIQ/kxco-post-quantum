@@ -8,26 +8,40 @@
 // Domain separation through `info` is critical — using the same master key
 // for different purposes (signing vs encryption) MUST use distinct info
 // strings or you create a cross-protocol attack surface.
+//
+// Isomorphic: uses @noble/hashes/hkdf which runs identically in Node 18+ and
+// modern browsers. Returns Buffer when running on Node (for backwards
+// compatibility with existing callers), Uint8Array in browsers.
 
-import { hkdfSync } from 'node:crypto'
+import { hkdf } from '@noble/hashes/hkdf.js'
+import { sha512 } from '@noble/hashes/sha2.js'
+
+const HAS_BUFFER = typeof Buffer !== 'undefined'
+const enc = new TextEncoder()
+
+function toBytes(input) {
+  if (input instanceof Uint8Array) return input
+  if (typeof input === 'string') return enc.encode(input)
+  throw new Error('expected Uint8Array or string')
+}
 
 /**
  * Derive a deterministic seed from a master secret + an info string.
  *
- * @param {Buffer|Uint8Array} master   — high-entropy input keying material
- * @param {string}             info    — domain separation tag (eg. 'kxco-platform-ml-dsa-65-v1')
- * @param {number}             length  — output seed length in bytes (32 for ML-DSA, 64 for ML-KEM)
- * @returns {Buffer}
+ * @param {Buffer|Uint8Array|string} master   — high-entropy keying material (>= 16 bytes)
+ * @param {string}                    info    — domain separation tag
+ * @param {number}                    length  — output seed length in bytes
+ * @returns {Buffer|Uint8Array}
  */
 export function deriveSeed(master, info, length) {
-  if (!master || master.length < 16) {
+  const ikm = toBytes(master)
+  if (!ikm || ikm.length < 16) {
     throw new Error('deriveSeed: master keying material must be at least 16 bytes')
   }
   if (!info || typeof info !== 'string') {
     throw new Error('deriveSeed: info string is required for domain separation')
   }
-  // Empty salt with HKDF-SHA-512 is fine when master has high entropy.
-  return Buffer.from(
-    hkdfSync('sha512', master, Buffer.alloc(32), Buffer.from(info, 'utf8'), length)
-  )
+  const salt = new Uint8Array(32) // 32 zero bytes — fine with high-entropy IKM
+  const out = hkdf(sha512, ikm, salt, enc.encode(info), length)
+  return HAS_BUFFER ? Buffer.from(out) : out
 }
