@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] — 2026-05-21
+
+Operational hardening release. No source-code changes; this is the first
+release published via **npm Trusted Publishing** rather than a long-lived
+`NPM_TOKEN`.
+
+### Changed
+- `.github/workflows/publish.yml` now publishes via npm Trusted Publishing
+  (OIDC). The `NODE_AUTH_TOKEN` / `NPM_OTP` env vars are removed; the
+  workflow's `id-token: write` permission is the entire credential.
+  Registered at https://www.npmjs.com/package/kxco-post-quantum/access
+  binding `org=JackKXCO`, `repo=kxco-post-quantum`, `workflow=publish.yml`.
+- Repo-level `NPM_TOKEN` and `NPM_OTP` secrets removed — no long-lived
+  credentials remain in the publishing path.
+
+### Why this matters
+- Every release tarball is now signed by GitHub Actions OIDC against the
+  exact commit being published, with no human-held secret in the loop.
+- No more burning recovery codes per release. The publish workflow now
+  runs hands-free on every `v*` tag push.
+
 ## [1.1.0] — 2026-05-21
 
 Same API. Same byte-for-byte outputs (all 29 pinned vectors still match).
