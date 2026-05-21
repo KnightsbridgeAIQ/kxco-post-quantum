@@ -1,16 +1,17 @@
 name: publish
 
-# Triggered by pushing a v* tag (e.g. v1.0.3), or manually via the Actions
+# Triggered by pushing a v* tag (e.g. v1.1.0), or manually via the Actions
 # UI / GitHub API by dispatching with a tag name.
 #
-# Auth via npm Trusted Publishing — npm verifies the publish through OIDC
-# against this workflow run (org=JackKXCO, repo=kxco-post-quantum, workflow
-# file=publish.yml). No NPM_TOKEN secret, no NPM_OTP, no long-lived
-# credential of any kind. Provenance is minted automatically as part of the
-# OIDC publish.
+# Auth path: NPM_TOKEN secret + optional NPM_OTP (a recovery code or fresh
+# TOTP) when the npm account has 2FA in auth-and-publish mode. Provenance is
+# attached via npm's --provenance flag using the workflow's id-token OIDC.
 #
-# All third-party actions are pinned by 40-char commit SHA so a hijacked
-# floating tag cannot inject a malicious step into a release run.
+# Long-term: set up Trusted Publishing for this package at
+# https://www.npmjs.com/package/kxco-post-quantum/access — then NPM_TOKEN
+# and NPM_OTP can both be removed.
+#
+# All third-party actions are pinned by 40-char commit SHA.
 
 on:
   push:
@@ -19,13 +20,13 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: 'Tag or ref to publish (e.g. v1.0.3)'
+        description: 'Tag or ref to publish (e.g. v1.1.0)'
         required: true
         type: string
 
 permissions:
   contents: read
-  id-token: write   # required for npm Trusted Publishing OIDC
+  id-token: write   # required for npm --provenance OIDC
 
 jobs:
   publish:
@@ -37,7 +38,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.ref || github.ref }}
 
-      - name: Setup Node 20 with npm registry
+      - name: Setup Node 20 with npm registry auth
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '20'
@@ -49,5 +50,13 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Publish (Trusted Publishing + provenance via OIDC)
-        run: npm publish --provenance --access public
+      - name: Publish with provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_OTP:         ${{ secrets.NPM_OTP }}
+        run: |
+          if [ -n "$NPM_OTP" ]; then
+            npm publish --provenance --access public --otp="$NPM_OTP"
+          else
+            npm publish --provenance --access public
+          fi
