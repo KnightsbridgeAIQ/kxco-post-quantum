@@ -1,7 +1,7 @@
 name: CI
 
 # Runs on every push and PR. Matrix over the Node versions we declare
-# support for in package.json engines (>=18). All actions pinned by
+# support for in package.json engines (>=20.19). All actions pinned by
 # 40-char commit SHA.
 
 on:
@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: ['18', '20', '22']
+        node: ['20', '22', '24']
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
