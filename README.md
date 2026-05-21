@@ -2,12 +2,10 @@
 
 **Production-tested post-quantum cryptography patterns.** Deterministic key derivation, hybrid webhook signing, and kid fingerprinting — the integration patterns KXCO uses in production across KnightsVault, KXCO Bank, KnightsBot, The Exchequer, and Armature L1.
 
-[![npm](https://img.shields.io/npm/v/kxco-post-quantum?color=d4a017)](https://www.npmjs.com/package/kxco-post-quantum)
-[![tests](https://github.com/JackKXCO/kxco-post-quantum/actions/workflows/test.yml/badge.svg)](https://github.com/JackKXCO/kxco-post-quantum/actions/workflows/test.yml)
-[![CodeQL](https://github.com/JackKXCO/kxco-post-quantum/actions/workflows/codeql.yml/badge.svg)](https://github.com/JackKXCO/kxco-post-quantum/actions/workflows/codeql.yml)
+[![npm](https://img.shields.io/npm/v/kxco-post-quantum?color=d4a017&label=npm)](https://www.npmjs.com/package/kxco-post-quantum)
 [![license](https://img.shields.io/npm/l/kxco-post-quantum)](./LICENSE)
-[![FIPS 203](https://img.shields.io/badge/FIPS%20203-ML--KEM--768-1e3a8a)](https://csrc.nist.gov/pubs/fips/203/final)
-[![FIPS 204](https://img.shields.io/badge/FIPS%20204-ML--DSA--65-1e3a8a)](https://csrc.nist.gov/pubs/fips/204/final)
+[![Socket](https://socket.dev/api/badge/npm/package/kxco-post-quantum)](https://socket.dev/npm/package/kxco-post-quantum)
+[![live verifier](https://img.shields.io/website?url=https%3A%2F%2Fchain.kxco.ai%2Fwallet%2Fverify&up_message=live&up_color=brightgreen&down_message=down&down_color=red&label=production)](https://chain.kxco.ai/wallet/verify)
 
 ---
 
