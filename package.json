@@ -73,7 +73,8 @@
   "scripts": {
     "test":             "node --test test/basic.test.js && node test/run-vectors.js",
     "test:vectors":     "node test/run-vectors.js",
-    "generate:vectors": "node test/generate-vectors.js > test/vectors.json"
+    "generate:vectors": "node test/generate-vectors.js > test/vectors.json",
+    "bench":            "node bench/bench.js"
   },
   "publishConfig": {
     "provenance": true,
