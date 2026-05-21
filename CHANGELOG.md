@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.3] — 2026-05-21
+
+First release ships with SLSA Level 2 provenance attestation tied to a
+public GitHub Actions workflow run. No cryptographic surface changes
+vs `1.0.2` — every diff is metadata, types, CI, and hygiene.
+
 ### Added
 - SLSA Level 2 provenance on every published release via GitHub Actions OIDC
   (`publishConfig.provenance: true`)
@@ -83,7 +89,8 @@ ESM-only. Node.js 18+.
 
 Initial pre-release.
 
-[Unreleased]: https://github.com/JackKXCO/kxco-post-quantum/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/JackKXCO/kxco-post-quantum/compare/v1.0.3...HEAD
+[1.0.3]:      https://github.com/JackKXCO/kxco-post-quantum/compare/v1.0.2...v1.0.3
 [1.0.2]:      https://github.com/JackKXCO/kxco-post-quantum/compare/v1.0.1...v1.0.2
 [1.0.1]:      https://github.com/JackKXCO/kxco-post-quantum/compare/v1.0.0...v1.0.1
 [1.0.0]:      https://github.com/JackKXCO/kxco-post-quantum/compare/v0.1.0...v1.0.0
