@@ -1,6 +1,6 @@
 {
   "name": "kxco-post-quantum",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Production-tested post-quantum cryptography patterns: deterministic key derivation, hybrid webhook signing, and kid fingerprinting. Built on @noble/post-quantum. Used in production at KXCO.",
   "keywords": [
     "post-quantum",
@@ -33,27 +33,27 @@
   "types": "./src/index.d.ts",
   "exports": {
     ".": {
-      "types":  "./src/index.d.ts",
+      "types": "./src/index.d.ts",
       "import": "./src/index.js"
     },
     "./ml-dsa": {
-      "types":  "./src/ml-dsa.d.ts",
+      "types": "./src/ml-dsa.d.ts",
       "import": "./src/ml-dsa.js"
     },
     "./ml-kem": {
-      "types":  "./src/ml-kem.d.ts",
+      "types": "./src/ml-kem.d.ts",
       "import": "./src/ml-kem.js"
     },
     "./derive": {
-      "types":  "./src/derive.d.ts",
+      "types": "./src/derive.d.ts",
       "import": "./src/derive.js"
     },
     "./webhook": {
-      "types":  "./src/webhook.d.ts",
+      "types": "./src/webhook.d.ts",
       "import": "./src/webhook.js"
     },
     "./kid": {
-      "types":  "./src/kid.d.ts",
+      "types": "./src/kid.d.ts",
       "import": "./src/kid.js"
     }
   },
@@ -65,16 +65,17 @@
     "CHANGELOG.md"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20.19"
   },
   "dependencies": {
+    "@noble/hashes": "^2.2.0",
     "@noble/post-quantum": "^0.2.1"
   },
   "scripts": {
-    "test":             "node --test test/basic.test.js && node test/run-vectors.js",
-    "test:vectors":     "node test/run-vectors.js",
+    "test": "node --test test/basic.test.js && node --test test/browser-smoke.test.js && node test/run-vectors.js",
+    "test:vectors": "node test/run-vectors.js",
     "generate:vectors": "node test/generate-vectors.js > test/vectors.json",
-    "bench":            "node bench/bench.js"
+    "bench": "node bench/bench.js"
   },
   "publishConfig": {
     "provenance": true,
