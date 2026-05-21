@@ -1,0 +1,38 @@
+version: 2
+
+updates:
+  # Runtime dependency (currently just @noble/post-quantum).
+  # Reviews are weekly. Security updates are auto-opened by Dependabot's
+  # security-updates feature, which is enabled at the repo level.
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - npm
+    commit-message:
+      prefix: deps
+      include: scope
+
+  # Pin updates for the actions used in our workflows. Dependabot will open
+  # PRs proposing newer commit SHAs for actions/checkout etc, so we never
+  # have to track upstream release notes by hand.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: ci
+      include: scope

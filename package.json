@@ -19,6 +19,7 @@
   "license": "MIT",
   "author": "KXCO by Knightsbridge <hello@kxco.ai>",
   "homepage": "https://kxco.ai",
+  "funding": "https://kxco.ai",
   "repository": {
     "type": "git",
     "url": "https://github.com/JackKXCO/kxco-post-quantum.git"
@@ -27,23 +28,40 @@
     "url": "https://github.com/JackKXCO/kxco-post-quantum/issues"
   },
   "type": "module",
+  "sideEffects": false,
   "main": "./src/index.js",
+  "types": "./src/index.d.ts",
   "exports": {
-    ".":          "./src/index.js",
-    "./ml-dsa":   "./src/ml-dsa.js",
-    "./ml-kem":   "./src/ml-kem.js",
-    "./derive":   "./src/derive.js",
-    "./webhook":  "./src/webhook.js",
-    "./kid":      "./src/kid.js"
+    ".": {
+      "types":  "./src/index.d.ts",
+      "import": "./src/index.js"
+    },
+    "./ml-dsa": {
+      "types":  "./src/ml-dsa.d.ts",
+      "import": "./src/ml-dsa.js"
+    },
+    "./ml-kem": {
+      "types":  "./src/ml-kem.d.ts",
+      "import": "./src/ml-kem.js"
+    },
+    "./derive": {
+      "types":  "./src/derive.d.ts",
+      "import": "./src/derive.js"
+    },
+    "./webhook": {
+      "types":  "./src/webhook.d.ts",
+      "import": "./src/webhook.js"
+    },
+    "./kid": {
+      "types":  "./src/kid.d.ts",
+      "import": "./src/kid.js"
+    }
   },
   "files": [
-    "src/",
-    "test/vectors.json",
-    "test/run-vectors.js",
+    "src",
     "README.md",
     "LICENSE",
     "SECURITY.md",
-    "AUDIT.md",
     "CHANGELOG.md"
   ],
   "engines": {
@@ -56,5 +74,9 @@
     "test":             "node --test test/basic.test.js && node test/run-vectors.js",
     "test:vectors":     "node test/run-vectors.js",
     "generate:vectors": "node test/generate-vectors.js > test/vectors.json"
+  },
+  "publishConfig": {
+    "provenance": true,
+    "access": "public"
   }
 }
