@@ -1,82 +1,90 @@
 # Changelog
 
-All notable changes to `kxco-post-quantum` are documented here. This project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- SLSA Level 2 provenance on every published release via GitHub Actions OIDC
+  (`publishConfig.provenance: true`)
+- `.github/workflows/publish.yml` triggered by `v*` tags — runs tests then
+  `npm publish --provenance --access public`
+- `.github/workflows/ci.yml` matrix over Node 18 / 20 / 22 on every push and PR
+- Hand-written TypeScript declarations (`.d.ts`) for all six modules; wired
+  into `exports[*].types` so TypeScript consumers get full typings without
+  any build step
+- `.github/dependabot.yml` — weekly npm + github-actions ecosystem checks
+- `sideEffects: false` for tree-shaking
+- `funding` field in `package.json`
+- Top-level `"types"` field in `package.json` pointing at `./src/index.d.ts`
+
+### Changed
+- `package.json` `files` allowlist tightened to `["src", "README.md", "LICENSE",
+  "SECURITY.md", "CHANGELOG.md"]` — locks down what ships to npm
+- `package.json` `exports` now declares per-subpath `types` + `import` keys
+- `SECURITY.md` rewritten in the standard short-form template with explicit
+  in-scope / out-of-scope split delegating primitive bugs upstream to
+  `@noble/post-quantum`
+- All third-party actions in workflows pinned by 40-char commit SHA, never
+  floating tags
+- README badge row trimmed to four (`npm`, `license`, `Socket`, `production-live`)
+  and a 60-second live-verify quickstart added under the title
+
+### Security
+- No cryptographic code changed in this release — every change is metadata,
+  types, CI, and documentation. Production behaviour is bit-for-bit identical
+  to `1.0.2`.
 
 ## [1.0.2] — 2026-05-21
 
 ### Changed
-- Repository URL on the npm package now points to `github.com/JackKXCO/kxco-post-quantum`. No code change.
+- Repository URL on the npm package metadata now points to
+  `github.com/JackKXCO/kxco-post-quantum`. No code change.
 
 ## [1.0.1] — 2026-05-21
 
-Substance additions to the v1.0 release. No API changes. Same code on the cryptographic path; auditability and reproducibility infrastructure expanded.
-
 ### Added
-- `AUDIT.md` — self-attested audit posture, including explicit roadmap for third-party review (Q3 2026), bug bounty (Q4 2026), and FIPS 140-3 CMVP application (2027)
-- `test/vectors.json` — 29 deterministic test vectors pinning every primitive's output bit-for-bit
-- `test/run-vectors.js` — runner that verifies the library's output against `vectors.json` (exit code 0 = match)
-- `test/generate-vectors.js` — vector generator (run only when the library's output behaviour changes)
-- `npm test` — now runs both functional tests and vector verification
-- `npm run test:vectors` — vector check only
-- Production deployment proof: the wallet at `chain.kxco.ai` now imports `kxco-post-quantum` directly via npm. Real-world download count starts here.
+- `AUDIT.md` — self-attested audit posture with roadmap (external audit
+  Q3 2026, public bug bounty Q4 2026, FIPS 140-3 CMVP application 2027)
+- `test/vectors.json` — 29 deterministic test vectors pinning every primitive
+  output bit-for-bit
+- `test/run-vectors.js` — runner anyone can use to verify reproducibility
+- `npm test` runs both the functional tests and vector verification
+- `npm run test:vectors` for vector check only
 
 ### Changed
-- `SECURITY.md` — sharpened with explicit threat model, in-scope vs out-of-scope responsibilities, pinned `@noble/post-quantum@0.2.1` integrity hash, Cure53 audit reference, FIPS posture clarification, replay-window and side-channel limitations
-- `README.md` — added "Used in production at" section with file refs to the live deployment
+- `SECURITY.md` sharpened with explicit threat model and pinned upstream
+  `@noble/post-quantum@0.2.1` integrity hash
+- `README.md` "Used in production at" section with file refs to chain.kxco.ai
 
-### Why a patch and not a feature release
-No API surface changes. Same exports, same signatures, same behaviour. The diff is documentation, vectors, and infrastructure that lets reviewers verify the library without trusting the publisher.
+No API changes from `1.0.0`.
 
 ## [1.0.0] — 2026-05-21
 
-First stable release. The public API below is committed to: future minor and patch releases will not break it without a major version bump.
+First stable release. Committed public API surface:
 
-### Committed public API
+- `mlDsa.keypairFromMaster(master, info?)`, `mlDsa.sign`, `mlDsa.verify`
+- `mlKem.keypairFromMaster(master, info?)`, `mlKem.encapsulate`, `mlKem.decapsulate`
+- `deriveSeed(master, info, length)`
+- `fingerprint(publicKey)`, `kidEquals(a, b)`
+- `webhook.envelope`, `webhook.hmacHex`, `webhook.verifyHmac`,
+  `webhook.pqSign`, `webhook.verifyPq`, `webhook.signDelivery`,
+  `webhook.verifyDelivery`
 
-```js
-import {
-  mlDsa,        // namespace
-  mlKem,        // namespace
-  deriveSeed,
-  fingerprint,
-  kidEquals,
-  webhook,      // namespace
-} from 'kxco-post-quantum'
-```
+Verified at release: 9/9 functional tests + 29/29 vector checks pass.
 
-| Export | Signature | Notes |
-|---|---|---|
-| `mlDsa.keypairFromMaster(master, info='ml-dsa-65-v1')` | → `{ publicKey: Buffer, secretKey: Buffer }` | Deterministic. Stable across versions. |
-| `mlDsa.sign(secretKey, message)` | → hex string (6618 chars) | `message` accepts Buffer or string |
-| `mlDsa.verify(publicKey, message, sigHex)` | → boolean | Catches exceptions, returns false |
-| `mlDsa.ml_dsa65` | re-export | Raw `@noble/post-quantum` primitive |
-| `mlKem.keypairFromMaster(master, info='ml-kem-768-v1')` | → `{ publicKey, secretKey }` | Deterministic |
-| `mlKem.encapsulate(publicKey)` | → `{ ciphertext, sharedSecret, cipherText }` | `cipherText` (camelCase) alias for noble compatibility |
-| `mlKem.decapsulate(ciphertext, secretKey)` | → Buffer (32 bytes) | |
-| `mlKem.ml_kem768` | re-export | Raw primitive |
-| `deriveSeed(master, info, length)` | → Buffer | HKDF-SHA-512 with empty salt; requires `master.length ≥ 16` |
-| `fingerprint(publicKey)` | → 16-hex string | First 8 bytes of SHA-256(pubkey) |
-| `kidEquals(a, b)` | → boolean | Constant-time string compare |
-| `webhook.envelope(timestamp, rawBody)` | → Buffer | `timestamp + "." + rawBody` |
-| `webhook.hmacHex(secret, timestamp, rawBody)` | → hex string | HMAC-SHA-256 over envelope |
-| `webhook.verifyHmac(secret, timestamp, rawBody, sigHeader)` | → boolean | Constant-time. Accepts `sha256=` prefix. |
-| `webhook.pqSign(secretKey, timestamp, rawBody)` | → `ml-dsa-65=<hex>` | Ready-to-send header value |
-| `webhook.verifyPq(publicKey, timestamp, rawBody, sigHeader)` | → boolean | Accepts `ml-dsa-65=` prefix |
-| `webhook.signDelivery({ rawBody, hmacSecret, pqSecretKey, pqKid, event?, deliveryId? })` | → HTTP header map | Full sender helper |
-| `webhook.verifyDelivery({ headers, rawBody, hmacSecret?, pqPublicKey?, pinnedKid?, windowSeconds=300 })` | → `{ hmacOk, pqOk, timestampOk, kidOk }` | Receiver helper. Either signature can be omitted to skip that check. |
-
-### What "committed" means
-We will not break any of the above signatures in a 1.x release. We will not change algorithm choices in a 1.x release. We will not change the envelope format `${timestamp}.${rawBody}` in a 1.x release. We may add new exports; existing ones won't move.
-
-### Verified at release
-- 9/9 functional tests pass (sign/verify, encapsulate/decapsulate, hybrid delivery, replay rejection, tamper rejection)
-- 29/29 test vectors pass
-- Underlying primitives: `@noble/post-quantum@0.2.1` (audited by Cure53, 2024)
-- Node.js 18+ ESM-only
-
-### Initial release notes
-ESM-only. Node.js 18+. FIPS-aligned (implements FIPS 203/204 algorithms). Not CMVP-validated as a module. TLS guidance: use OpenSSL 3.5+ for `X25519MLKEM768` hybrid at the edge — this package does not handle TLS.
+Underlying primitives via `@noble/post-quantum@^0.2.1` (audited by Cure53, 2024).
+ESM-only. Node.js 18+.
 
 ## [0.1.0] — 2026-05-21
 
-Initial pre-release. Same surface as 1.0.0; promoted to 1.0.0 after verifying clean install and round-trip on a fresh environment.
+Initial pre-release.
+
+[Unreleased]: https://github.com/JackKXCO/kxco-post-quantum/compare/v1.0.2...HEAD
+[1.0.2]:      https://github.com/JackKXCO/kxco-post-quantum/compare/v1.0.1...v1.0.2
+[1.0.1]:      https://github.com/JackKXCO/kxco-post-quantum/compare/v1.0.0...v1.0.1
+[1.0.0]:      https://github.com/JackKXCO/kxco-post-quantum/compare/v0.1.0...v1.0.0
+[0.1.0]:      https://github.com/JackKXCO/kxco-post-quantum/releases/tag/v0.1.0
