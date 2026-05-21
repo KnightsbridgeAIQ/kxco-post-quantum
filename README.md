@@ -9,6 +9,41 @@
 
 ---
 
+## 60-second quickstart
+
+Install the package, fetch a freshly signed test vector from the live KXCO platform, post it back to verify — **200 OK**. The same code path every production webhook runs.
+
+```bash
+# 1. Install
+npm install kxco-post-quantum
+
+# 2. Fetch a freshly signed test vector from the live KXCO platform
+curl -s https://chain.kxco.ai/wallet/api/verify-demo > vector.json
+
+# 3. Post it back — the server verifies HMAC + ML-DSA-65 against the live key
+node --input-type=module -e '
+  import fs from "node:fs"
+  const v = JSON.parse(fs.readFileSync("vector.json", "utf8"))
+  const h = v.headers
+  const res = await fetch("https://chain.kxco.ai/wallet/api/verify-demo", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({
+      timestamp:  h["X-KXCO-Timestamp"],
+      body:       v.body,
+      hmacSecret: v.hmacSecret,
+      hmacSig:    h["X-KXCO-Signature"],
+      pqSig:      h["X-KXCO-PQ-Signature"].replace(/^ml-dsa-65=/, ""),
+      pqKid:      h["X-KXCO-PQ-Kid"],
+    }),
+  })
+  console.log(res.status, await res.json())
+'
+# → 200 { kidMatch: true, hmac: { ok: true }, pq: { ok: true }, ... }
+```
+
+The platform signs every fetch fresh — no cached fixtures, no replay. `verify-demo` exposes the HMAC secret for the demo only; in production the HMAC secret never leaves the receiving server.
+
 ## Used in production at
 
 This is not a sample library. It runs in production at KXCO across multiple products. You can verify this yourself without any cooperation from us:
