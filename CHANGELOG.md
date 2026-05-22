@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] — 2026-05-22
+
+Documentation correction. No code changes; no behaviour changes; no
+cryptographic surface changes vs `1.1.1`.
+
+### Fixed
+- **AUDIT.md** §1 previously cited a 2024 Cure53 audit of
+  `@noble/post-quantum`. That citation was incorrect — Cure53's 2023
+  NDS-01 audit covered `@noble/ciphers`, `@noble/curves`, and
+  `@noble/hashes` only; the post-quantum package was not in scope. As of
+  2026-05-22, upstream `@noble/post-quantum` has only been self-audited
+  by its maintainer (v0.6.1, April 2026). AUDIT.md §1 has been rewritten
+  to reflect the actual upstream audit posture. A correction notice is
+  included at the top of the file. Reviewers who relied on the prior
+  citation should re-read §1 of AUDIT.md.
+- **CHANGELOG.md** 1.0.0 entry similarly stated "audited by Cure53,
+  2024" alongside the upstream pin. That sentence has been corrected
+  in-place in this release; the substance of the 1.0.0 release is
+  otherwise unchanged.
+
+### Why this is a patch, not an advisory
+The misstatement was in documentation only. No code path, signature,
+key-derivation routine, or wire format depends on the cited audit. The
+fix is a documentation rewrite; affected installs upgrade by pulling
+1.1.2. If your due-diligence pack referenced AUDIT.md from 1.0.1
+through 1.1.1, please refresh against 1.1.2.
+
 ## [1.1.1] — 2026-05-21
 
 Operational hardening release. No source-code changes; this is the first
@@ -141,14 +168,18 @@ First stable release. Committed public API surface:
 
 Verified at release: 9/9 functional tests + 29/29 vector checks pass.
 
-Underlying primitives via `@noble/post-quantum@^0.2.1` (audited by Cure53, 2024).
-ESM-only. Node.js 18+.
+Underlying primitives via `@noble/post-quantum@^0.2.1`. See `AUDIT.md` for
+upstream audit posture (no third-party audit of the PQ package; self-audited
+by maintainer at v0.6.1, April 2026). ESM-only. Node.js 18+.
 
 ## [0.1.0] — 2026-05-21
 
 Initial pre-release.
 
-[Unreleased]: https://github.com/JackKXCO/kxco-post-quantum/compare/v1.0.3...HEAD
+[Unreleased]: https://github.com/JackKXCO/kxco-post-quantum/compare/v1.1.2...HEAD
+[1.1.2]:      https://github.com/JackKXCO/kxco-post-quantum/compare/v1.1.1...v1.1.2
+[1.1.1]:      https://github.com/JackKXCO/kxco-post-quantum/compare/v1.1.0...v1.1.1
+[1.1.0]:      https://github.com/JackKXCO/kxco-post-quantum/compare/v1.0.3...v1.1.0
 [1.0.3]:      https://github.com/JackKXCO/kxco-post-quantum/compare/v1.0.2...v1.0.3
 [1.0.2]:      https://github.com/JackKXCO/kxco-post-quantum/compare/v1.0.1...v1.0.2
 [1.0.1]:      https://github.com/JackKXCO/kxco-post-quantum/compare/v1.0.0...v1.0.1

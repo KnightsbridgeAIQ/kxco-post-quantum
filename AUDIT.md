@@ -1,22 +1,26 @@
 # Audit Posture
 
-**Status as of v1.0.1 release (2026-05-21).** Self-attested. No third-party audit of this wrapper library has been performed yet. This document exists to make our posture **legible to reviewers** so the right questions get asked of the right party.
+**Status as of v1.1.2 release (2026-05-22).** Self-attested. No third-party audit of this wrapper library has been performed yet. This document exists to make our posture **legible to reviewers** so the right questions get asked of the right party.
 
 If you are doing institutional due diligence, read this end-to-end before the README.
 
+> **Correction (v1.1.2):** earlier releases (1.0.1 – 1.1.1) of this file cited a 2024 Cure53 audit of `@noble/post-quantum`. **That citation was wrong.** Cure53's 2023 NDS-01 audit covered `@noble/ciphers`, `@noble/curves`, and `@noble/hashes` — **not** `@noble/post-quantum`. As of 2026-05-22, `@noble/post-quantum` has only been self-audited by its maintainer (v0.6.1, April 2026). No third-party audit of the post-quantum package exists. Section 1 has been rewritten accordingly. No code path changed; this is a documentation correction only.
+
 ---
 
-## 1. What has been audited (upstream)
+## 1. Upstream audit posture
 
-**`@noble/post-quantum@0.2.1`** — the underlying NIST primitives we wrap — has been independently audited.
+**`@noble/post-quantum@0.2.1`** — the underlying NIST primitives we wrap — has **not** been independently audited by a third party.
 
-| Auditor | Year | Scope | Report |
+| Review | Year | Scope | Source |
 |---|---|---|---|
-| **Cure53** | 2024 | `@noble/post-quantum` cryptographic primitives | https://github.com/paulmillr/noble-post-quantum#security |
+| Maintainer self-audit (`@noble/post-quantum` v0.6.1) | April 2026 | Full library | https://github.com/paulmillr/noble-post-quantum#security |
 
-This audit covers the actual cryptographic operations: ML-DSA-65 sign/verify, ML-KEM-768 keygen/encapsulate/decapsulate, the constant-time properties, the test vector compliance with NIST's reference outputs.
+The wider `@noble/*` ecosystem has been audited by Cure53 (NDS-01, 2023), but that engagement covered `@noble/ciphers`, `@noble/curves`, and `@noble/hashes` — not the post-quantum package.
 
-When you `npm install kxco-post-quantum`, the audited code is what runs the math. This wrapper does not reimplement the primitives.
+The primitives themselves are reference implementations of NIST FIPS 203 (ML-KEM) and FIPS 204 (ML-DSA), with test vectors matching NIST's published reference outputs. Reviewers wanting a fully third-party-audited PQ primitive layer should evaluate whether this posture meets their requirements before adopting in production.
+
+When you `npm install kxco-post-quantum`, the upstream `@noble/post-quantum` code is what runs the math. This wrapper does not reimplement the primitives.
 
 The exact upstream we pin:
 
