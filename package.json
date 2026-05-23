@@ -1,6 +1,6 @@
 {
   "name": "kxco-post-quantum",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Production-tested post-quantum cryptography patterns: deterministic key derivation, hybrid webhook signing, and kid fingerprinting. Built on @noble/post-quantum. Used in production at KXCO.",
   "keywords": [
     "post-quantum",
