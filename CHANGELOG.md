@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.5 — 2026-05-24
+
+Maintenance release. No breaking changes.
+
+
+
 ## 1.1.4 — 2026-05-24
 
 Maintenance release. No breaking changes.
