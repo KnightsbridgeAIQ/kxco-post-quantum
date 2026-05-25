@@ -1,6 +1,6 @@
 {
   "name": "kxco-post-quantum",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Production-tested post-quantum cryptography patterns: deterministic key derivation, hybrid webhook signing, and kid fingerprinting. Built on @noble/post-quantum. Used in production at KXCO.",
   "keywords": [
     "post-quantum",
@@ -18,6 +18,10 @@
   ],
   "license": "MIT",
   "author": "KXCO by Knightsbridge <hello@kxco.ai>",
+  "contributors": [
+    { "name": "Shayne Heffernan" },
+    { "name": "John Heffernan" }
+  ],
   "homepage": "https://kxco.ai",
   "funding": "https://kxco.ai",
   "repository": {
