@@ -1,6 +1,6 @@
 {
   "name": "kxco-post-quantum",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "Production-tested post-quantum cryptography patterns: deterministic key derivation, hybrid webhook signing, and kid fingerprinting. Built on @noble/post-quantum. Used in production at KXCO.",
   "keywords": [
     "post-quantum",
@@ -14,7 +14,15 @@
     "fips-204",
     "webhook-signing",
     "quantum-resistant",
-    "armature"
+    "armature",
+    "key-derivation",
+    "hkdf",
+    "deterministic-keys",
+    "fingerprint",
+    "replay-protection",
+    "constant-time",
+    "hybrid-signing",
+    "non-repudiation"
   ],
   "license": "MIT",
   "author": "KXCO by Knightsbridge <hello@kxco.ai>",

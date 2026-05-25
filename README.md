@@ -5,6 +5,8 @@
 [![CI](https://github.com/JackKXCO/kxco-post-quantum/actions/workflows/ci.yml/badge.svg)](https://github.com/JackKXCO/kxco-post-quantum/actions/workflows/ci.yml)
 [![Socket](https://socket.dev/api/badge/npm/package/kxco-post-quantum)](https://socket.dev/npm/package/kxco-post-quantum)
 [![npm provenance](https://img.shields.io/npm/v/kxco-post-quantum?label=npm%20%E2%9C%93%20provenance)](https://www.npmjs.com/package/kxco-post-quantum)
+[![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+[![node](https://img.shields.io/node/v/kxco-post-quantum.svg)](https://nodejs.org)
 [![live verifier](https://img.shields.io/website?url=https%3A%2F%2Fchain.kxco.ai%2Fwallet%2Fverify&up_message=live&up_color=brightgreen&down_message=down&down_color=red&label=production)](https://chain.kxco.ai/wallet/verify)
 
 ---
@@ -266,6 +268,18 @@ See [AUDIT.md](./AUDIT.md) for the full statement. Short version:
 - [NSA CNSA 2.0](https://media.defense.gov/2022/Sep/07/2003071834/-1/-1/0/CSA_CNSA_2.0_ALGORITHMS_.PDF)
 - [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) — the underlying audited implementation
 - [RFC 9106 — Argon2](https://datatracker.ietf.org/doc/html/rfc9106)
+
+## Security
+
+Cryptographic primitives are provided by [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) and [`@noble/hashes`](https://github.com/paulmillr/noble-hashes) — independently audited by Cure53 (2024). This package does not reimplement any NIST primitive; all ML-DSA-65 and ML-KEM-768 operations delegate entirely to the audited upstream.
+
+To report a vulnerability, open a [private security advisory](https://github.com/JackKXCO/kxco-post-quantum/security/advisories/new) or email **security@kxco.ai**.
+
+## Funding
+
+Maintained by **Shayne Heffernan** and **John Heffernan** at [KXCO by Knightsbridge](https://kxco.ai).
+
+[Knightsbridge Law](https://knightsbridge.law) · [target150.com](https://target150.com) · [livetradingnews.com](https://livetradingnews.com)
 
 ## About KXCO
 
