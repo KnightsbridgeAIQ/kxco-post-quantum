@@ -1,0 +1,26 @@
+version: 2
+
+# https://docs.socket.dev/docs/socket-yml
+# Escalate known-bad categories to hard errors; leave noisy-but-informational
+# categories at warn so they surface in PRs without blocking CI.
+
+issues:
+  cve:
+    action: error
+  malware:
+    action: error
+  protestware:
+    action: error
+  new-author:
+    action: warn
+  install-scripts:
+    action: warn
+  telemetry:
+    action: warn
+
+# Explicitly audited dependencies.
+# @noble/post-quantum and @noble/hashes have no transitive runtime deps
+# and were audited by Cure53 in 2024.
+ignore:
+  - "@noble/post-quantum"
+  - "@noble/hashes"
