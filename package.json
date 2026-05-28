@@ -85,7 +85,7 @@
   },
   "dependencies": {
     "@noble/hashes": "^2.2.0",
-    "@noble/post-quantum": "^0.2.1"
+    "@noble/post-quantum": "^0.6.1"
   },
   "scripts": {
     "test": "node --test test/basic.test.js && node --test test/browser-smoke.test.js && node test/run-vectors.js",
