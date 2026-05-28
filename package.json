@@ -1,7 +1,7 @@
 {
   "name": "kxco-post-quantum",
-  "version": "1.1.11",
-  "description": "Production-tested post-quantum cryptography patterns: deterministic key derivation, hybrid webhook signing, and kid fingerprinting. Built on @noble/post-quantum. Used in production at KXCO.",
+  "version": "1.1.12",
+  "description": "ML-DSA-65 and ML-KEM-768 primitives with key fingerprinting. The base layer for all kxco-pq-* packages.",
   "keywords": [
     "post-quantum",
     "pqc",
