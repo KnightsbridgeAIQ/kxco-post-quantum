@@ -4,7 +4,7 @@ Post-quantum cryptography primitives for the KXCO stack.
 
 [![npm](https://img.shields.io/npm/v/kxco-post-quantum)](https://www.npmjs.com/package/kxco-post-quantum)
 [![CI](https://github.com/JackKXCO/kxco-post-quantum/actions/workflows/ci.yml/badge.svg)](https://github.com/JackKXCO/kxco-post-quantum/actions/workflows/ci.yml)
-[![license](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+[![license](https://img.shields.io/badge/license-Apache--2.0-blue)](./LICENSE)
 
 ML-DSA-65 (FIPS 204) signatures and ML-KEM-768 (FIPS 203) key encapsulation, with key fingerprinting utilities. Wraps [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) — the Cure53-audited NIST reference implementation. All other `kxco-pq-*` packages depend on this one.
 
@@ -112,7 +112,7 @@ To report a vulnerability: [open a private security advisory](https://github.com
 
 ## License
 
-MIT. See [LICENSE](./LICENSE).
+Apache-2.0. See [LICENSE](./LICENSE).
 
 ## Maintainers
 
