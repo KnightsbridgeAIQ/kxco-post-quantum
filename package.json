@@ -24,7 +24,7 @@
     "hybrid-signing",
     "non-repudiation"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": "KXCO by Knightsbridge <hello@kxco.ai>",
   "contributors": [
     {
