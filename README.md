@@ -3,7 +3,7 @@
 Post-quantum cryptography primitives for the KXCO stack.
 
 [![npm](https://img.shields.io/npm/v/kxco-post-quantum)](https://www.npmjs.com/package/kxco-post-quantum)
-[![CI](https://github.com/JackKXCO/kxco-post-quantum/actions/workflows/ci.yml/badge.svg)](https://github.com/JackKXCO/kxco-post-quantum/actions/workflows/ci.yml)
+[![CI](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/ci.yml/badge.svg)](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue)](./LICENSE)
 
 ML-DSA-65 (FIPS 204) signatures and ML-KEM-768 (FIPS 203) key encapsulation, with key fingerprinting utilities. Wraps [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) — the Cure53-audited NIST reference implementation. All other `kxco-pq-*` packages depend on this one.
@@ -108,7 +108,7 @@ Install this package directly when you need ML-DSA or ML-KEM without the rest of
 
 Cryptographic operations delegate entirely to [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) and [`@noble/hashes`](https://github.com/paulmillr/noble-hashes), audited by Cure53 (2024). This package does not reimplement any NIST primitive.
 
-To report a vulnerability: [open a private security advisory](https://github.com/JackKXCO/kxco-post-quantum/security/advisories/new) or email **security@kxco.ai**.
+To report a vulnerability: [open a private security advisory](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/security/advisories/new) or email **security@kxco.ai**.
 
 ## License
 
