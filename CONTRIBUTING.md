@@ -12,7 +12,7 @@ Do not open a public issue for a security vulnerability. See
 ## Development setup
 
 ```bash
-git clone https://github.com/JackKXCO/kxco-post-quantum.git
+git clone https://github.com/KnightsbridgeAIQ/kxco-post-quantum.git
 cd kxco-post-quantum
 npm ci
 npm test
