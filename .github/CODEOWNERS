@@ -1,0 +1,7 @@
+# Code owners for kxco-post-quantum.
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Required reviewer on every PR. Pair with a branch-protection rule on `main`
+# that requires "Require review from Code Owners" to be checked.
+
+* @JackKXCO

@@ -1,7 +1,7 @@
 {
   "name": "kxco-post-quantum",
-  "version": "1.1.1",
-  "description": "Production-tested post-quantum cryptography patterns: deterministic key derivation, hybrid webhook signing, and kid fingerprinting. Built on @noble/post-quantum. Used in production at KXCO.",
+  "version": "1.1.12",
+  "description": "ML-DSA-65 and ML-KEM-768 primitives with key fingerprinting. The base layer for all kxco-pq-* packages.",
   "keywords": [
     "post-quantum",
     "pqc",
@@ -14,10 +14,26 @@
     "fips-204",
     "webhook-signing",
     "quantum-resistant",
-    "armature"
+    "armature",
+    "key-derivation",
+    "hkdf",
+    "deterministic-keys",
+    "fingerprint",
+    "replay-protection",
+    "constant-time",
+    "hybrid-signing",
+    "non-repudiation"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": "KXCO by Knightsbridge <hello@kxco.ai>",
+  "contributors": [
+    {
+      "name": "Shayne Heffernan"
+    },
+    {
+      "name": "John Heffernan"
+    }
+  ],
   "homepage": "https://kxco.ai",
   "funding": "https://kxco.ai",
   "repository": {
