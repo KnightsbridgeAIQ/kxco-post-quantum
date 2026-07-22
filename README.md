@@ -127,7 +127,7 @@ Install this package directly when you need ML-DSA or ML-KEM without the rest of
 
 ## Security
 
-Cryptographic operations delegate entirely to [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) and [`@noble/hashes`](https://github.com/paulmillr/noble-hashes), audited by Cure53 (2024). This package does not reimplement any NIST primitive.
+Cryptographic operations delegate entirely to [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) and [`@noble/hashes`](https://github.com/paulmillr/noble-hashes) — this package does not reimplement any NIST primitive. `@noble/hashes` falls under Cure53's 2023 audit of the `@noble` ecosystem (`ciphers`, `curves`, `hashes`); `@noble/post-quantum` was **not** in that audit's scope and has been self-audited by its maintainer. See [AUDIT.md](./AUDIT.md) for the full posture.
 
 To report a vulnerability: [open a private security advisory](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/security/advisories/new) or email **security@kxco.ai**.
 

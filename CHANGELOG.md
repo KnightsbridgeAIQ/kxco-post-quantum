@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.2.1 — 2026-07-22
+
+Metadata alignment. No code changes; cryptographic surface is byte-for-byte
+identical to `1.2.0` (all 39 pinned vectors match).
+
+### Changed
+- **License now `Apache-2.0`** in package metadata, matching the repository
+  LICENSE. `1.2.0` was published declaring `MIT` from a pre-relicense branch;
+  this release corrects the published license to the canonical `Apache-2.0`.
+- `author` set to **Shayne Heffernan and John Heffernan**.
+- README security note corrected: `@noble/post-quantum` was **not** in scope
+  of Cure53's 2023 `@noble` audit (which covered `ciphers`/`curves`/`hashes`)
+  and is maintainer self-audited — the prior "audited by Cure53 (2024)"
+  wording was inaccurate. See `AUDIT.md`.
+
 ## 1.2.0 — 2026-07-22
 
 Adds SLH-DSA (FIPS 205) and modernises the underlying primitive engine to
