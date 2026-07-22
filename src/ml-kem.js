@@ -7,7 +7,7 @@
 // Isomorphic: works in Node and modern browsers. Returns Buffer on Node
 // (backwards compatible), Uint8Array in browsers.
 
-import { ml_kem768 } from '@noble/post-quantum/ml-kem'
+import { ml_kem768 } from '@noble/post-quantum/ml-kem.js'
 import { deriveSeed } from './derive.js'
 
 const HAS_BUFFER = typeof Buffer !== 'undefined'

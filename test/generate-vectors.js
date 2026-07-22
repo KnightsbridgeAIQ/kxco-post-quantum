@@ -6,7 +6,7 @@
 
 import { createHash, createHmac } from 'node:crypto'
 import {
-  mlDsa, mlKem, deriveSeed, fingerprint, webhook,
+  mlDsa, mlKem, slhDsa, deriveSeed, fingerprint, webhook,
 } from '../src/index.js'
 
 const sha256hex = (buf) => createHash('sha256').update(buf).digest('hex')
@@ -39,6 +39,7 @@ const vectors = {
   underlying_primitive: '@noble/post-quantum',
   notes: [
     'ML-DSA-65 signatures are randomized — we cannot pin signature bytes. We pin keypair hashes and verify round-trip.',
+    'SLH-DSA-SHA2-192s signatures are randomized — we pin keypair hashes and verify round-trip.',
     'ML-KEM encapsulation is randomized — we pin keypair hashes and verify decapsulate round-trip in the runner.',
     'All hex is lowercase. All UTF-8 strings are explicit.',
   ],
@@ -90,6 +91,32 @@ const vectors = {
       message_utf8: 'hello kxco',
       expect_verify: true,
       expect_sig_hex_length: 6618,
+    },
+  ],
+
+  slhDsa_keypairFromMaster: [
+    {
+      name: 'zero master, info=platform-v1',
+      master_hex: zero32.toString('hex'),
+      info: 'platform-v1',
+      ...kpHashes(slhDsa.keypairFromMaster(zero32, 'platform-v1')),
+    },
+    {
+      name: '0xff master, info=test',
+      master_hex: ffs32.toString('hex'),
+      info: 'test',
+      ...kpHashes(slhDsa.keypairFromMaster(ffs32, 'test')),
+    },
+  ],
+
+  slhDsa_sign_roundtrip: [
+    {
+      name: 'sign known message with keypair from zero master; verify true',
+      master_hex: zero32.toString('hex'),
+      info: 'platform-v1',
+      message_utf8: 'hello kxco',
+      expect_verify: true,
+      expect_sig_hex_length: 32448,
     },
   ],
 

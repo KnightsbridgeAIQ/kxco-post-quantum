@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
 import {
-  mlDsa, mlKem, deriveSeed, fingerprint, webhook,
+  mlDsa, mlKem, slhDsa, deriveSeed, fingerprint, webhook,
 } from '../src/index.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -60,6 +60,26 @@ for (const v of vectors.mlDsa_sign_roundtrip) {
   const verified = mlDsa.verify(kp.publicKey, v.message_utf8, sig)
   check('mlDsa.sign_roundtrip', v.name + ' [verify]', v.expect_verify, verified)
   check('mlDsa.sign_roundtrip', v.name + ' [sig_hex_length]', v.expect_sig_hex_length, sig.length)
+}
+
+// slhDsa keypairFromMaster — pin SHA-256 of pub + secret bytes
+for (const v of vectors.slhDsa_keypairFromMaster) {
+  const master = Buffer.from(v.master_hex, 'hex')
+  const kp = slhDsa.keypairFromMaster(master, v.info)
+  check('slhDsa.keypairFromMaster', v.name + ' [publicKey_sha256]', v.publicKey_sha256, sha256hex(kp.publicKey))
+  check('slhDsa.keypairFromMaster', v.name + ' [secretKey_sha256]', v.secretKey_sha256, sha256hex(kp.secretKey))
+  check('slhDsa.keypairFromMaster', v.name + ' [publicKey_bytes]',  v.publicKey_bytes,  kp.publicKey.length)
+  check('slhDsa.keypairFromMaster', v.name + ' [secretKey_bytes]',  v.secretKey_bytes,  kp.secretKey.length)
+}
+
+// slhDsa sign round-trip
+for (const v of vectors.slhDsa_sign_roundtrip) {
+  const master = Buffer.from(v.master_hex, 'hex')
+  const kp = slhDsa.keypairFromMaster(master, v.info)
+  const sig = slhDsa.sign(kp.secretKey, v.message_utf8)
+  const verified = slhDsa.verify(kp.publicKey, v.message_utf8, sig)
+  check('slhDsa.sign_roundtrip', v.name + ' [verify]', v.expect_verify, verified)
+  check('slhDsa.sign_roundtrip', v.name + ' [sig_hex_length]', v.expect_sig_hex_length, sig.length)
 }
 
 // mlKem keypairFromMaster
