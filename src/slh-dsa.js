@@ -1,12 +1,19 @@
-// ML-DSA-65 helpers (NIST FIPS 204, Dilithium3).
+// SLH-DSA-SHA2-192s helpers (NIST FIPS 205, SPHINCS+).
 //
-// Module-lattice signatures. Security Category 3 (≈ AES-192). Public key 1952
-// bytes, signature 3309 bytes. Resistant to attacks by quantum computers.
+// Stateless hash-based signatures. Security Category 3 (≈ AES-192), matching
+// ML-DSA-65's security level. Public key 48 bytes, secret key 96 bytes,
+// signature 16224 bytes. Security rests only on the SHA-2 hash function — no
+// lattice or number-theoretic assumptions — which makes it the conservative
+// hedge alongside ML-DSA-65.
+//
+// Tradeoff: signatures are ~5x larger than ML-DSA-65 (16224 vs 3309 bytes) and
+// signing is slower. Use ML-DSA-65 as the default; reach for SLH-DSA when you
+// want a signature whose security does not depend on lattice hardness.
 //
 // Isomorphic: works in Node and modern browsers. Returns Buffer on Node
-// (backwards compatible), Uint8Array in browsers.
+// (consistent with ml-dsa.js), Uint8Array in browsers.
 
-import { ml_dsa65 } from '@noble/post-quantum/ml-dsa.js'
+import { slh_dsa_sha2_192s } from '@noble/post-quantum/slh-dsa.js'
 import { deriveSeed } from './derive.js'
 
 const HAS_BUFFER = typeof Buffer !== 'undefined'
@@ -32,15 +39,18 @@ function wrap(bytes) {
   return HAS_BUFFER ? Buffer.from(bytes) : bytes
 }
 
+// Seed length for SLH-DSA-SHA2-192s keygen (FIPS 205: SK.seed || SK.prf || PK.seed).
+const SEED_BYTES = slh_dsa_sha2_192s.lengths.seed
+
 /**
- * Generate an ML-DSA-65 keypair from a master + domain-separation info.
+ * Generate an SLH-DSA-SHA2-192s keypair from a master + domain-separation info.
  *
  * @returns {{ publicKey: Buffer|Uint8Array, secretKey: Buffer|Uint8Array }}
  */
-export function keypairFromMaster(master, info = 'ml-dsa-65-v1') {
-  const seed = deriveSeed(master, info, 32)
+export function keypairFromMaster(master, info = 'slh-dsa-sha2-192s-v1') {
+  const seed = deriveSeed(master, info, SEED_BYTES)
   const seedU8 = seed instanceof Uint8Array ? seed : new Uint8Array(seed)
-  const k = ml_dsa65.keygen(seedU8)
+  const k = slh_dsa_sha2_192s.keygen(seedU8)
   return {
     publicKey: wrap(k.publicKey),
     secretKey: wrap(k.secretKey),
@@ -52,10 +62,10 @@ export function keypairFromMaster(master, info = 'ml-dsa-65-v1') {
  *
  * @param {Buffer|Uint8Array} secretKey
  * @param {Buffer|Uint8Array|string} message
- * @returns {string} hex-encoded signature (6618 chars)
+ * @returns {string} hex-encoded signature (32448 chars)
  */
 export function sign(secretKey, message) {
-  const sig = ml_dsa65.sign(toBytes(message), secretKey)
+  const sig = slh_dsa_sha2_192s.sign(toBytes(message), secretKey)
   return bytesToHex(sig)
 }
 
@@ -69,10 +79,10 @@ export function sign(secretKey, message) {
  */
 export function verify(publicKey, message, sigHex) {
   try {
-    return ml_dsa65.verify(hexToBytes(sigHex), toBytes(message), publicKey)
+    return slh_dsa_sha2_192s.verify(hexToBytes(sigHex), toBytes(message), publicKey)
   } catch {
     return false
   }
 }
 
-export { ml_dsa65 }
+export { slh_dsa_sha2_192s }

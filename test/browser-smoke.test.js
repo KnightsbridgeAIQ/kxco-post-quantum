@@ -15,7 +15,7 @@ import assert from 'node:assert/strict'
 const realBuffer = globalThis.Buffer
 delete globalThis.Buffer
 
-const { mlDsa, mlKem, deriveSeed, fingerprint, webhook } = await import('../src/index.js?nobuf')
+const { mlDsa, mlKem, slhDsa, deriveSeed, fingerprint, webhook } = await import('../src/index.js?nobuf')
 
 test('deriveSeed returns Uint8Array (not Buffer) when Buffer is absent', () => {
   const master = new Uint8Array(32)
@@ -44,6 +44,18 @@ test('ML-DSA sign + verify round-trip in browser-mode', () => {
   assert.equal(sig.length, 6618)
   assert.ok(mlDsa.verify(publicKey, 'browser-payload', sig))
   assert.ok(!mlDsa.verify(publicKey, 'tampered', sig))
+})
+
+test('SLH-DSA sign + verify round-trip in browser-mode', () => {
+  const master = new Uint8Array(32).fill(0x5a)
+  const { publicKey, secretKey } = slhDsa.keypairFromMaster(master)
+  assert.equal(publicKey.constructor.name, 'Uint8Array')
+  assert.equal(secretKey.constructor.name, 'Uint8Array')
+  const sig = slhDsa.sign(secretKey, 'browser-payload')
+  assert.equal(typeof sig, 'string')
+  assert.equal(sig.length, 32448)
+  assert.ok(slhDsa.verify(publicKey, 'browser-payload', sig))
+  assert.ok(!slhDsa.verify(publicKey, 'tampered', sig))
 })
 
 test('ML-KEM encapsulate/decapsulate in browser-mode', () => {

@@ -6,7 +6,7 @@ Post-quantum cryptography primitives for the KXCO stack.
 [![CI](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/ci.yml/badge.svg)](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue)](./LICENSE)
 
-ML-DSA-65 (FIPS 204) signatures and ML-KEM-768 (FIPS 203) key encapsulation, with key fingerprinting utilities. Wraps [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) — the Cure53-audited NIST reference implementation. All other `kxco-pq-*` packages depend on this one.
+ML-DSA-65 (FIPS 204) and SLH-DSA-SHA2-192s (FIPS 205) signatures, ML-KEM-768 (FIPS 203) key encapsulation, and key fingerprinting utilities. Wraps [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) — the NIST reference implementation. All other `kxco-pq-*` packages depend on this one.
 
 ---
 
@@ -23,12 +23,17 @@ Requires Node.js 20.19+. ESM-only.
 ## Quick start
 
 ```js
-import { mlDsa, mlKem, fingerprint, kidEquals } from 'kxco-post-quantum'
+import { mlDsa, mlKem, slhDsa, fingerprint, kidEquals } from 'kxco-post-quantum'
 
 // ML-DSA-65 — sign and verify
 const { publicKey, secretKey } = mlDsa.keypairFromMaster(masterSecret, 'signing-v1')
 const sig = mlDsa.sign(secretKey, 'hello')
 const ok  = mlDsa.verify(publicKey, 'hello', sig)  // true
+
+// SLH-DSA-SHA2-192s — hash-based signatures (same API shape as mlDsa)
+const slh = slhDsa.keypairFromMaster(masterSecret, 'signing-v1')
+const slhSig = slhDsa.sign(slh.secretKey, 'hello')
+const slhOk  = slhDsa.verify(slh.publicKey, 'hello', slhSig)  // true
 
 // Key fingerprint
 const kid = fingerprint(publicKey)  // e.g. '4a7c9e2f1b3d5680'
@@ -58,6 +63,19 @@ const recovered = mlKem.decapsulate(ciphertext, kemKeys.secretKey)
 
 `publicKey` is 1952 bytes. `secretKey` is 4032 bytes. `message` accepts `Buffer`, `Uint8Array`, or `string`.
 
+### `slhDsa` — SLH-DSA-SHA2-192s (NIST FIPS 205)
+
+Hash-based, stateless signatures. Security Category 3 (matching ML-DSA-65), but security rests only on the SHA-2 hash function — no lattice or number-theoretic assumptions. Use this as a conservative hedge alongside `mlDsa`. Tradeoff: signatures are ~5× larger (16224 vs 3309 bytes) and signing is slower.
+
+| Export | Signature | Description |
+|---|---|---|
+| `keypairFromMaster` | `(master, info?) → { publicKey, secretKey }` | Deterministic keypair via HKDF-SHA-512. `info` defaults to `'slh-dsa-sha2-192s-v1'`. |
+| `sign` | `(secretKey, message) → string` | Signs a message. Returns a hex-encoded signature (32448 chars). |
+| `verify` | `(publicKey, message, sigHex) → boolean` | Verifies a hex-encoded signature. Returns `false` on any failure. |
+| `slh_dsa_sha2_192s` | raw primitive | The underlying `@noble/post-quantum` primitive, re-exported. |
+
+`publicKey` is 48 bytes. `secretKey` is 96 bytes. `message` accepts `Buffer`, `Uint8Array`, or `string`.
+
 ### `mlKem` — ML-KEM-768 (NIST FIPS 203)
 
 | Export | Signature | Description |
@@ -81,12 +99,15 @@ Constant-time comparison of two kid strings. Use this when comparing user-suppli
 
 HKDF-SHA-512 derivation. `master` must be at least 16 bytes. `info` is a required domain-separation string. Returns `length` bytes.
 
+### `webhook` — hybrid HMAC + ML-DSA-65 delivery signing
+
+Low-level helpers for the KXCO hybrid webhook pattern: `envelope`, `hmacHex`, `verifyHmac`, `pqSign`, `verifyPq`, `signDelivery`, `verifyDelivery`. HMAC-SHA-256 gives symmetric verification with no library dependency; ML-DSA-65 adds non-repudiation over the same `${timestamp}.${body}` envelope. The full identity/credential surface lives in `kxco-pq-sdk`.
+
 ---
 
 ## What this does NOT do
 
-- No identity credentials or verifiable claims
-- No webhook signing or HMAC utilities (those are in `kxco-pq-sdk`)
+- No identity credentials or verifiable claims (those are in `kxco-pq-sdk`)
 - No relay, transport, or network layer
 - No key storage or KMS integration
 - No FIPS 140-3 module validation (the algorithms are FIPS-standardised; the module is not validated)

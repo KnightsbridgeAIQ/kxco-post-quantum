@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { randomBytes } from 'node:crypto'
 
 import {
-  mlDsa, mlKem, deriveSeed, fingerprint, kidEquals, webhook,
+  mlDsa, mlKem, slhDsa, deriveSeed, fingerprint, kidEquals, webhook,
 } from '../src/index.js'
 
 test('deriveSeed is deterministic and domain-separated', () => {
@@ -29,6 +29,25 @@ test('ML-DSA keypair is deterministic from master', () => {
   const master = Buffer.from('11'.repeat(32), 'hex')
   const a = mlDsa.keypairFromMaster(master, 'platform-v1')
   const b = mlDsa.keypairFromMaster(master, 'platform-v1')
+  assert.deepEqual(a.publicKey, b.publicKey)
+})
+
+test('SLH-DSA-SHA2-192s sign + verify round trip', () => {
+  const master = randomBytes(32)
+  const { publicKey, secretKey } = slhDsa.keypairFromMaster(master)
+  assert.equal(publicKey.length, 48, 'SLH-DSA-192s public key = 48 bytes')
+  assert.equal(secretKey.length, 96, 'SLH-DSA-192s secret key = 96 bytes')
+  const sig = slhDsa.sign(secretKey, 'hello kxco')
+  assert.equal(typeof sig, 'string')
+  assert.equal(sig.length, 32448, 'SLH-DSA-192s sig = 16224 bytes = 32448 hex chars')
+  assert.ok(slhDsa.verify(publicKey, 'hello kxco', sig))
+  assert.ok(!slhDsa.verify(publicKey, 'tampered', sig))
+})
+
+test('SLH-DSA keypair is deterministic from master', () => {
+  const master = Buffer.from('22'.repeat(32), 'hex')
+  const a = slhDsa.keypairFromMaster(master, 'platform-v1')
+  const b = slhDsa.keypairFromMaster(master, 'platform-v1')
   assert.deepEqual(a.publicKey, b.publicKey)
 })
 

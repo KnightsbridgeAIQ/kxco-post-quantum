@@ -46,4 +46,4 @@ export function decapsulate(
 /**
  * Raw `@noble/post-quantum` ML-KEM-768 primitive, re-exported.
  */
-export const ml_kem768: typeof import('@noble/post-quantum/ml-kem').ml_kem768
+export const ml_kem768: typeof import('@noble/post-quantum/ml-kem.js').ml_kem768

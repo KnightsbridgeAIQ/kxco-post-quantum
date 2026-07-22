@@ -1,5 +1,37 @@
 # Changelog
 
+## 1.2.0 — 2026-07-22
+
+Adds SLH-DSA (FIPS 205) and modernises the underlying primitive engine to
+`@noble/post-quantum@0.6.1`. **No breaking changes for consumers** — the
+public API and all previously pinned outputs are byte-for-byte identical.
+
+### Added
+- **`slhDsa` — SLH-DSA-SHA2-192s (NIST FIPS 205)**, exported both from the
+  package root and the `kxco-post-quantum/slh-dsa` subpath. Hash-based,
+  stateless signatures at Security Category 3 (matching ML-DSA-65), whose
+  security rests only on SHA-2 — the conservative hedge alongside the
+  lattice-based ML-DSA-65. Deterministic `keypairFromMaster(master, info?)`
+  via the same HKDF-SHA-512 derivation, plus `sign` / `verify`. Public key
+  48 bytes, secret key 96 bytes, signature 16224 bytes.
+- Test vectors extended to pin SLH-DSA keypairs and round-trip (39 checks,
+  up from 29).
+
+### Changed
+- **`@noble/post-quantum` bumped `^0.2.1` → `^0.6.1`** — the FIPS 203/204/205
+  final reference implementation. The engine's public API changed argument
+  order for signature `sign`/`verify` and requires `.js` in subpath imports;
+  both are absorbed inside this package's wrappers, so no downstream package
+  or caller is affected.
+- Description and keywords updated to reflect SLH-DSA / FIPS 205 coverage.
+
+### Verification
+- 11 node tests pass, 7 browser-smoke tests pass, 39 pinned vectors pass.
+- **Compatibility gate:** every ML-DSA-65, ML-KEM-768, HKDF, fingerprint and
+  webhook vector pinned under `@noble/post-quantum@0.2.1` still matches
+  bit-for-bit under `0.6.1`. Deterministic keys derived from existing KXCO
+  master secrets — including Armature L1 identities — are unchanged.
+
 ## 1.1.6 — 2026-05-24
 
 Maintenance release. No breaking changes.

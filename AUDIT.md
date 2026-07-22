@@ -1,6 +1,6 @@
 # Audit Posture
 
-**Status as of v1.1.2 release (2026-05-22).** Self-attested. No third-party audit of this wrapper library has been performed yet. This document exists to make our posture **legible to reviewers** so the right questions get asked of the right party.
+**Status as of v1.2.0 release (2026-07-22).** Self-attested. No third-party audit of this wrapper library has been performed yet. This document exists to make our posture **legible to reviewers** so the right questions get asked of the right party.
 
 If you are doing institutional due diligence, read this end-to-end before the README.
 
@@ -10,7 +10,7 @@ If you are doing institutional due diligence, read this end-to-end before the RE
 
 ## 1. Upstream audit posture
 
-**`@noble/post-quantum@0.2.1`** — the underlying NIST primitives we wrap — has **not** been independently audited by a third party.
+**`@noble/post-quantum@0.6.1`** — the underlying NIST primitives we wrap — has **not** been independently audited by a third party. As of v1.2.0 we pin `0.6.1`, which is the exact version covered by the maintainer's own self-audit (see table below).
 
 | Review | Year | Scope | Source |
 |---|---|---|---|
@@ -18,15 +18,15 @@ If you are doing institutional due diligence, read this end-to-end before the RE
 
 The wider `@noble/*` ecosystem has been audited by Cure53 (NDS-01, 2023), but that engagement covered `@noble/ciphers`, `@noble/curves`, and `@noble/hashes` — not the post-quantum package.
 
-The primitives themselves are reference implementations of NIST FIPS 203 (ML-KEM) and FIPS 204 (ML-DSA), with test vectors matching NIST's published reference outputs. Reviewers wanting a fully third-party-audited PQ primitive layer should evaluate whether this posture meets their requirements before adopting in production.
+The primitives themselves are reference implementations of NIST FIPS 203 (ML-KEM), FIPS 204 (ML-DSA), and FIPS 205 (SLH-DSA), with test vectors matching NIST's published reference outputs. Reviewers wanting a fully third-party-audited PQ primitive layer should evaluate whether this posture meets their requirements before adopting in production.
 
 When you `npm install kxco-post-quantum`, the upstream `@noble/post-quantum` code is what runs the math. This wrapper does not reimplement the primitives.
 
 The exact upstream we pin:
 
 ```
-@noble/post-quantum@0.2.1
-integrity: sha512-ImgfMp9notXSEocz464o1AefYfFWEkkszKMGO+ZiTn73yIBFeNyEHKQUMS+SheJwSNymldSts6YyVcQDjcnVVg==
+@noble/post-quantum@0.6.1
+integrity: sha512-+pormrDZwjRw05U8ADK4JpHejo87+gBd+muRBB/ozztH5yhDLMDF4jHQWN3NQQAsu1zBNPWTG0ZwVI0CR29H0A==
 ```
 
 ## 2. What has NOT been audited (this wrapper)
@@ -77,7 +77,7 @@ npm run test:vectors
 curl https://chain.kxco.ai/wallet/api/.well-known/kxco-pq-pubkey
 ```
 
-Expected: `npm test` reports `✓ All 29 checks pass — library output matches pinned vectors bit-for-bit.`
+Expected: `npm test` reports `✓ All 39 checks pass — library output matches pinned vectors bit-for-bit.`
 
 ## 5. Threat model summary
 
@@ -90,8 +90,8 @@ See [SECURITY.md](./SECURITY.md) for the full threat model. In short:
 
 If you are evaluating this library, look at:
 
-- **Test coverage:** 9 functional tests + 29 vector checks = 38 distinct assertions covering every export
-- **Code size:** ~280 source lines across 6 modules — small enough to review end-to-end in an afternoon
+- **Test coverage:** 11 functional tests + 39 vector checks covering every export (plus 7 browser-mode smoke tests)
+- **Code size:** small enough to review end-to-end in an afternoon, across 7 single-purpose modules
 - **Dependency surface:** one runtime dependency (`@noble/post-quantum`), itself audited
 - **Determinism:** every output is reproducible from inputs — no hidden state, no globals beyond a lazy cache, no network
 - **API stability:** v1.0 commits to the public surface listed in CHANGELOG.md

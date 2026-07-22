@@ -1,11 +1,12 @@
 {
   "version": "1.0",
-  "generated_at": "2026-05-20T18:58:39.432Z",
+  "generated_at": "2026-07-22T05:58:43.229Z",
   "description": "Deterministic test vectors for kxco-post-quantum. Run test/run-vectors.js to verify these match the library output bit-for-bit.",
   "library": "kxco-post-quantum",
   "underlying_primitive": "@noble/post-quantum",
   "notes": [
     "ML-DSA-65 signatures are randomized — we cannot pin signature bytes. We pin keypair hashes and verify round-trip.",
+    "SLH-DSA-SHA2-192s signatures are randomized — we pin keypair hashes and verify round-trip.",
     "ML-KEM encapsulation is randomized — we pin keypair hashes and verify decapsulate round-trip in the runner.",
     "All hex is lowercase. All UTF-8 strings are explicit."
   ],
@@ -60,6 +61,36 @@
       "message_utf8": "hello kxco",
       "expect_verify": true,
       "expect_sig_hex_length": 6618
+    }
+  ],
+  "slhDsa_keypairFromMaster": [
+    {
+      "name": "zero master, info=platform-v1",
+      "master_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "info": "platform-v1",
+      "publicKey_sha256": "8d67dd21fdc4d6393c1808bb19e9b6114cc1883db4e3008918bd6390d195db5f",
+      "publicKey_bytes": 48,
+      "secretKey_sha256": "bd6316a63355ecae76f6ef77985e269b19406254fd2029b593dd001b1337b48a",
+      "secretKey_bytes": 96
+    },
+    {
+      "name": "0xff master, info=test",
+      "master_hex": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "info": "test",
+      "publicKey_sha256": "52ab731d16ba43f336ec5b9845522605e1297ae1a0088ce1d8b551d24757b404",
+      "publicKey_bytes": 48,
+      "secretKey_sha256": "8200a4253e23fa53c47f470135167a5cb088eb6f7a1bbe4702dec836a7c45887",
+      "secretKey_bytes": 96
+    }
+  ],
+  "slhDsa_sign_roundtrip": [
+    {
+      "name": "sign known message with keypair from zero master; verify true",
+      "master_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "info": "platform-v1",
+      "message_utf8": "hello kxco",
+      "expect_verify": true,
+      "expect_sig_hex_length": 32448
     }
   ],
   "mlKem_keypairFromMaster": [

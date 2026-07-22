@@ -42,4 +42,4 @@ export function verify(
  * who want the lower-level API. The wrapper functions above are
  * recommended for production use.
  */
-export const ml_dsa65: typeof import('@noble/post-quantum/ml-dsa').ml_dsa65
+export const ml_dsa65: typeof import('@noble/post-quantum/ml-dsa.js').ml_dsa65
