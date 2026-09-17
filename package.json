@@ -62,51 +62,63 @@
   "exports": {
     ".": {
       "types": "./src/index.d.ts",
-      "import": "./src/index.js"
+      "import": "./src/index.js",
+      "default": "./src/index.js"
     },
     "./ml-dsa": {
       "types": "./src/ml-dsa.d.ts",
-      "import": "./src/ml-dsa.js"
+      "import": "./src/ml-dsa.js",
+      "default": "./src/ml-dsa.js"
     },
     "./ml-dsa-87": {
       "types": "./src/ml-dsa-87.d.ts",
-      "import": "./src/ml-dsa-87.js"
+      "import": "./src/ml-dsa-87.js",
+      "default": "./src/ml-dsa-87.js"
     },
     "./ml-kem": {
       "types": "./src/ml-kem.d.ts",
-      "import": "./src/ml-kem.js"
+      "import": "./src/ml-kem.js",
+      "default": "./src/ml-kem.js"
     },
     "./ml-kem-1024": {
       "types": "./src/ml-kem-1024.d.ts",
-      "import": "./src/ml-kem-1024.js"
+      "import": "./src/ml-kem-1024.js",
+      "default": "./src/ml-kem-1024.js"
     },
     "./slh-dsa": {
       "types": "./src/slh-dsa.d.ts",
-      "import": "./src/slh-dsa.js"
+      "import": "./src/slh-dsa.js",
+      "default": "./src/slh-dsa.js"
     },
     "./derive": {
       "types": "./src/derive.d.ts",
-      "import": "./src/derive.js"
+      "import": "./src/derive.js",
+      "default": "./src/derive.js"
     },
     "./webhook": {
       "types": "./src/webhook.d.ts",
-      "import": "./src/webhook.js"
+      "import": "./src/webhook.js",
+      "default": "./src/webhook.js"
     },
     "./kid": {
       "types": "./src/kid.d.ts",
-      "import": "./src/kid.js"
+      "import": "./src/kid.js",
+      "default": "./src/kid.js"
     },
     "./seed": {
       "types": "./src/seed.d.ts",
-      "import": "./src/seed.js"
+      "import": "./src/seed.js",
+      "default": "./src/seed.js"
     },
     "./jws": {
       "types": "./src/jws.d.ts",
-      "import": "./src/jws.js"
+      "import": "./src/jws.js",
+      "default": "./src/jws.js"
     },
     "./backend": {
       "types": "./src/backend.d.ts",
-      "import": "./src/backend.js"
+      "import": "./src/backend.js",
+      "default": "./src/backend.js"
     }
   },
   "files": [
