@@ -336,7 +336,7 @@ Install this package directly when you need ML-DSA or ML-KEM without the rest of
 
 ## Security
 
-Cryptographic operations delegate entirely to [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) and [`@noble/hashes`](https://github.com/paulmillr/noble-hashes) — this package does not reimplement any NIST primitive. `@noble/hashes` falls under Cure53's 2023 audit of the `@noble` ecosystem (`ciphers`, `curves`, `hashes`); `@noble/post-quantum` was **not** in that audit's scope and has been self-audited by its maintainer. See [AUDIT.md](./AUDIT.md) for the full posture.
+Cryptographic operations delegate entirely to [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) and [`@noble/hashes`](https://github.com/paulmillr/noble-hashes); this package does not reimplement any NIST primitive. `@noble/post-quantum` has never been audited by a third party. It has been self-audited by its maintainer (v0.6.1, April 2026). The other Noble packages were audited separately, at different dates, and none of those engagements covered the post-quantum package: `@noble/hashes` by Cure53 in January 2022, `@noble/curves` by Trail of Bits in February 2023, Kudelski Security in September 2023 and Cure53 in September 2024, and `@noble/ciphers` by Cure53 in September 2024. See [AUDIT.md](./AUDIT.md) for the full posture.
 
 To report a vulnerability: [open a private security advisory](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/security/advisories/new) or email **john@knightsbridgelaw.com**. Acknowledgement within 2 business days, triage decision within 5. Full policy, including safe harbour for good-faith research: <https://kxco.ai/security>.
 
