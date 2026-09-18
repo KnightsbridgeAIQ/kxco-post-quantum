@@ -44,7 +44,7 @@
   "funding": "https://kxco.ai",
   "repository": {
     "type": "git",
-    "url": "https://github.com/KnightsbridgeAIQ/kxco-post-quantum.git"
+    "url": "git+https://github.com/KnightsbridgeAIQ/kxco-post-quantum.git"
   },
   "bugs": {
     "url": "https://github.com/KnightsbridgeAIQ/kxco-post-quantum/issues"
