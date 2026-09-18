@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.7.3
+
+One resolution fix that consumers could hit, plus the ACVTS tooling and two
+maturity documents. No change to any algorithm, key format or wire format.
+
+**Every export subpath now carries a `default` condition.** All twelve declared
+only `types` and `import`, so a consumer resolving outside an import context got
+`ERR_PACKAGE_PATH_NOT_EXPORTED` and could not load the package at all. That is a
+packaging defect rather than a library one: nothing about the code changed, only
+what Node is willing to resolve. It was found from the other side, in a project
+that had to pass `--conditions=import` on every test invocation to work around
+it, and that workaround can come out once this is published.
+
+The addition is purely additive. A subpath that resolved before resolves to the
+same file now.
+
+**ACVTS tooling is committed rather than kept locally.** The selftest, the
+validation printer and the demo certificate verifier were written against the
+NIST demo submission and existed only on one machine, which makes them evidence
+nobody else can re-run.
+
+**Two PQCMM gaps closed and Level 3 re-declared**, against the PKI Consortium's
+Post-Quantum Cryptography Maturity Model, with the self-assessment written down
+rather than asserted.
+
 ## 1.7.2
 
 Documentation, and one typing fix. No source change to the library and no wire
