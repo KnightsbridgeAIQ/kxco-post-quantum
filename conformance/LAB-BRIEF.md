@@ -242,7 +242,15 @@ as certified, or re-run against the current release, and what that costs.
 1. A price and elapsed time for CAVP algorithm validation at the scope in
    section 3, against the deviation in section 4.
 2. Separately priced, if you offer it: FIPS 140-3 module validation of a
-   deployment of this library with an HSM.
+   deployment of this library with an HSM. Before you price it, note what we
+   measured on the same OpenSSL 3.5.6 the runtime uses: `openssl list
+   -signature-algorithms` reports ML-DSA-44, ML-DSA-65 and ML-DSA-87 as
+   `@ default`, so OpenSSL's post-quantum algorithms are in the default
+   provider and not in the FIPS provider. If that is still true when this is
+   quoted, the native path cannot sit inside a validated module boundary at
+   all, whatever the algorithm certificates say. Tell us if you read it
+   differently, because it decides whether item 2 is a 2027 job or a later
+   one.
 3. Whether you hold 17ACVT accreditation, CST, or both.
 4. What you need from us that is not in section 6.
 
