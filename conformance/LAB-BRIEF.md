@@ -273,4 +273,4 @@ Contact and commercial terms follow separately. This document is scope only.
 Shayne Heffernan
 Knightsbridge Financial Ltd, 15684975
 71-75 Shelton Street, Covent Garden, London WC2H 9JQ
-shayne@knightsbridgelaw.com
+shayne@kxco.ai
