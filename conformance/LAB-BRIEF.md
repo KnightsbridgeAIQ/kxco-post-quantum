@@ -55,9 +55,17 @@ Financial Ltd, person 16779, operational environment 34701, module 15488.
 |---|---|---|
 | FIPS 203 | ML-KEM | ML-KEM-768, ML-KEM-1024 |
 | FIPS 204 | ML-DSA | ML-DSA-65, ML-DSA-87 |
-| FIPS 205 | SLH-DSA | ten parameter sets, with published helpers for SLH-DSA-SHA2-128f, SLH-DSA-SHA2-192s and SLH-DSA-SHAKE-256f |
+| FIPS 205 | SLH-DSA | all 12 parameter sets, with published helpers for SLH-DSA-SHA2-128f, SLH-DSA-SHA2-192s and SLH-DSA-SHAKE-256f |
+
+The 12 are what the ACVTS registration in `conformance/acvts/registrations.mjs`
+claims and what NIST graded. Section 5 narrows this: the implementation we are
+asking you to certify covers 3 of the 12, not all of them.
 
 ## 4. READ THIS BEFORE QUOTING: the claim is narrower than NIST's matrix
+
+**This section describes the JavaScript implementation.** Section 5 asks you to
+certify the other one, where the constraint is different and wider. Read both
+before pricing.
 
 This is the one thing that changes a quote, and it is stated up front rather than
 discovered during testing.
@@ -88,22 +96,140 @@ matrix as it stands, or require the backend to accept the weaker pairings first.
 The second is an engineering change on our side and we would want to know before
 starting rather than after.
 
-## 5. Two open questions we are asking you to price, not answer
+## 5. Which implementation we want certified, and what that costs
 
-**Which implementation.** The evidence above is for the JavaScript path only. An
-OpenSSL 3.5 backend also exists and has never been run against ACVTS. We have not
-decided which implementation carries the certificate. If your pricing differs
-between them, quote both.
+**The decision is the native path.** Two implementations ship inside one
+package. It picks between them at import time by probing the runtime, not by
+reading a version number. Where the runtime provides the FIPS 203/204/205
+primitives through OpenSSL, that is what executes. The JavaScript
+implementation is the documented fallback for everything else, browsers
+included.
+
+Asked directly on the operational environment named in section 2:
+
+```
+backend() -> { kind: 'openssl', library: 'node:crypto', openssl: '3.5.6' }
+```
+
+A certificate against the JavaScript implementation would therefore certify a
+path that a supported deployment does not take. That is the wrong way round,
+and it is why we want the native path quoted.
+
+**What we do not have for it.** No graded evidence, none. Everything in
+section 2 is the JavaScript implementation:
+`conformance/acvts/responders.mjs` binds to `@noble/post-quantum` directly
+instead of going through the backend selector, and the ACVTS registration
+names that library by version. Certificate A11025, and the 2,130 cases per
+validation record 42204 in section 2, are that path and only that path. The
+native path has never been run against ACVTS.
+
+Note what follows from those two facts together. On the same machine that
+produced the certified evidence, the library in ordinary use would have run
+OpenSSL. The evidence and the deployment do not meet.
+
+**We tried to close that gap ourselves and could not, which is the useful part.**
+`conformance/acvts/responders-native.mjs` is an ACVP responder that answers with
+OpenSSL instead of the JavaScript library. Run against the same pinned NIST
+vector files, per `conformance/results/selftest-native.json`:
+
+| Vector set | Matched | Mismatched | Refused |
+|---|---|---|---|
+| ML-KEM keyGen | 0 | 0 | 75 |
+| ML-KEM encapDecap | 90 | 0 | 75 |
+| ML-DSA keyGen | 0 | 0 | 75 |
+| ML-DSA sigGen | 0 | 0 | 360 |
+| ML-DSA sigVer | 45 | 0 | 135 |
+| SLH-DSA keyGen | 0 | 0 | 120 |
+| SLH-DSA sigGen | 0 | 0 | 624 |
+| SLH-DSA sigVer | 42 | 0 | 462 |
+| **Total** | **177** | **0** | **1926** |
+
+Read both columns. **Nothing OpenSSL answered was wrong**, per that report: 177
+matched and 0 mismatched against NIST's published expected results. What it
+could not answer at all is the larger number, and it splits into two causes that
+are not the same problem.
+
+**Cause 1, the Node binding, 69 groups.** ACVP does not want an answer,
+it wants a reproducible one: a keygen driven from the seed NIST supplies, a
+signature using the per-signature randomness NIST supplies. OpenSSL 3.5 takes
+those controls at its C API. Node's binding does not pass them on. Read out of
+Node's own source, `crypto.sign` looks for one algorithm-specific option on the
+key object, `context`, and there is no `deterministic`, no `rnd` and no `mu`.
+Node also ignores an unknown option in silence, so a harness that passed one
+would appear to work and would be graded wrong. That accounts for 42 groups
+refused on signing randomness, 9 on the internal interface, 9 on keygen where
+only the seed can be exported rather than the expanded key, 3 on encapsulation
+needing NIST's m, and 6 on pre-hash.
+
+**Cause 2, the OpenSSL build, 90 groups.** The 9 SLH-DSA parameter sets named
+above simply are not in it. No binding would help.
+
+**So item 3 below is a question for you, not an offer from us.** A lab driving
+OpenSSL through its C API should reach what we cannot reach through Node. We can
+hand over the responder, the harness and this measurement. We cannot finish it
+at this layer, and we would rather say so now than discover it inside a paid
+engagement.
+
+**What it changes about section 3.** OpenSSL 3.5.6 on this runtime provides 9
+parameter sets: all 3 ML-KEM, all 3 ML-DSA, and 3 of the SLH-DSA sets, which
+are SLH-DSA-SHA2-128f, SLH-DSA-SHA2-192s and SLH-DSA-SHAKE-256f. The other 9
+FIPS 205 sets have no native path and fall back to JavaScript. So a
+native-only certificate covers the ML-KEM and ML-DSA scope in section 3 in
+full, and 3 SLH-DSA sets rather than 12.
+
+**What it changes about section 4.** The declined-pairing rule described there
+is `@noble/post-quantum`'s policy. It does not carry across. The native path's
+constraint is a different one and it is wider: pre-hash is not reachable at
+all. The provider refuses it.
+
+```
+crypto.sign('sha256', message, mlDsaKey)
+  -> error:1C80007A:Provider routines::invalid digest
+```
+
+Measured across ML-DSA-44, ML-DSA-65, ML-DSA-87 and the 3 native SLH-DSA sets,
+against sha256, sha384, sha512 and shake256: **refused on 24 of 24 set and hash
+pairs. Pure mode signs and verifies on 6 of 6.** FIPS 204 and FIPS 205 context
+strings run natively, and are not affected.
+
+So on the native path the 135-of-975 deviation in section 4 does not arise at
+all. What arises instead is that NIST's pre-hash vector groups have no
+implementation behind them on that path. Tell us how you would handle it:
+scope the certificate to pure mode, or require pre-hash to come from
+somewhere.
+
+**How a deployment proves it stayed on the certified path.** A silent fallback
+would mean the certificate describes an implementation the process did not
+use, with nothing saying so. `requireNativeBackend()` is an operator control
+that fails a process at import if it has landed on the JavaScript path, set
+from the environment rather than from application code, because the team under
+the control is usually not the team calling the library. It asserts that
+OpenSSL is doing the arithmetic. Whether that OpenSSL is itself a validated
+module is a property of the operator's build and the package does not claim to
+see it.
+
+**What we are asking you to price**
+
+1. Algorithm validation of the native path, at the coverage above, pure mode.
+2. The same for the JavaScript implementation, which already has graded
+   evidence, if you would recommend certifying both rather than one.
+3. Driving OpenSSL through its C API so the groups in cause 1 can be answered.
+   Say plainly whether your harness does this today. If it does not, say so,
+   because then the native path cannot be validated in full by anyone and that
+   changes what we should certify.
 
 **Version binding.** The demo certificate names 1.7.2. The current published
 release is 1.7.3, which changed packaging metadata and added no algorithm, key
-format or wire format change. Tell us whether you would validate against 1.7.2 as
-certified, or re-run against the current release, and what that costs.
+format or wire format change. Tell us whether you would validate against 1.7.2
+as certified, or re-run against the current release, and what that costs.
 
 ## 6. What we can hand you on day one
 
 - The full ACVTS client, in `conformance/acvts/`, with a README carrying every
   protocol trap we hit
+- Both responders: the JavaScript one that produced certificate A11025, and the
+  OpenSSL one in `responders-native.mjs`, which refuses a group it cannot
+  express rather than answering it wrongly, and names the reason
 - `selftest.mjs`, which proves the responder against pinned vectors offline: 840
   matched, 0 mismatched, before anything is sent to a live NIST system
 - Per-case results with every skip listed and its reason, written by CI to
@@ -116,7 +242,15 @@ certified, or re-run against the current release, and what that costs.
 1. A price and elapsed time for CAVP algorithm validation at the scope in
    section 3, against the deviation in section 4.
 2. Separately priced, if you offer it: FIPS 140-3 module validation of a
-   deployment of this library with an HSM.
+   deployment of this library with an HSM. Before you price it, note what we
+   measured on the same OpenSSL 3.5.6 the runtime uses: `openssl list
+   -signature-algorithms` reports ML-DSA-44, ML-DSA-65 and ML-DSA-87 as
+   `@ default`, so OpenSSL's post-quantum algorithms are in the default
+   provider and not in the FIPS provider. If that is still true when this is
+   quoted, the native path cannot sit inside a validated module boundary at
+   all, whatever the algorithm certificates say. Tell us if you read it
+   differently, because it decides whether item 2 is a 2027 job or a later
+   one.
 3. Whether you hold 17ACVT accreditation, CST, or both.
 4. What you need from us that is not in section 6.
 

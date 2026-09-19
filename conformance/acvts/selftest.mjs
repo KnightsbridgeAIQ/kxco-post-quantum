@@ -6,13 +6,20 @@
 // compares field by field. A group the backend refuses is reported by name,
 // because that list is what the live registration must exclude.
 //
-//   node conformance/acvts/selftest.mjs [--set NAME[,NAME...]] [--json PATH]
+//   node conformance/acvts/selftest.mjs [--native] [--set NAME[,NAME...]] [--json PATH]
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { respond } from './responders.mjs'
+// --native swaps in the OpenSSL-backed responder. Same contract, same
+// comparison, same pinned expected results, so the two are measured on exactly
+// one scale and the refusal list is the answer to what OpenSSL can be asked
+// for through node:crypto.
+const NATIVE = process.argv.includes('--native')
+const { respond } = NATIVE
+  ? await import('./responders-native.mjs')
+  : await import('./responders.mjs')
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const CACHE = join(HERE, '..', '.acvp-cache', 'gen-val', 'json-files')
@@ -47,7 +54,9 @@ function compare(got, want) {
   return null
 }
 
-const report = { sets: [], totals: { matched: 0, mismatched: 0, refused: 0 } }
+const report = { backend: NATIVE ? 'openssl' : 'javascript', sets: [], totals: { matched: 0, mismatched: 0, refused: 0 } }
+console.log(`responder: ${NATIVE ? 'OpenSSL via node:crypto' : '@noble/post-quantum'}
+`)
 let failed = 0
 
 for (const set of only) {

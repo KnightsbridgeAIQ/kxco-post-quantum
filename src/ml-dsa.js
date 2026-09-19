@@ -20,12 +20,18 @@ export { MAX_CONTEXT_BYTES }
 // set in both directions by the interoperability matrix, so this is a swap
 // between two implementations known to agree, not an assumption that they do.
 //
-// A context string forces the JavaScript path: Node's sign and verify take no
-// context argument, and signing without the caller's context would produce a
-// signature that verifies against nothing.
+// A context string used to force the JavaScript path unconditionally, because
+// Node's sign and verify took no context argument. Newer builds take one and
+// honour it, so the capability is probed and the call stays native where it
+// holds. The fallback is unchanged everywhere else.
 const NATIVE_ALG = 'ML-DSA-65'
+// A context string stays on the native backend only where the runtime honours
+// it; see the probe in _native.node.js. Where it does not, this falls back to
+// the JavaScript backend exactly as it always did.
 const usesNative = (context) =>
-  context === undefined && native !== null && native.supports(NATIVE_ALG)
+  native !== null &&
+  native.supports(NATIVE_ALG) &&
+  (context === undefined || native.supportsContext())
 
 const HAS_BUFFER = typeof Buffer !== 'undefined'
 const enc = new TextEncoder()
@@ -85,7 +91,7 @@ export function keypairFromMaster(master, info = 'ml-dsa-65-v1') {
 export function sign(secretKey, message, opts) {
   const context = normalizeContext(opts)
   if (usesNative(context)) {
-    return bytesToHex(native.sign(NATIVE_ALG, secretKey, toBytes(message)))
+    return bytesToHex(native.sign(NATIVE_ALG, secretKey, toBytes(message), undefined, context))
   }
   const sig = context === undefined
     ? ml_dsa65.sign(toBytes(message), secretKey)
@@ -115,7 +121,7 @@ export function verify(publicKey, message, sigHex, opts) {
   const context = normalizeContext(opts)
   try {
     if (usesNative(context)) {
-      return native.verify(NATIVE_ALG, publicKey, toBytes(message), hexToBytes(sigHex))
+      return native.verify(NATIVE_ALG, publicKey, toBytes(message), hexToBytes(sigHex), context)
     }
     return context === undefined
       ? ml_dsa65.verify(hexToBytes(sigHex), toBytes(message), publicKey)
