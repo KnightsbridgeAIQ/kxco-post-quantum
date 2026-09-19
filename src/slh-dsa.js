@@ -52,8 +52,13 @@ const SEED_BYTES = slh_dsa_sha2_192s.lengths.seed
 // changes. The two backends are checked against each other for this parameter
 // set in both directions by the interoperability matrix.
 const NATIVE_ALG = 'SLH-DSA-SHA2-192s'
+// A context string stays on the native backend only where the runtime honours
+// it; see the probe in _native.node.js. Where it does not, this falls back to
+// the JavaScript backend exactly as it always did.
 const usesNative = (context) =>
-  context === undefined && native !== null && native.supports(NATIVE_ALG)
+  native !== null &&
+  native.supports(NATIVE_ALG) &&
+  (context === undefined || native.supportsContext())
 
 /**
  * Generate an SLH-DSA-SHA2-192s keypair from a master + domain-separation info.
@@ -85,7 +90,7 @@ export function keypairFromMaster(master, info = 'slh-dsa-sha2-192s-v1') {
 export function sign(secretKey, message, opts) {
   const context = normalizeContext(opts)
   if (usesNative(context)) {
-    return bytesToHex(native.sign(NATIVE_ALG, secretKey, toBytes(message)))
+    return bytesToHex(native.sign(NATIVE_ALG, secretKey, toBytes(message), undefined, context))
   }
   const sig = context === undefined
     ? slh_dsa_sha2_192s.sign(toBytes(message), secretKey)
@@ -109,7 +114,7 @@ export function verify(publicKey, message, sigHex, opts) {
   const context = normalizeContext(opts)
   try {
     if (usesNative(context)) {
-      return native.verify(NATIVE_ALG, publicKey, toBytes(message), hexToBytes(sigHex))
+      return native.verify(NATIVE_ALG, publicKey, toBytes(message), hexToBytes(sigHex), context)
     }
     return context === undefined
       ? slh_dsa_sha2_192s.verify(hexToBytes(sigHex), toBytes(message), publicKey)

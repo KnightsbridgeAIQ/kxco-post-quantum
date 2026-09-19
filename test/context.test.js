@@ -247,3 +247,75 @@ test('our context signature verifies under the third-party public key path', () 
     'keygen from the same seed must produce the same public key',
   )
 })
+
+// ---------------------------------------------------------------------------
+// Backend routing for context signatures.
+//
+// A context string used to force the JavaScript backend unconditionally,
+// because Node's sign and verify took no context argument. Newer builds take
+// one and honour it, so the capability is probed.
+//
+// This matters beyond speed. The fallback silently moved every context-using
+// call onto the implementation the operator did not ask for, and
+// requireNativeBackend() cannot see that happen: it asserts the backend is
+// present, not that a given call reached it. A deployment under a
+// validated-module control would have had the control not in force, with
+// nothing saying so.
+//
+// These tests are conditional on the runtime, not on a version number: where
+// the native backend is absent or does not honour a context, the old fallback
+// is the correct behaviour and is what is asserted instead.
+// ---------------------------------------------------------------------------
+
+test('a context signature reaches the native backend where the runtime honours one', async () => {
+  const { native } = await import('../src/_native.node.js')
+  if (native === null) return   // JavaScript backend only; nothing to route.
+
+  const seen = []
+  const realSign = native.sign.bind(native)
+  native.sign = (alg, sk, msg, pk, ctx) => {
+    seen.push(ctx === undefined ? 'none' : Buffer.from(ctx).toString())
+    return realSign(alg, sk, msg, pk, ctx)
+  }
+  try {
+    mlDsa.sign(kp.secretKey, MESSAGE)
+    mlDsa.sign(kp.secretKey, MESSAGE, { context: 'routing-probe' })
+  } finally {
+    native.sign = realSign
+  }
+
+  assert.deepEqual(seen.slice(0, 1), ['none'], 'a plain signature stays native')
+  if (native.supportsContext()) {
+    assert.deepEqual(seen, ['none', 'routing-probe'],
+      'a context signature must stay on the native backend and carry the context')
+  } else {
+    assert.deepEqual(seen, ['none'],
+      'where the runtime does not honour a context, the call must fall back')
+  }
+})
+
+test('the context capability probe rejects a backend that ignores the argument', async () => {
+  const { native } = await import('../src/_native.node.js')
+  if (native === null) return
+
+  // The probe's whole job is to tell "honours it" from "accepts and ignores
+  // it", because ignoring it is the dangerous answer: it would sign without
+  // the caller's domain separation while reporting success. Assert the
+  // property the probe checks, directly against this runtime.
+  if (!native.supportsContext()) return
+  const sig = mlDsa.sign(kp.secretKey, MESSAGE, { context: 'a' })
+  assert.equal(mlDsa.verify(kp.publicKey, MESSAGE, sig, { context: 'a' }), true)
+  assert.equal(mlDsa.verify(kp.publicKey, MESSAGE, sig, { context: 'b' }), false,
+    'a different context must not verify, or the context is being ignored')
+  assert.equal(mlDsa.verify(kp.publicKey, MESSAGE, sig), false)
+})
+
+test('SLH-DSA context signatures route the same way as ML-DSA', async () => {
+  const { native } = await import('../src/_native.node.js')
+  if (native === null) return
+
+  const skp = slhDsa.keypairFromMaster(MASTER)
+  const sig = slhDsa.sign(skp.secretKey, MESSAGE, { context: 'slh-routing' })
+  assert.equal(slhDsa.verify(skp.publicKey, MESSAGE, sig, { context: 'slh-routing' }), true)
+  assert.equal(slhDsa.verify(skp.publicKey, MESSAGE, sig, { context: 'other' }), false)
+})

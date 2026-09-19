@@ -64,8 +64,13 @@ function wrap(bytes) {
 // changes. The two backends are checked against each other for this parameter
 // set in both directions by the interoperability matrix.
 const NATIVE_ALG = 'ML-DSA-87'
+// A context string stays on the native backend only where the runtime honours
+// it; see the probe in _native.node.js. Where it does not, this falls back to
+// the JavaScript backend exactly as it always did.
 const usesNative = (context) =>
-  context === undefined && native !== null && native.supports(NATIVE_ALG)
+  native !== null &&
+  native.supports(NATIVE_ALG) &&
+  (context === undefined || native.supportsContext())
 
 /**
  * Generate an ML-DSA-87 keypair from a master + domain-separation info.
@@ -104,7 +109,7 @@ export function keypairFromMaster(master, info = 'ml-dsa-87-v1') {
 export function sign(secretKey, message, opts) {
   const context = normalizeContext(opts)
   if (usesNative(context)) {
-    return bytesToHex(native.sign(NATIVE_ALG, secretKey, toBytes(message)))
+    return bytesToHex(native.sign(NATIVE_ALG, secretKey, toBytes(message), undefined, context))
   }
   const sig = context === undefined
     ? ml_dsa87.sign(toBytes(message), secretKey)
@@ -135,7 +140,7 @@ export function verify(publicKey, message, sigHex, opts) {
   const context = normalizeContext(opts)
   try {
     if (usesNative(context)) {
-      return native.verify(NATIVE_ALG, publicKey, toBytes(message), hexToBytes(sigHex))
+      return native.verify(NATIVE_ALG, publicKey, toBytes(message), hexToBytes(sigHex), context)
     }
     return context === undefined
       ? ml_dsa87.verify(hexToBytes(sigHex), toBytes(message), publicKey)

@@ -28,11 +28,28 @@
 
 import crypto from 'node:crypto'
 
-// FIPS 204 section 5.2 context strings are not reachable through Node's sign and
-// verify, which take no context argument. A call that uses one falls back to the
-// JavaScript backend rather than being signed without it: a signature made
-// without the caller's context verifies against nothing and would look like a
+// FIPS 204 section 5.2 and FIPS 205 context strings. Node's sign and verify
+// took no context argument when this module was written, so a call that used
+// one fell back to the JavaScript backend: signing without the caller's context
+// produces a signature that verifies against nothing, which would look like a
 // cross-implementation disagreement rather than a missing feature.
+//
+// Newer Node builds do take one, and honour it. That is worth having rather
+// than assuming either way, because the fallback quietly moved every
+// context-using call onto the implementation the operator did not ask for, and
+// requireNativeBackend() cannot see it happen: it asserts the backend is
+// present, not that a particular call reached it.
+//
+// So the capability is probed rather than inferred from a version number, and
+// the probe is the real thing: sign under one context, then require that the
+// same context verifies and a different one does not. A build that accepted
+// the argument and ignored it would pass the first check and fail the second,
+// and ignoring it is the dangerous outcome, not rejecting it.
+//
+// Verified before this was enabled: with a context string, OpenSSL and
+// @noble/post-quantum accept each other's signatures in both directions, and
+// both reject a wrong context, across ML-DSA-44/65/87 and the three SLH-DSA
+// sets this build exposes.
 
 const DER_SEQUENCE = 0x30
 const DER_OCTET_STRING = 0x04
@@ -109,6 +126,34 @@ function probe() {
 
 const SUPPORTED = probe()
 
+// Whether this runtime's sign and verify honour a context string. Probed once,
+// on first use rather than at import, because most callers never pass one and
+// the probe costs a keygen.
+//
+// `null` means not yet probed. Any throw is read as "no", so a build that
+// rejects the argument outright falls back exactly as before.
+let contextHonoured = null
+function probeContext() {
+  if (contextHonoured !== null) return contextHonoured
+  contextHonoured = false
+  try {
+    // ML-DSA-44 is the cheapest set to key and sign. If the build has no
+    // ML-DSA at all there is nothing to probe with and the answer stays no.
+    const spec = SUPPORTED.get('ML-DSA-44')
+    if (!spec) return contextHonoured
+    const { privateKey, publicKey } = crypto.generateKeyPairSync(spec.nodeName)
+    const message = Buffer.from('kxco-pq context probe')
+    const a = Buffer.from('a'), b = Buffer.from('b')
+    const sig = crypto.sign(null, message, { key: privateKey, context: a })
+    contextHonoured =
+      crypto.verify(null, message, { key: publicKey, context: a }, sig) === true &&
+      crypto.verify(null, message, { key: publicKey, context: b }, sig) === false
+  } catch {
+    contextHonoured = false
+  }
+  return contextHonoured
+}
+
 function privateKeyObject(spec, secretKey, publicKey) {
   if (spec.privateForm === 'jwk') {
     // FIPS 205 lays the private key out as SK.seed || SK.prf || PK.seed ||
@@ -161,22 +206,33 @@ export const native = SUPPORTED.size === 0 ? null : {
     return [...SUPPORTED.keys()].sort()
   },
 
-  openssl: process.versions.openssl,
-
-  sign(alg, secretKey, message, publicKey) {
-    const spec = SUPPORTED.get(alg)
-    if (!spec) return null
-    return crypto.sign(null, Buffer.from(message), privateKeyObject(spec, secretKey, publicKey))
+  /** Whether a signature carrying a context string can stay on this backend. */
+  supportsContext() {
+    return probeContext()
   },
 
-  verify(alg, publicKey, message, signature) {
+  openssl: process.versions.openssl,
+
+  sign(alg, secretKey, message, publicKey, context) {
+    const spec = SUPPORTED.get(alg)
+    if (!spec) return null
+    const key = privateKeyObject(spec, secretKey, publicKey)
+    return crypto.sign(
+      null,
+      Buffer.from(message),
+      context === undefined ? key : { key, context: Buffer.from(context) },
+    )
+  },
+
+  verify(alg, publicKey, message, signature, context) {
     const spec = SUPPORTED.get(alg)
     if (!spec) return null
     try {
+      const key = publicKeyObject(spec, publicKey)
       return crypto.verify(
         null,
         Buffer.from(message),
-        publicKeyObject(spec, publicKey),
+        context === undefined ? key : { key, context: Buffer.from(context) },
         Buffer.from(signature)
       )
     } catch {

@@ -1,10 +1,10 @@
 {
   "subject": {
     "package": "kxco-post-quantum",
-    "version": "1.4.1"
+    "version": "1.7.3"
   },
   "backend": {
-    "@noble/hashes": "2.3.0",
+    "@noble/hashes": "2.4.0",
     "@noble/post-quantum": "0.7.0"
   },
   "wrapperBackend": {
@@ -100,15 +100,15 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours 4b4a92ec74d4c067aaaa, theirs 4b4a92ec74d4c067aaaa)"
+          "detail": "deterministic signatures match (4b4a92ec74d4c067aaaa)"
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -116,15 +116,15 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours f8d83fa9553ec8b89dc9, theirs f8d83fa9553ec8b89dc9)"
+          "detail": "deterministic signatures match (f8d83fa9553ec8b89dc9)"
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -143,7 +143,7 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": null,
@@ -151,7 +151,7 @@
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -159,7 +159,7 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": null,
@@ -167,7 +167,7 @@
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -186,15 +186,15 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours d27840805d344c6674fe, theirs d27840805d344c6674fe)"
+          "detail": "deterministic signatures match (d27840805d344c6674fe)"
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -202,15 +202,15 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours 854e69040ca1a185ac9a, theirs 854e69040ca1a185ac9a)"
+          "detail": "deterministic signatures match (854e69040ca1a185ac9a)"
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -229,7 +229,7 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": null,
@@ -237,7 +237,7 @@
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -245,7 +245,7 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": null,
@@ -253,7 +253,7 @@
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -272,15 +272,15 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours ec922cf9523a612174e2, theirs ec922cf9523a612174e2)"
+          "detail": "deterministic signatures match (ec922cf9523a612174e2)"
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -288,15 +288,15 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours 834026ca82037ea156bd, theirs 834026ca82037ea156bd)"
+          "detail": "deterministic signatures match (834026ca82037ea156bd)"
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -307,19 +307,19 @@
       "checks": {
         "keys": {
           "ok": true,
-          "detail": "derived encapsulation keys differ"
+          "detail": "derived encapsulation keys match"
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -330,19 +330,19 @@
       "checks": {
         "keys": {
           "ok": true,
-          "detail": "derived encapsulation keys differ"
+          "detail": "derived encapsulation keys match"
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -353,19 +353,19 @@
       "checks": {
         "keys": {
           "ok": true,
-          "detail": "derived encapsulation keys differ"
+          "detail": "derived encapsulation keys match"
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -376,19 +376,19 @@
       "checks": {
         "keys": {
           "ok": true,
-          "detail": "derived encapsulation keys differ"
+          "detail": "derived encapsulation keys match"
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -399,19 +399,19 @@
       "checks": {
         "keys": {
           "ok": true,
-          "detail": "derived encapsulation keys differ"
+          "detail": "derived encapsulation keys match"
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -430,15 +430,15 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours 8952786e6b41b83cfabc, theirs 8952786e6b41b83cfabc)"
+          "detail": "deterministic signatures match (8952786e6b41b83cfabc)"
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -446,15 +446,15 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours 5b871154fe23d152f622, theirs 5b871154fe23d152f622)"
+          "detail": "deterministic signatures match (5b871154fe23d152f622)"
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -473,7 +473,7 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": null,
@@ -481,7 +481,7 @@
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -489,7 +489,7 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": null,
@@ -497,7 +497,7 @@
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -516,15 +516,15 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours 63338d76b553bbdf3aa5, theirs 63338d76b553bbdf3aa5)"
+          "detail": "deterministic signatures match (63338d76b553bbdf3aa5)"
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -532,15 +532,15 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours 2c78a6c0fe93195c2da7, theirs 2c78a6c0fe93195c2da7)"
+          "detail": "deterministic signatures match (2c78a6c0fe93195c2da7)"
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -559,15 +559,15 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours 5d57a441662071c89fab, theirs 5d57a441662071c89fab)"
+          "detail": "deterministic signatures match (5d57a441662071c89fab)"
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -575,15 +575,15 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours 46a6ec48e840246f7fb4, theirs 46a6ec48e840246f7fb4)"
+          "detail": "deterministic signatures match (46a6ec48e840246f7fb4)"
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -602,15 +602,15 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours 4b4a92ec74d4c067aaaa, theirs 4b4a92ec74d4c067aaaa)"
+          "detail": "deterministic signatures match (4b4a92ec74d4c067aaaa)"
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -618,15 +618,15 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours f8d83fa9553ec8b89dc9, theirs f8d83fa9553ec8b89dc9)"
+          "detail": "deterministic signatures match (f8d83fa9553ec8b89dc9)"
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -645,7 +645,7 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": null,
@@ -653,7 +653,7 @@
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -661,7 +661,7 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": null,
@@ -669,7 +669,7 @@
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -688,15 +688,15 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours d27840805d344c6674fe, theirs d27840805d344c6674fe)"
+          "detail": "deterministic signatures match (d27840805d344c6674fe)"
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -704,15 +704,15 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours 854e69040ca1a185ac9a, theirs 854e69040ca1a185ac9a)"
+          "detail": "deterministic signatures match (854e69040ca1a185ac9a)"
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -731,7 +731,7 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": null,
@@ -739,7 +739,7 @@
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -747,7 +747,7 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": null,
@@ -755,7 +755,7 @@
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -774,15 +774,15 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours ec922cf9523a612174e2, theirs ec922cf9523a612174e2)"
+          "detail": "deterministic signatures match (ec922cf9523a612174e2)"
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -790,15 +790,15 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": true,
-          "detail": "deterministic signatures differ (ours 834026ca82037ea156bd, theirs 834026ca82037ea156bd)"
+          "detail": "deterministic signatures match (834026ca82037ea156bd)"
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -809,19 +809,19 @@
       "checks": {
         "keys": {
           "ok": true,
-          "detail": "derived encapsulation keys differ"
+          "detail": "derived encapsulation keys match"
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -832,19 +832,19 @@
       "checks": {
         "keys": {
           "ok": true,
-          "detail": "derived encapsulation keys differ"
+          "detail": "derived encapsulation keys match"
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -855,19 +855,19 @@
       "checks": {
         "keys": {
           "ok": true,
-          "detail": "derived encapsulation keys differ"
+          "detail": "derived encapsulation keys match"
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -878,19 +878,19 @@
       "checks": {
         "keys": {
           "ok": true,
-          "detail": "derived encapsulation keys differ"
+          "detail": "derived encapsulation keys match"
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -901,19 +901,19 @@
       "checks": {
         "keys": {
           "ok": true,
-          "detail": "derived encapsulation keys differ"
+          "detail": "derived encapsulation keys match"
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -932,7 +932,7 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": null,
@@ -940,7 +940,7 @@
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -948,7 +948,7 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": null,
@@ -956,7 +956,7 @@
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -975,7 +975,7 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": null,
@@ -983,7 +983,7 @@
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -991,7 +991,7 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": null,
@@ -999,7 +999,7 @@
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -1018,7 +1018,7 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": null,
@@ -1026,7 +1026,7 @@
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -1034,7 +1034,7 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": null,
@@ -1042,7 +1042,7 @@
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -1061,7 +1061,7 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": null,
@@ -1069,7 +1069,7 @@
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -1077,7 +1077,7 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": null,
@@ -1085,7 +1085,7 @@
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -1104,7 +1104,7 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": null,
@@ -1112,7 +1112,7 @@
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -1120,7 +1120,7 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": null,
@@ -1128,7 +1128,7 @@
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -1143,15 +1143,15 @@
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -1166,15 +1166,15 @@
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -1189,15 +1189,15 @@
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -1212,15 +1212,15 @@
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -1235,15 +1235,15 @@
         },
         "ours>theirs": {
           "ok": true,
-          "detail": "shared secrets differ"
+          "detail": "shared secrets match"
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we recovered a different shared secret than the peer sent"
+          "detail": "we recovered the shared secret the peer sent"
         },
         "reject": {
           "ok": true,
-          "detail": "peer returned the real shared secret for a corrupted ciphertext"
+          "detail": "peer did not return the real shared secret for a corrupted ciphertext"
         }
       }
     },
@@ -1262,7 +1262,7 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": null,
@@ -1270,7 +1270,7 @@
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -1278,7 +1278,7 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": null,
@@ -1286,7 +1286,7 @@
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -1305,7 +1305,7 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": null,
@@ -1313,7 +1313,7 @@
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -1321,7 +1321,7 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": null,
@@ -1329,7 +1329,7 @@
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -1348,7 +1348,7 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": null,
@@ -1356,7 +1356,7 @@
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -1364,7 +1364,7 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": null,
@@ -1372,7 +1372,7 @@
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     },
@@ -1391,7 +1391,7 @@
         },
         "theirs>ours": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes": {
           "ok": null,
@@ -1399,7 +1399,7 @@
         },
         "tamper": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         },
         "ours>theirs/ctx": {
           "ok": true,
@@ -1407,7 +1407,7 @@
         },
         "theirs>ours/ctx": {
           "ok": true,
-          "detail": "we rejected a signature the peer produced"
+          "detail": "we verified a signature the peer produced"
         },
         "bytes/ctx": {
           "ok": null,
@@ -1415,7 +1415,7 @@
         },
         "tamper/ctx": {
           "ok": true,
-          "detail": "peer accepted a tampered signature"
+          "detail": "peer rejected the tampered signature"
         }
       }
     }
@@ -1423,6 +1423,8 @@
   "totals": {
     "passed": 225,
     "failed": 0,
-    "inconclusive": 42
+    "inconclusive": 42,
+    "applicable": 225,
+    "note": "inconclusive = the peer does not support the check (no seed-derived keygen, or hedged signing with no deterministic mode), not a failure on either side. passed/applicable is the meaningful ratio."
   }
 }
