@@ -16,7 +16,7 @@
 // wrong one, which is a different thing, and the thing a deployment under a
 // validated-module control actually needs.
 
-import { native } from '#native'
+import { native, pinned } from '#native'
 
 // An operator control. A deployment under a validated-module requirement is
 // usually not the same team as the one calling this library, so the
@@ -46,13 +46,20 @@ export function backend() {
     return {
       kind: 'javascript',
       library: '@noble/post-quantum',
-      reason: 'the runtime does not provide the FIPS 203/204/205 primitives',
+      // Two different facts wear the same result, and an evidence bundle that
+      // conflated them would be wrong. Absent means the runtime cannot do it.
+      // Pinned means it can and the operator said not to.
+      reason: pinned === 'javascript'
+        ? 'KXCO_PQ_BACKEND=javascript pins this process to the JavaScript backend'
+        : 'the runtime does not provide the FIPS 203/204/205 primitives',
+      ...(pinned ? { pinned } : {}),
     }
   }
   return {
     kind: 'openssl',
     library: 'node:crypto',
     openssl: native.openssl,
+    ...(pinned ? { pinned } : {}),
     // Only the sets OpenSSL can express. Anything absent here still works, on
     // the JavaScript backend, which is why this is a list rather than a flag.
     parameterSets: native.algorithms(),
@@ -93,20 +100,48 @@ export function isNative(alg) {
  * @throws {Error} with `code: 'ERR_KXCO_PQ_BACKEND'` when the requirement fails.
  */
 export function requireNativeBackend(algorithms) {
+  return requireBackend('openssl', algorithms)
+}
+
+/**
+ * Refuse to run unless the cryptography is executing in a named implementation.
+ *
+ * The general form of requireNativeBackend, and the reason it exists is that
+ * both implementations are being taken to algorithm validation. A deployment
+ * under a control that names a certificate has to be able to pin the one its
+ * certificate covers, and for some of them that is the JavaScript one.
+ *
+ * Asserting 'javascript' on a runtime that has OpenSSL will fail unless the
+ * operator also set KXCO_PQ_BACKEND=javascript, and that is deliberate. This
+ * function reports; the environment decides. Keeping the two apart is what
+ * stops application code quietly changing which implementation a customer's
+ * evidence is about.
+ *
+ * @param {'openssl'|'javascript'} kind
+ * @param {string[]} [algorithms] — parameter sets that must run in it. Only
+ *   meaningful for 'openssl'; the JavaScript backend covers every set.
+ * @throws {Error} with `code: 'ERR_KXCO_PQ_BACKEND'` when the requirement fails.
+ */
+export function requireBackend(kind, algorithms) {
+  if (kind !== 'openssl' && kind !== 'javascript') {
+    throw backendError(`backend must be 'openssl' or 'javascript', got '${kind}'`, { required: kind })
+  }
   const b = backend()
-  if (b.kind !== 'openssl') {
+  if (b.kind !== kind) {
     throw backendError(
-      `the native backend is required and is not present: ${b.reason}`,
-      { required: 'openssl', actual: b.kind, reason: b.reason },
+      `the ${kind} backend is required and is not the one running: ${b.reason ?? `this process is on ${b.kind}`}`,
+      { required: kind, actual: b.kind, reason: b.reason, pinned: b.pinned },
     )
   }
-  const missing = (algorithms ?? []).filter((a) => !isNative(a))
-  if (missing.length) {
-    throw backendError(
-      `the native backend is required for ${missing.join(', ')}, ` +
-        `and this OpenSSL does not provide ${missing.length > 1 ? 'them' : 'it'}`,
-      { required: 'openssl', actual: b.kind, missing, available: b.parameterSets },
-    )
+  if (kind === 'openssl') {
+    const missing = (algorithms ?? []).filter((a) => !isNative(a))
+    if (missing.length) {
+      throw backendError(
+        `the native backend is required for ${missing.join(', ')}, ` +
+          `and this OpenSSL does not provide ${missing.length > 1 ? 'them' : 'it'}`,
+        { required: 'openssl', actual: b.kind, missing, available: b.parameterSets },
+      )
+    }
   }
   return b
 }

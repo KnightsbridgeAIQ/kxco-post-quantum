@@ -37,4 +37,4 @@ export * as jws  from './jws.js'
 
 // Reports which backend is doing the maths in this process, for evidence
 // bundles and support. It reports; it never switches.
-export { backend, isNative, requireNativeBackend } from './backend.js'
+export { backend, isNative, requireNativeBackend, requireBackend } from './backend.js'

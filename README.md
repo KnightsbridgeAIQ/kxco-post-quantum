@@ -310,9 +310,49 @@ import, before its first signature rather than after.
 maths. Whether that OpenSSL is a FIPS-validated module is a property of your
 build, not of this package, and no library can see it from the inside. What it
 removes is the silent fallback, which is the part this package is responsible
-for. It is an assertion, never a switch: it cannot change which backend runs,
-because a flag that changed which implementation signed would change what your
-evidence means.
+for.
+
+### Pinning the implementation your certificate names
+
+`requireNativeBackend()` only ever asserts OpenSSL. Both implementations are
+being taken to algorithm validation, so a deployment under a control that names
+a certificate has to be able to pin whichever one its certificate covers, and
+for some that is the JavaScript implementation.
+
+```
+KXCO_PQ_BACKEND=javascript    never use OpenSSL, even where it is present
+KXCO_PQ_BACKEND=openssl       prefer OpenSSL, which is the default anyway
+```
+
+```js
+import { requireBackend } from 'kxco-post-quantum'
+
+requireBackend('javascript')                            // the JS certificate
+requireBackend('openssl', ['ML-DSA-65', 'ML-KEM-768'])  // the native one
+```
+
+A value that is neither throws at import. A misspelled pin that silently did
+nothing would leave you believing a control was in force when it was not.
+
+The environment selects, the function asserts, and they are deliberately kept
+apart: `requireBackend('javascript')` fails on an unpinned OpenSSL process
+rather than switching it. Application code cannot quietly change which
+implementation your evidence is about.
+
+Nothing here changes what a signature looks like. The two produce identical
+wire bytes, which the interoperability matrix proves for every parameter set in
+both directions, and a signature made under the pin verifies on the other
+backend. What changes is which one computed it, and `backend()` always reports
+that truthfully, including when the answer is the result of a pin:
+
+```js
+backend()
+// { kind: 'javascript', library: '@noble/post-quantum', pinned: 'javascript',
+//   reason: 'KXCO_PQ_BACKEND=javascript pins this process to the JavaScript backend' }
+```
+
+That `reason` matters. Pinned and unavailable are two different facts and an
+evidence bundle that conflated them would be wrong.
 
 ## Where this fits
 

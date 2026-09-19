@@ -28,6 +28,51 @@
 
 import crypto from 'node:crypto'
 
+// Which implementation this process must use, chosen by the operator.
+//
+// Until now the only control was requireNativeBackend(), which asserts OpenSSL
+// is present. That was enough while only one implementation was going to carry
+// a certificate. Both are now being taken to validation, so a deployment under
+// a validated-module control has to be able to pin EITHER, and the one it must
+// pin is whichever its certificate names.
+//
+// Set from the environment rather than from application code, for the same
+// reason the assertion is: the team under the control is usually not the team
+// calling this library.
+//
+//   KXCO_PQ_BACKEND=javascript   never use OpenSSL, even where it is present
+//   KXCO_PQ_BACKEND=openssl      prefer OpenSSL, which is the default anyway;
+//                                pair with requireBackend to make it binding
+//
+// A value that is neither throws at import. A misspelled pin that silently did
+// nothing would leave the operator believing a control was in force when it
+// was not, which is the exact failure this exists to remove.
+//
+// Nothing here changes what a signature looks like. The two implementations
+// produce identical wire bytes, proved for every parameter set in both
+// directions by the interoperability matrix. What it changes is which one
+// computed them, and backend() always reports that truthfully, including when
+// the answer is the result of this pin.
+const PIN = (() => {
+  try {
+    const v = globalThis.process?.env?.KXCO_PQ_BACKEND
+    if (v === undefined || v === null || v === '') return null
+    const k = String(v).trim().toLowerCase()
+    if (k !== 'openssl' && k !== 'javascript') {
+      throw new Error(
+        `KXCO_PQ_BACKEND must be 'openssl' or 'javascript', got '${v}'`,
+      )
+    }
+    return k
+  } catch (err) {
+    if (err instanceof Error && err.message.startsWith('KXCO_PQ_BACKEND')) throw err
+    return null
+  }
+})()
+
+/** The operator's pin, or null. Reported by backend() so evidence records it. */
+export const pinned = PIN
+
 // FIPS 204 section 5.2 and FIPS 205 context strings. Node's sign and verify
 // took no context argument when this module was written, so a call that used
 // one fell back to the JavaScript backend: signing without the caller's context
@@ -187,7 +232,7 @@ function publicKeyObject(spec, publicKey) {
   })
 }
 
-export const native = SUPPORTED.size === 0 ? null : {
+export const native = (PIN === 'javascript' || SUPPORTED.size === 0) ? null : {
   /** Parameter sets this build can do. Anything else falls through to JS.
    *
    * The Buffer check is not defensive padding. This package's browser-mode

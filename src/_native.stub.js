@@ -11,3 +11,7 @@
 // working unmodified in a browser.
 
 export const native = null
+
+// Same shape as the Node module so backend() can import it unconditionally.
+// There is no OpenSSL to pin away from here, so there is never a pin.
+export const pinned = null
