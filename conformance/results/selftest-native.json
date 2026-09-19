@@ -1,0 +1,877 @@
+{
+  "backend": "openssl",
+  "sets": [
+    {
+      "set": "ML-KEM-keyGen-FIPS203",
+      "matched": 0,
+      "mismatched": 0,
+      "refused": 75,
+      "refusals": [
+        {
+          "tgId": 1,
+          "parameterSet": "ML-KEM-512",
+          "reason": "tgId 1 ML-KEM-512: dk is not obtainable: OpenSSL exports the 64-byte seed, not the expanded decapsulation key"
+        },
+        {
+          "tgId": 2,
+          "parameterSet": "ML-KEM-768",
+          "reason": "tgId 2 ML-KEM-768: dk is not obtainable: OpenSSL exports the 64-byte seed, not the expanded decapsulation key"
+        },
+        {
+          "tgId": 3,
+          "parameterSet": "ML-KEM-1024",
+          "reason": "tgId 3 ML-KEM-1024: dk is not obtainable: OpenSSL exports the 64-byte seed, not the expanded decapsulation key"
+        }
+      ],
+      "mismatches": []
+    },
+    {
+      "set": "ML-KEM-encapDecap-FIPS203",
+      "matched": 90,
+      "mismatched": 0,
+      "refused": 75,
+      "refusals": [
+        {
+          "tgId": 1,
+          "parameterSet": "ML-KEM-512",
+          "reason": "tgId 1 ML-KEM-512: encapsulation needs the m from NIST as its randomness, and crypto.encapsulate takes no such option"
+        },
+        {
+          "tgId": 2,
+          "parameterSet": "ML-KEM-768",
+          "reason": "tgId 2 ML-KEM-768: encapsulation needs the m from NIST as its randomness, and crypto.encapsulate takes no such option"
+        },
+        {
+          "tgId": 3,
+          "parameterSet": "ML-KEM-1024",
+          "reason": "tgId 3 ML-KEM-1024: encapsulation needs the m from NIST as its randomness, and crypto.encapsulate takes no such option"
+        }
+      ],
+      "mismatches": []
+    },
+    {
+      "set": "ML-DSA-keyGen-FIPS204",
+      "matched": 0,
+      "mismatched": 0,
+      "refused": 75,
+      "refusals": [
+        {
+          "tgId": 1,
+          "parameterSet": "ML-DSA-44",
+          "reason": "tgId 1 ML-DSA-44: sk is not obtainable: OpenSSL exports the 32-byte seed, not the expanded signing key"
+        },
+        {
+          "tgId": 2,
+          "parameterSet": "ML-DSA-65",
+          "reason": "tgId 2 ML-DSA-65: sk is not obtainable: OpenSSL exports the 32-byte seed, not the expanded signing key"
+        },
+        {
+          "tgId": 3,
+          "parameterSet": "ML-DSA-87",
+          "reason": "tgId 3 ML-DSA-87: sk is not obtainable: OpenSSL exports the 32-byte seed, not the expanded signing key"
+        }
+      ],
+      "mismatches": []
+    },
+    {
+      "set": "ML-DSA-sigGen-FIPS204",
+      "matched": 0,
+      "mismatched": 0,
+      "refused": 360,
+      "refusals": [
+        {
+          "tgId": 1,
+          "parameterSet": "ML-DSA-44",
+          "reason": "tgId 1 ML-DSA-44: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 2,
+          "parameterSet": "ML-DSA-44",
+          "reason": "tgId 2 ML-DSA-44: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 3,
+          "parameterSet": "ML-DSA-65",
+          "reason": "tgId 3 ML-DSA-65: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 4,
+          "parameterSet": "ML-DSA-65",
+          "reason": "tgId 4 ML-DSA-65: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 5,
+          "parameterSet": "ML-DSA-87",
+          "reason": "tgId 5 ML-DSA-87: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 6,
+          "parameterSet": "ML-DSA-87",
+          "reason": "tgId 6 ML-DSA-87: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 7,
+          "parameterSet": "ML-DSA-44",
+          "reason": "tgId 7 ML-DSA-44: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 8,
+          "parameterSet": "ML-DSA-44",
+          "reason": "tgId 8 ML-DSA-44: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 9,
+          "parameterSet": "ML-DSA-65",
+          "reason": "tgId 9 ML-DSA-65: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 10,
+          "parameterSet": "ML-DSA-65",
+          "reason": "tgId 10 ML-DSA-65: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 11,
+          "parameterSet": "ML-DSA-87",
+          "reason": "tgId 11 ML-DSA-87: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 12,
+          "parameterSet": "ML-DSA-87",
+          "reason": "tgId 12 ML-DSA-87: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 13,
+          "parameterSet": "ML-DSA-44",
+          "reason": "tgId 13 ML-DSA-44: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 14,
+          "parameterSet": "ML-DSA-44",
+          "reason": "tgId 14 ML-DSA-44: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 15,
+          "parameterSet": "ML-DSA-65",
+          "reason": "tgId 15 ML-DSA-65: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 16,
+          "parameterSet": "ML-DSA-65",
+          "reason": "tgId 16 ML-DSA-65: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 17,
+          "parameterSet": "ML-DSA-87",
+          "reason": "tgId 17 ML-DSA-87: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 18,
+          "parameterSet": "ML-DSA-87",
+          "reason": "tgId 18 ML-DSA-87: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 19,
+          "parameterSet": "ML-DSA-44",
+          "reason": "tgId 19 ML-DSA-44: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 20,
+          "parameterSet": "ML-DSA-44",
+          "reason": "tgId 20 ML-DSA-44: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 21,
+          "parameterSet": "ML-DSA-65",
+          "reason": "tgId 21 ML-DSA-65: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 22,
+          "parameterSet": "ML-DSA-65",
+          "reason": "tgId 22 ML-DSA-65: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 23,
+          "parameterSet": "ML-DSA-87",
+          "reason": "tgId 23 ML-DSA-87: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        },
+        {
+          "tgId": 24,
+          "parameterSet": "ML-DSA-87",
+          "reason": "tgId 24 ML-DSA-87: signing randomness is not controllable: crypto.sign reads no deterministic and no rnd option"
+        }
+      ],
+      "mismatches": []
+    },
+    {
+      "set": "ML-DSA-sigVer-FIPS204",
+      "matched": 45,
+      "mismatched": 0,
+      "refused": 135,
+      "refusals": [
+        {
+          "tgId": 2,
+          "parameterSet": "ML-DSA-44",
+          "reason": "tgId 2 ML-DSA-44: pre-hash is refused by the provider: every digest returns invalid digest"
+        },
+        {
+          "tgId": 4,
+          "parameterSet": "ML-DSA-65",
+          "reason": "tgId 4 ML-DSA-65: pre-hash is refused by the provider: every digest returns invalid digest"
+        },
+        {
+          "tgId": 6,
+          "parameterSet": "ML-DSA-87",
+          "reason": "tgId 6 ML-DSA-87: pre-hash is refused by the provider: every digest returns invalid digest"
+        },
+        {
+          "tgId": 7,
+          "parameterSet": "ML-DSA-44",
+          "reason": "tgId 7 ML-DSA-44: the internal interface is not reachable through node:crypto"
+        },
+        {
+          "tgId": 8,
+          "parameterSet": "ML-DSA-44",
+          "reason": "tgId 8 ML-DSA-44: the internal interface is not reachable through node:crypto"
+        },
+        {
+          "tgId": 9,
+          "parameterSet": "ML-DSA-65",
+          "reason": "tgId 9 ML-DSA-65: the internal interface is not reachable through node:crypto"
+        },
+        {
+          "tgId": 10,
+          "parameterSet": "ML-DSA-65",
+          "reason": "tgId 10 ML-DSA-65: the internal interface is not reachable through node:crypto"
+        },
+        {
+          "tgId": 11,
+          "parameterSet": "ML-DSA-87",
+          "reason": "tgId 11 ML-DSA-87: the internal interface is not reachable through node:crypto"
+        },
+        {
+          "tgId": 12,
+          "parameterSet": "ML-DSA-87",
+          "reason": "tgId 12 ML-DSA-87: the internal interface is not reachable through node:crypto"
+        }
+      ],
+      "mismatches": []
+    },
+    {
+      "set": "SLH-DSA-keyGen-FIPS205",
+      "matched": 0,
+      "mismatched": 0,
+      "refused": 120,
+      "refusals": [
+        {
+          "tgId": 1,
+          "parameterSet": "SLH-DSA-SHA2-128s",
+          "reason": "tgId 1 SLH-DSA-SHA2-128s: SLH-DSA-SHA2-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 2,
+          "parameterSet": "SLH-DSA-SHAKE-128s",
+          "reason": "tgId 2 SLH-DSA-SHAKE-128s: SLH-DSA-SHAKE-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 3,
+          "parameterSet": "SLH-DSA-SHA2-128f",
+          "reason": "tgId 3 SLH-DSA-SHA2-128f: keyGen from SK.seed, SK.prf and PK.seed is not reachable: OpenSSL imports a complete key only"
+        },
+        {
+          "tgId": 4,
+          "parameterSet": "SLH-DSA-SHAKE-128f",
+          "reason": "tgId 4 SLH-DSA-SHAKE-128f: SLH-DSA-SHAKE-128f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 5,
+          "parameterSet": "SLH-DSA-SHA2-192s",
+          "reason": "tgId 5 SLH-DSA-SHA2-192s: keyGen from SK.seed, SK.prf and PK.seed is not reachable: OpenSSL imports a complete key only"
+        },
+        {
+          "tgId": 6,
+          "parameterSet": "SLH-DSA-SHAKE-192s",
+          "reason": "tgId 6 SLH-DSA-SHAKE-192s: SLH-DSA-SHAKE-192s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 7,
+          "parameterSet": "SLH-DSA-SHA2-192f",
+          "reason": "tgId 7 SLH-DSA-SHA2-192f: SLH-DSA-SHA2-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 8,
+          "parameterSet": "SLH-DSA-SHAKE-192f",
+          "reason": "tgId 8 SLH-DSA-SHAKE-192f: SLH-DSA-SHAKE-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 9,
+          "parameterSet": "SLH-DSA-SHA2-256s",
+          "reason": "tgId 9 SLH-DSA-SHA2-256s: SLH-DSA-SHA2-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 10,
+          "parameterSet": "SLH-DSA-SHAKE-256s",
+          "reason": "tgId 10 SLH-DSA-SHAKE-256s: SLH-DSA-SHAKE-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 11,
+          "parameterSet": "SLH-DSA-SHA2-256f",
+          "reason": "tgId 11 SLH-DSA-SHA2-256f: SLH-DSA-SHA2-256f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 12,
+          "parameterSet": "SLH-DSA-SHAKE-256f",
+          "reason": "tgId 12 SLH-DSA-SHAKE-256f: keyGen from SK.seed, SK.prf and PK.seed is not reachable: OpenSSL imports a complete key only"
+        }
+      ],
+      "mismatches": []
+    },
+    {
+      "set": "SLH-DSA-sigGen-FIPS205",
+      "matched": 0,
+      "mismatched": 0,
+      "refused": 624,
+      "refusals": [
+        {
+          "tgId": 1,
+          "parameterSet": "SLH-DSA-SHA2-128f",
+          "reason": "tgId 1 SLH-DSA-SHA2-128f: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 2,
+          "parameterSet": "SLH-DSA-SHA2-128f",
+          "reason": "tgId 2 SLH-DSA-SHA2-128f: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 3,
+          "parameterSet": "SLH-DSA-SHA2-192f",
+          "reason": "tgId 3 SLH-DSA-SHA2-192f: SLH-DSA-SHA2-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 4,
+          "parameterSet": "SLH-DSA-SHA2-192f",
+          "reason": "tgId 4 SLH-DSA-SHA2-192f: SLH-DSA-SHA2-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 5,
+          "parameterSet": "SLH-DSA-SHA2-256f",
+          "reason": "tgId 5 SLH-DSA-SHA2-256f: SLH-DSA-SHA2-256f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 6,
+          "parameterSet": "SLH-DSA-SHA2-256f",
+          "reason": "tgId 6 SLH-DSA-SHA2-256f: SLH-DSA-SHA2-256f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 7,
+          "parameterSet": "SLH-DSA-SHAKE-128f",
+          "reason": "tgId 7 SLH-DSA-SHAKE-128f: SLH-DSA-SHAKE-128f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 8,
+          "parameterSet": "SLH-DSA-SHAKE-128f",
+          "reason": "tgId 8 SLH-DSA-SHAKE-128f: SLH-DSA-SHAKE-128f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 9,
+          "parameterSet": "SLH-DSA-SHAKE-192f",
+          "reason": "tgId 9 SLH-DSA-SHAKE-192f: SLH-DSA-SHAKE-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 10,
+          "parameterSet": "SLH-DSA-SHAKE-192f",
+          "reason": "tgId 10 SLH-DSA-SHAKE-192f: SLH-DSA-SHAKE-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 11,
+          "parameterSet": "SLH-DSA-SHAKE-256f",
+          "reason": "tgId 11 SLH-DSA-SHAKE-256f: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 12,
+          "parameterSet": "SLH-DSA-SHAKE-256f",
+          "reason": "tgId 12 SLH-DSA-SHAKE-256f: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 13,
+          "parameterSet": "SLH-DSA-SHA2-128f",
+          "reason": "tgId 13 SLH-DSA-SHA2-128f: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 14,
+          "parameterSet": "SLH-DSA-SHA2-192f",
+          "reason": "tgId 14 SLH-DSA-SHA2-192f: SLH-DSA-SHA2-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 15,
+          "parameterSet": "SLH-DSA-SHA2-256f",
+          "reason": "tgId 15 SLH-DSA-SHA2-256f: SLH-DSA-SHA2-256f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 16,
+          "parameterSet": "SLH-DSA-SHAKE-128f",
+          "reason": "tgId 16 SLH-DSA-SHAKE-128f: SLH-DSA-SHAKE-128f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 17,
+          "parameterSet": "SLH-DSA-SHAKE-192f",
+          "reason": "tgId 17 SLH-DSA-SHAKE-192f: SLH-DSA-SHAKE-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 18,
+          "parameterSet": "SLH-DSA-SHAKE-256f",
+          "reason": "tgId 18 SLH-DSA-SHAKE-256f: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 19,
+          "parameterSet": "SLH-DSA-SHA2-128s",
+          "reason": "tgId 19 SLH-DSA-SHA2-128s: SLH-DSA-SHA2-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 20,
+          "parameterSet": "SLH-DSA-SHA2-128s",
+          "reason": "tgId 20 SLH-DSA-SHA2-128s: SLH-DSA-SHA2-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 21,
+          "parameterSet": "SLH-DSA-SHA2-192s",
+          "reason": "tgId 21 SLH-DSA-SHA2-192s: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 22,
+          "parameterSet": "SLH-DSA-SHA2-192s",
+          "reason": "tgId 22 SLH-DSA-SHA2-192s: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 23,
+          "parameterSet": "SLH-DSA-SHA2-256s",
+          "reason": "tgId 23 SLH-DSA-SHA2-256s: SLH-DSA-SHA2-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 24,
+          "parameterSet": "SLH-DSA-SHA2-256s",
+          "reason": "tgId 24 SLH-DSA-SHA2-256s: SLH-DSA-SHA2-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 25,
+          "parameterSet": "SLH-DSA-SHAKE-128s",
+          "reason": "tgId 25 SLH-DSA-SHAKE-128s: SLH-DSA-SHAKE-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 26,
+          "parameterSet": "SLH-DSA-SHAKE-128s",
+          "reason": "tgId 26 SLH-DSA-SHAKE-128s: SLH-DSA-SHAKE-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 27,
+          "parameterSet": "SLH-DSA-SHAKE-192s",
+          "reason": "tgId 27 SLH-DSA-SHAKE-192s: SLH-DSA-SHAKE-192s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 28,
+          "parameterSet": "SLH-DSA-SHAKE-192s",
+          "reason": "tgId 28 SLH-DSA-SHAKE-192s: SLH-DSA-SHAKE-192s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 29,
+          "parameterSet": "SLH-DSA-SHAKE-256s",
+          "reason": "tgId 29 SLH-DSA-SHAKE-256s: SLH-DSA-SHAKE-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 30,
+          "parameterSet": "SLH-DSA-SHAKE-256s",
+          "reason": "tgId 30 SLH-DSA-SHAKE-256s: SLH-DSA-SHAKE-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 31,
+          "parameterSet": "SLH-DSA-SHA2-128s",
+          "reason": "tgId 31 SLH-DSA-SHA2-128s: SLH-DSA-SHA2-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 32,
+          "parameterSet": "SLH-DSA-SHA2-192s",
+          "reason": "tgId 32 SLH-DSA-SHA2-192s: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 33,
+          "parameterSet": "SLH-DSA-SHA2-256s",
+          "reason": "tgId 33 SLH-DSA-SHA2-256s: SLH-DSA-SHA2-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 34,
+          "parameterSet": "SLH-DSA-SHAKE-128s",
+          "reason": "tgId 34 SLH-DSA-SHAKE-128s: SLH-DSA-SHAKE-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 35,
+          "parameterSet": "SLH-DSA-SHAKE-192s",
+          "reason": "tgId 35 SLH-DSA-SHAKE-192s: SLH-DSA-SHAKE-192s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 36,
+          "parameterSet": "SLH-DSA-SHAKE-256s",
+          "reason": "tgId 36 SLH-DSA-SHAKE-256s: SLH-DSA-SHAKE-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 37,
+          "parameterSet": "SLH-DSA-SHA2-128f",
+          "reason": "tgId 37 SLH-DSA-SHA2-128f: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 38,
+          "parameterSet": "SLH-DSA-SHA2-128f",
+          "reason": "tgId 38 SLH-DSA-SHA2-128f: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 39,
+          "parameterSet": "SLH-DSA-SHA2-192f",
+          "reason": "tgId 39 SLH-DSA-SHA2-192f: SLH-DSA-SHA2-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 40,
+          "parameterSet": "SLH-DSA-SHA2-192f",
+          "reason": "tgId 40 SLH-DSA-SHA2-192f: SLH-DSA-SHA2-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 41,
+          "parameterSet": "SLH-DSA-SHA2-256f",
+          "reason": "tgId 41 SLH-DSA-SHA2-256f: SLH-DSA-SHA2-256f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 42,
+          "parameterSet": "SLH-DSA-SHA2-256f",
+          "reason": "tgId 42 SLH-DSA-SHA2-256f: SLH-DSA-SHA2-256f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 43,
+          "parameterSet": "SLH-DSA-SHAKE-128f",
+          "reason": "tgId 43 SLH-DSA-SHAKE-128f: SLH-DSA-SHAKE-128f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 44,
+          "parameterSet": "SLH-DSA-SHAKE-128f",
+          "reason": "tgId 44 SLH-DSA-SHAKE-128f: SLH-DSA-SHAKE-128f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 45,
+          "parameterSet": "SLH-DSA-SHAKE-192f",
+          "reason": "tgId 45 SLH-DSA-SHAKE-192f: SLH-DSA-SHAKE-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 46,
+          "parameterSet": "SLH-DSA-SHAKE-192f",
+          "reason": "tgId 46 SLH-DSA-SHAKE-192f: SLH-DSA-SHAKE-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 47,
+          "parameterSet": "SLH-DSA-SHAKE-256f",
+          "reason": "tgId 47 SLH-DSA-SHAKE-256f: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 48,
+          "parameterSet": "SLH-DSA-SHAKE-256f",
+          "reason": "tgId 48 SLH-DSA-SHAKE-256f: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 49,
+          "parameterSet": "SLH-DSA-SHA2-128f",
+          "reason": "tgId 49 SLH-DSA-SHA2-128f: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 50,
+          "parameterSet": "SLH-DSA-SHA2-192f",
+          "reason": "tgId 50 SLH-DSA-SHA2-192f: SLH-DSA-SHA2-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 51,
+          "parameterSet": "SLH-DSA-SHA2-256f",
+          "reason": "tgId 51 SLH-DSA-SHA2-256f: SLH-DSA-SHA2-256f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 52,
+          "parameterSet": "SLH-DSA-SHAKE-128f",
+          "reason": "tgId 52 SLH-DSA-SHAKE-128f: SLH-DSA-SHAKE-128f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 53,
+          "parameterSet": "SLH-DSA-SHAKE-192f",
+          "reason": "tgId 53 SLH-DSA-SHAKE-192f: SLH-DSA-SHAKE-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 54,
+          "parameterSet": "SLH-DSA-SHAKE-256f",
+          "reason": "tgId 54 SLH-DSA-SHAKE-256f: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 55,
+          "parameterSet": "SLH-DSA-SHA2-128s",
+          "reason": "tgId 55 SLH-DSA-SHA2-128s: SLH-DSA-SHA2-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 56,
+          "parameterSet": "SLH-DSA-SHA2-128s",
+          "reason": "tgId 56 SLH-DSA-SHA2-128s: SLH-DSA-SHA2-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 57,
+          "parameterSet": "SLH-DSA-SHA2-192s",
+          "reason": "tgId 57 SLH-DSA-SHA2-192s: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 58,
+          "parameterSet": "SLH-DSA-SHA2-192s",
+          "reason": "tgId 58 SLH-DSA-SHA2-192s: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 59,
+          "parameterSet": "SLH-DSA-SHA2-256s",
+          "reason": "tgId 59 SLH-DSA-SHA2-256s: SLH-DSA-SHA2-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 60,
+          "parameterSet": "SLH-DSA-SHA2-256s",
+          "reason": "tgId 60 SLH-DSA-SHA2-256s: SLH-DSA-SHA2-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 61,
+          "parameterSet": "SLH-DSA-SHAKE-128s",
+          "reason": "tgId 61 SLH-DSA-SHAKE-128s: SLH-DSA-SHAKE-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 62,
+          "parameterSet": "SLH-DSA-SHAKE-128s",
+          "reason": "tgId 62 SLH-DSA-SHAKE-128s: SLH-DSA-SHAKE-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 63,
+          "parameterSet": "SLH-DSA-SHAKE-192s",
+          "reason": "tgId 63 SLH-DSA-SHAKE-192s: SLH-DSA-SHAKE-192s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 64,
+          "parameterSet": "SLH-DSA-SHAKE-192s",
+          "reason": "tgId 64 SLH-DSA-SHAKE-192s: SLH-DSA-SHAKE-192s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 65,
+          "parameterSet": "SLH-DSA-SHAKE-256s",
+          "reason": "tgId 65 SLH-DSA-SHAKE-256s: SLH-DSA-SHAKE-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 66,
+          "parameterSet": "SLH-DSA-SHAKE-256s",
+          "reason": "tgId 66 SLH-DSA-SHAKE-256s: SLH-DSA-SHAKE-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 67,
+          "parameterSet": "SLH-DSA-SHA2-128s",
+          "reason": "tgId 67 SLH-DSA-SHA2-128s: SLH-DSA-SHA2-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 68,
+          "parameterSet": "SLH-DSA-SHA2-192s",
+          "reason": "tgId 68 SLH-DSA-SHA2-192s: signing randomness is not controllable: crypto.sign reads no additionalRandomness option"
+        },
+        {
+          "tgId": 69,
+          "parameterSet": "SLH-DSA-SHA2-256s",
+          "reason": "tgId 69 SLH-DSA-SHA2-256s: SLH-DSA-SHA2-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 70,
+          "parameterSet": "SLH-DSA-SHAKE-128s",
+          "reason": "tgId 70 SLH-DSA-SHAKE-128s: SLH-DSA-SHAKE-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 71,
+          "parameterSet": "SLH-DSA-SHAKE-192s",
+          "reason": "tgId 71 SLH-DSA-SHAKE-192s: SLH-DSA-SHAKE-192s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 72,
+          "parameterSet": "SLH-DSA-SHAKE-256s",
+          "reason": "tgId 72 SLH-DSA-SHAKE-256s: SLH-DSA-SHAKE-256s has no native path in this OpenSSL build"
+        }
+      ],
+      "mismatches": []
+    },
+    {
+      "set": "SLH-DSA-sigVer-FIPS205",
+      "matched": 42,
+      "mismatched": 0,
+      "refused": 462,
+      "refusals": [
+        {
+          "tgId": 2,
+          "parameterSet": "SLH-DSA-SHA2-128f",
+          "reason": "tgId 2 SLH-DSA-SHA2-128f: pre-hash is refused by the provider: every digest returns invalid digest"
+        },
+        {
+          "tgId": 3,
+          "parameterSet": "SLH-DSA-SHA2-192f",
+          "reason": "tgId 3 SLH-DSA-SHA2-192f: SLH-DSA-SHA2-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 4,
+          "parameterSet": "SLH-DSA-SHA2-192f",
+          "reason": "tgId 4 SLH-DSA-SHA2-192f: SLH-DSA-SHA2-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 5,
+          "parameterSet": "SLH-DSA-SHA2-256f",
+          "reason": "tgId 5 SLH-DSA-SHA2-256f: SLH-DSA-SHA2-256f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 6,
+          "parameterSet": "SLH-DSA-SHA2-256f",
+          "reason": "tgId 6 SLH-DSA-SHA2-256f: SLH-DSA-SHA2-256f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 7,
+          "parameterSet": "SLH-DSA-SHAKE-128f",
+          "reason": "tgId 7 SLH-DSA-SHAKE-128f: SLH-DSA-SHAKE-128f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 8,
+          "parameterSet": "SLH-DSA-SHAKE-128f",
+          "reason": "tgId 8 SLH-DSA-SHAKE-128f: SLH-DSA-SHAKE-128f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 9,
+          "parameterSet": "SLH-DSA-SHAKE-192f",
+          "reason": "tgId 9 SLH-DSA-SHAKE-192f: SLH-DSA-SHAKE-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 10,
+          "parameterSet": "SLH-DSA-SHAKE-192f",
+          "reason": "tgId 10 SLH-DSA-SHAKE-192f: SLH-DSA-SHAKE-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 12,
+          "parameterSet": "SLH-DSA-SHAKE-256f",
+          "reason": "tgId 12 SLH-DSA-SHAKE-256f: pre-hash is refused by the provider: every digest returns invalid digest"
+        },
+        {
+          "tgId": 13,
+          "parameterSet": "SLH-DSA-SHA2-128f",
+          "reason": "tgId 13 SLH-DSA-SHA2-128f: the internal interface is not reachable through node:crypto"
+        },
+        {
+          "tgId": 14,
+          "parameterSet": "SLH-DSA-SHA2-192f",
+          "reason": "tgId 14 SLH-DSA-SHA2-192f: SLH-DSA-SHA2-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 15,
+          "parameterSet": "SLH-DSA-SHA2-256f",
+          "reason": "tgId 15 SLH-DSA-SHA2-256f: SLH-DSA-SHA2-256f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 16,
+          "parameterSet": "SLH-DSA-SHAKE-128f",
+          "reason": "tgId 16 SLH-DSA-SHAKE-128f: SLH-DSA-SHAKE-128f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 17,
+          "parameterSet": "SLH-DSA-SHAKE-192f",
+          "reason": "tgId 17 SLH-DSA-SHAKE-192f: SLH-DSA-SHAKE-192f has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 18,
+          "parameterSet": "SLH-DSA-SHAKE-256f",
+          "reason": "tgId 18 SLH-DSA-SHAKE-256f: the internal interface is not reachable through node:crypto"
+        },
+        {
+          "tgId": 19,
+          "parameterSet": "SLH-DSA-SHA2-128s",
+          "reason": "tgId 19 SLH-DSA-SHA2-128s: SLH-DSA-SHA2-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 20,
+          "parameterSet": "SLH-DSA-SHA2-128s",
+          "reason": "tgId 20 SLH-DSA-SHA2-128s: SLH-DSA-SHA2-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 22,
+          "parameterSet": "SLH-DSA-SHA2-192s",
+          "reason": "tgId 22 SLH-DSA-SHA2-192s: pre-hash is refused by the provider: every digest returns invalid digest"
+        },
+        {
+          "tgId": 23,
+          "parameterSet": "SLH-DSA-SHA2-256s",
+          "reason": "tgId 23 SLH-DSA-SHA2-256s: SLH-DSA-SHA2-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 24,
+          "parameterSet": "SLH-DSA-SHA2-256s",
+          "reason": "tgId 24 SLH-DSA-SHA2-256s: SLH-DSA-SHA2-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 25,
+          "parameterSet": "SLH-DSA-SHAKE-128s",
+          "reason": "tgId 25 SLH-DSA-SHAKE-128s: SLH-DSA-SHAKE-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 26,
+          "parameterSet": "SLH-DSA-SHAKE-128s",
+          "reason": "tgId 26 SLH-DSA-SHAKE-128s: SLH-DSA-SHAKE-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 27,
+          "parameterSet": "SLH-DSA-SHAKE-192s",
+          "reason": "tgId 27 SLH-DSA-SHAKE-192s: SLH-DSA-SHAKE-192s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 28,
+          "parameterSet": "SLH-DSA-SHAKE-192s",
+          "reason": "tgId 28 SLH-DSA-SHAKE-192s: SLH-DSA-SHAKE-192s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 29,
+          "parameterSet": "SLH-DSA-SHAKE-256s",
+          "reason": "tgId 29 SLH-DSA-SHAKE-256s: SLH-DSA-SHAKE-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 30,
+          "parameterSet": "SLH-DSA-SHAKE-256s",
+          "reason": "tgId 30 SLH-DSA-SHAKE-256s: SLH-DSA-SHAKE-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 31,
+          "parameterSet": "SLH-DSA-SHA2-128s",
+          "reason": "tgId 31 SLH-DSA-SHA2-128s: SLH-DSA-SHA2-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 32,
+          "parameterSet": "SLH-DSA-SHA2-192s",
+          "reason": "tgId 32 SLH-DSA-SHA2-192s: the internal interface is not reachable through node:crypto"
+        },
+        {
+          "tgId": 33,
+          "parameterSet": "SLH-DSA-SHA2-256s",
+          "reason": "tgId 33 SLH-DSA-SHA2-256s: SLH-DSA-SHA2-256s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 34,
+          "parameterSet": "SLH-DSA-SHAKE-128s",
+          "reason": "tgId 34 SLH-DSA-SHAKE-128s: SLH-DSA-SHAKE-128s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 35,
+          "parameterSet": "SLH-DSA-SHAKE-192s",
+          "reason": "tgId 35 SLH-DSA-SHAKE-192s: SLH-DSA-SHAKE-192s has no native path in this OpenSSL build"
+        },
+        {
+          "tgId": 36,
+          "parameterSet": "SLH-DSA-SHAKE-256s",
+          "reason": "tgId 36 SLH-DSA-SHAKE-256s: SLH-DSA-SHAKE-256s has no native path in this OpenSSL build"
+        }
+      ],
+      "mismatches": []
+    }
+  ],
+  "totals": {
+    "matched": 177,
+    "mismatched": 0,
+    "refused": 1926
+  }
+}
