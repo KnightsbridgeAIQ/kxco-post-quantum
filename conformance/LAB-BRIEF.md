@@ -149,7 +149,7 @@ matched and 0 mismatched against NIST's published expected results. What it
 could not answer at all is the larger number, and it splits into two causes that
 are not the same problem.
 
-**Cause 1, the Node binding, roughly 60 groups.** ACVP does not want an answer,
+**Cause 1, the Node binding, 69 groups.** ACVP does not want an answer,
 it wants a reproducible one: a keygen driven from the seed NIST supplies, a
 signature using the per-signature randomness NIST supplies. OpenSSL 3.5 takes
 those controls at its C API. Node's binding does not pass them on. Read out of
