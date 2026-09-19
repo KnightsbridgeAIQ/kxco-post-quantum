@@ -98,8 +98,9 @@ starting rather than after.
 
 ## 5. Which implementation we want certified, and what that costs
 
-**The decision is the native path.** Two implementations ship inside one
-package. It picks between them at import time by probing the runtime, not by
+**We want both certified.** That is a decision, not indecision, and the rest of
+this section is why it is the only honest answer. Two implementations ship
+inside one package. It picks between them at import time by probing the runtime, not by
 reading a version number. Where the runtime provides the FIPS 203/204/205
 primitives through OpenSSL, that is what executes. The JavaScript
 implementation is the documented fallback for everything else, browsers
@@ -111,9 +112,12 @@ Asked directly on the operational environment named in section 2:
 backend() -> { kind: 'openssl', library: 'node:crypto', openssl: '3.5.6' }
 ```
 
-A certificate against the JavaScript implementation would therefore certify a
-path that a supported deployment does not take. That is the wrong way round,
-and it is why we want the native path quoted.
+So a certificate against the JavaScript implementation alone would certify a
+path that a supported deployment does not take. That is the wrong way round.
+But the native path cannot be taken through ACVTS in full, for reasons measured
+below, and the JavaScript one already has 2,130 graded cases per section 2. One
+covers what runs, the other is the one that can actually complete. Hence both,
+and an operator control that pins whichever one a certificate names.
 
 **What we do not have for it.** No graded evidence, none. Everything in
 section 2 is the JavaScript implementation:
@@ -200,19 +204,26 @@ somewhere.
 
 **How a deployment proves it stayed on the certified path.** A silent fallback
 would mean the certificate describes an implementation the process did not
-use, with nothing saying so. `requireNativeBackend()` is an operator control
-that fails a process at import if it has landed on the JavaScript path, set
-from the environment rather than from application code, because the team under
-the control is usually not the team calling the library. It asserts that
-OpenSSL is doing the arithmetic. Whether that OpenSSL is itself a validated
-module is a property of the operator's build and the package does not claim to
-see it.
+use, with nothing saying so. Because both are being certified the control has
+to work both ways, and it now does. `KXCO_PQ_BACKEND` takes `openssl` or
+`javascript` and pins the process to one, and `requireBackend(kind)` asserts it
+and fails at import rather than at the first signature. It is set from the
+environment rather than from application code, because the team under the
+control is usually not the team calling the library, and a misspelled value
+throws rather than doing nothing. `backend()` reports which implementation ran
+and whether that was a pin or an absence, because those are different facts and
+an evidence bundle that conflated them would be wrong. What none of it can see
+is whether the OpenSSL underneath is a validated module. That is a property of
+the operator's build, and section 7 says more about why it matters.
 
 **What we are asking you to price**
 
-1. Algorithm validation of the native path, at the coverage above, pure mode.
-2. The same for the JavaScript implementation, which already has graded
-   evidence, if you would recommend certifying both rather than one.
+1. Algorithm validation of the JavaScript implementation. It has graded
+   evidence already and it is the one that can complete today, so price this
+   as the piece of work we expect to start with.
+2. Algorithm validation of the native path, at the coverage above, pure mode.
+   Price it separately, because whether it is possible at all depends on your
+   answer to item 3.
 3. Driving OpenSSL through its C API so the groups in cause 1 can be answered.
    Say plainly whether your harness does this today. If it does not, say so,
    because then the native path cannot be validated in full by anyone and that
@@ -255,3 +266,8 @@ as certified, or re-run against the current release, and what that costs.
 4. What you need from us that is not in section 6.
 
 Contact and commercial terms follow separately. This document is scope only.
+
+Shayne Heffernan
+Knightsbridge Financial Ltd, 15684975
+71-75 Shelton Street, Covent Garden, London WC2H 9JQ
+shayne@knightsbridgelaw.com
