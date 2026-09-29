@@ -98,12 +98,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      # Node 24 to match publish.yml: its bundled npm is the one that packs the
+      # release, so rebuilding with the same runtime compares like with like,
+      # with no `npm install -g npm@11` download in between.
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '22'
-
-      - name: Upgrade npm CLI to the 11.x line
-        run: npm install -g npm@11
+          node-version: '24'
 
       - name: Rebuild the published version from its tag and compare
         run: |
@@ -201,8 +201,8 @@ jobs:
 
       - name: Install pinned Python interop peers
         run: |
-          python -m pip install --disable-pip-version-check \
-            $(node -e "console.log(require('./conformance/interop/peers-lock.json').python.requirements.join(' '))")
+          python -m pip install --disable-pip-version-check --require-hashes \
+            -r conformance/interop/requirements-interop.txt
 
       # liboqs is C and is built from source into a container rather than
       # installed, so the tag in peers-lock.json is what actually gets tested.

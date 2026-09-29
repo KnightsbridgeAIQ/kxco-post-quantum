@@ -84,8 +84,8 @@ jobs:
 
       - name: Install pinned Python interop peers
         run: |
-          python -m pip install --disable-pip-version-check \
-            $(node -e "console.log(require('./conformance/interop/peers-lock.json').python.requirements.join(' '))")
+          python -m pip install --disable-pip-version-check --require-hashes \
+            -r conformance/interop/requirements-interop.txt
 
       # liboqs is C and is built from source into a container rather than
       # installed, so the tag in peers-lock.json is what actually gets tested.

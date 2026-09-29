@@ -2,7 +2,7 @@
 #
 # liboqs is C and needs a toolchain this repo does not assume any contributor
 # has, so the peer runs in a container instead. The image pins liboqs by tag and
-# liboqs-python by tag; both are recorded in peers-lock.json.
+# liboqs-python by tag and commit; the tags are recorded in peers-lock.json.
 #
 # libssl-dev is not optional: liboqs 0.16.0 configures against OpenSSL for its
 # symmetric primitives and cmake fails at find_package(OpenSSL) without it.
@@ -35,10 +35,21 @@ RUN git clone --depth 1 --branch ${LIBOQS_TAG} \
  && ldconfig \
  && rm -rf /tmp/liboqs
 
+# liboqs-python is pinned three ways, so no step fetches anything unpinned: the
+# tag must resolve to this commit, the build tools (hatchling and its
+# dependencies) install by sha256 from liboqs-build-requirements.txt, and the
+# wheel is built with --no-build-isolation so pip uses those rather than
+# downloading hatchling itself. Bump the commit together with LIBOQS_PYTHON_TAG.
+ARG LIBOQS_PYTHON_COMMIT=c6378cd5c8db74c0adf34ddcfbb96ee9c99f8061
+COPY liboqs-build-requirements.txt /tmp/liboqs-build-requirements.txt
+
 RUN git clone --depth 1 --branch ${LIBOQS_PYTHON_TAG} \
       https://github.com/open-quantum-safe/liboqs-python /tmp/liboqs-python \
- && pip install --no-cache-dir /tmp/liboqs-python \
- && rm -rf /tmp/liboqs-python
+ && test "$(git -C /tmp/liboqs-python rev-parse HEAD)" = "${LIBOQS_PYTHON_COMMIT}" \
+ && pip install --no-cache-dir --require-hashes -r /tmp/liboqs-build-requirements.txt \
+ && pip wheel --no-cache-dir --no-deps --no-build-isolation --wheel-dir /tmp/wheels /tmp/liboqs-python \
+ && pip install --no-cache-dir --no-deps /tmp/wheels/*.whl \
+ && rm -rf /tmp/liboqs-python /tmp/wheels /tmp/liboqs-build-requirements.txt
 
 COPY liboqs-peer.py /peer/liboqs-peer.py
 ENTRYPOINT ["python", "-u", "/peer/liboqs-peer.py"]
