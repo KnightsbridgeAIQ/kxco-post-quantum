@@ -90,7 +90,7 @@ The cryptography is NIST-standardised and the conformance is published, pinned a
 | Backend | OpenSSL 3.5 where the runtime provides it, `@noble/post-quantum` elsewhere. Identical on the wire, checked in both directions |
 | Conformance | 2,103 NIST ACVP vectors across FIPS 203, 204 and 205. Vectors pinned by digest |
 | Interoperability | 225 checks against OpenSSL 3.5, liboqs, Bouncy Castle and dilithium-py/kyber-py |
-| Supply chain | SLSA provenance attestation on every release; CycloneDX SBOM; reproducible build |
+| Supply chain | SLSA provenance attestation on every release since 1.4.0; CycloneDX SBOM; reproducible build |
 | Evidence bundle | `npm run evidence` regenerates all of it from source, on your machine |
 | On-chain verification | Armature L1 verifies ML-DSA-65 **in consensus** — `MLDSA65VerifyPrecompiledContract` at `0x0b`, executed by every validator, ~50,000 gas |
 | Accountability | Four **named** validators under QBFT proof-of-authority. Every block has an identified proposer and every write an accountable operator |
@@ -103,5 +103,5 @@ Dependency audit history — which upstream libraries were reviewed, by whom, an
 
 ## Support
 
-Commercial terms, seat pricing and SLA: **hello@kxco.ai**
+Commercial terms, seat pricing and SLA: **admin@kxco.ai**
 Security and vulnerability reports: **john@knightsbridgelaw.com**, or a private advisory on the relevant repository. Full policy, including safe harbour for good-faith research: <https://kxco.ai/security>

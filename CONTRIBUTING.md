@@ -64,4 +64,4 @@ attached automatically.
 
 ## Questions
 
-Open a discussion or email `hello@kxco.ai`.
+Open a discussion or email `admin@kxco.ai`.
