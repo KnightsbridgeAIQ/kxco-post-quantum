@@ -27,7 +27,7 @@ test('it agrees with backend() about which implementation is live', () => {
       (e) => {
         assert.equal(e.code, 'ERR_KXCO_PQ_BACKEND')
         assert.equal(e.actual, 'javascript')
-        assert.match(e.message, /native backend is required/)
+        assert.match(e.message, /openssl backend is required/)
         return true
       },
       'it must refuse when the JavaScript backend is live',
