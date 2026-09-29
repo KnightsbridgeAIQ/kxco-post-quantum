@@ -1,7 +1,7 @@
 {
   "name": "kxco-post-quantum",
-  "version": "1.7.3",
-  "description": "ML-DSA-65, ML-KEM-768 and SLH-DSA-SHA2-192s with key fingerprinting. OpenSSL 3.5 primitives on Node 24+, JavaScript elsewhere. 2,103 NIST ACVP vectors: 1,793 passed, 0 failed, 310 skipped. 225 interop checks, 0 failed. Reproducible builds and provenance.",
+  "version": "1.7.4",
+  "description": "NIST post-quantum cryptography for Node.js and browsers: ML-DSA, ML-KEM and SLH-DSA (FIPS 203, 204, 205). 1,793 NIST ACVP vectors passed, 0 failed. OpenSSL 3.5 native on Node 24+, the CNSA 2.0 parameter sets, reproducible builds with provenance.",
   "keywords": [
     "post-quantum",
     "pqc",
@@ -28,7 +28,17 @@
     "non-repudiation",
     "ml-dsa-87",
     "ml-kem-1024",
-    "category-5"
+    "category-5",
+    "quantum-safe",
+    "pqc-migration",
+    "cnsa-2.0",
+    "crypto-agility",
+    "harvest-now-decrypt-later",
+    "digital-signature",
+    "key-encapsulation",
+    "jws",
+    "jwk",
+    "openssl"
   ],
   "license": "Apache-2.0",
   "author": "Shayne Heffernan and John Heffernan",

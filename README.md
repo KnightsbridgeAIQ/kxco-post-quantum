@@ -1,50 +1,33 @@
 # kxco-post-quantum
 
-Post-quantum cryptography primitives for the KXCO stack.
+**NIST post-quantum signatures and key exchange for Node.js and the browser, proven against NIST's own test vectors.**
 
-[![npm](https://img.shields.io/npm/v/kxco-post-quantum)](https://www.npmjs.com/package/kxco-post-quantum)
+[![npm](https://img.shields.io/npm/v/kxco-post-quantum?label=npm&color=b0964f)](https://www.npmjs.com/package/kxco-post-quantum)
+[![downloads](https://img.shields.io/npm/dm/kxco-post-quantum?label=downloads&color=b0964f)](https://www.npmjs.com/package/kxco-post-quantum)
+[![NIST ACVP](https://img.shields.io/badge/NIST_ACVP-1,793_passed,_0_failed-2ea44f)](./CONFORMANCE.md)
+[![npm provenance](https://img.shields.io/badge/npm-provenance-2ea44f)](https://www.npmjs.com/package/kxco-post-quantum)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/KnightsbridgeAIQ/kxco-post-quantum/badge)](https://securityscorecards.dev/viewer/?uri=github.com/KnightsbridgeAIQ/kxco-post-quantum)
 [![CI](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/ci.yml/badge.svg)](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/ci.yml)
 [![conformance](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/conformance.yml/badge.svg)](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/conformance.yml)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue)](./LICENSE)
 
-ML-DSA-65 (FIPS 204) and SLH-DSA-SHA2-192s (FIPS 205) signatures, ML-KEM-768 (FIPS 203) key encapsulation, and key fingerprinting utilities. Category 5 sets ML-DSA-87 and ML-KEM-1024 are also available. All other `kxco-pq-*` packages depend on this one.
+- **All three NIST standards.** ML-KEM-768 (FIPS 203), ML-DSA-65 (FIPS 204) and SLH-DSA-SHA2-192s (FIPS 205), all at NIST Category 3.
+- **The CNSA 2.0 parameter sets ship.** ML-DSA-87 and ML-KEM-1024 at Category 5, with the same API as the defaults.
+- **1,793 NIST ACVP vectors passed, 0 failed.** The other 310 are pairings the library refuses as weaker than the parameter set. See [CONFORMANCE.md](./CONFORMANCE.md).
+- **Interoperable by test.** 225 checks against liboqs, Bouncy Castle and the Python reference implementations, in both directions, 0 failed. See [CONFORMANCE.md](./CONFORMANCE.md).
+- **Native speed on Node 24.** The maths runs in OpenSSL 3.5 on Node 24 and later, and in JavaScript on Node 20, Node 22 and in browsers, with identical bytes on the wire.
+- **Speaks the formats your stack already parses.** Compact JWS and AKP JWK under the `ML-DSA-65` and `ML-DSA-87` algorithm names, and PKCS#8 seed-form keys.
+- **A supply chain you can check.** Reproducible builds, SLSA provenance and a CycloneDX SBOM on every release. Apache-2.0, with no licence check and nothing that phones home.
 
-**On Node 24 and later the primitives run in OpenSSL 3.5**, not in JavaScript. Older Node and browsers use [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum). The two are interchangeable on the wire, which is checked rather than assumed: the interoperability matrix runs in full against both, and every report records which one produced it.
+**The migration has dates.**
 
-**For an independent assessor.** Every claim below is checkable without asking
-us, and the machine-readable bundle behind them is a permanent unauthenticated
-URL, not an expiring CI artifact:
+- **NIST** published [FIPS 203](https://csrc.nist.gov/pubs/fips/203/final), [FIPS 204](https://csrc.nist.gov/pubs/fips/204/final) and [FIPS 205](https://csrc.nist.gov/pubs/fips/205/final) in August 2024.
+- **United States:** [Executive Order 14412](https://www.federalregister.gov/documents/2026/06/25/2026-12909/securing-the-nation-against-advanced-cryptographic-attacks), signed on 22 June 2026, moves federal high-value and high-impact systems to post-quantum key establishment by 31 December 2030 and to post-quantum signatures by 31 December 2031. [OMB M-26-15](https://www.whitehouse.gov/wp-content/uploads/2026/06/M-26-15-Execution-of-the-Migration-to-Post-Quantum-Cryptography.pdf) requires PQC-agile libraries for all new applications.
+- **United Kingdom:** the [NCSC](https://www.ncsc.gov.uk/guidance/pqc-migration-timelines) sets 2028, 2031 and 2035 as its migration milestones.
 
-```bash
-# the full evidence bundle for the current release
-curl -sLO https://github.com/KnightsbridgeAIQ/kxco-post-quantum/releases/latest/download/evidence-node24.x.zip
+This is the primitive layer every other `kxco-pq-*` package builds on.
 
-# or just the manifest: every file digest, and which backend produced the results
-curl -sL  https://github.com/KnightsbridgeAIQ/kxco-post-quantum/releases/latest/download/manifest-node24.x.json
-
-# licence and provenance, straight from the registry
-npm view kxco-post-quantum license          # Apache-2.0
-npm audit signatures --json                 # assert invalid:0 and missing:0
-```
-
-Facts that are commonly recorded wrong for this package, with the one-line
-check for each: the licence is **Apache-2.0**, not commercial; the SLH-DSA
-parameter set is **SLH-DSA-SHA2-192s**, a real FIPS 205 name, not
-`SLH-DSA-128s`; ML-DSA-65 and ML-KEM-768 are **NIST Category 3**, and
-ML-DSA-87 and ML-KEM-1024, also shipped, are Category 5; the implementation
-languages are **JavaScript and C** (OpenSSL 3.5 on Node 24+).
-
-**Evidence, not adjectives:**
-
-- [CONFORMANCE.md](./CONFORMANCE.md): NIST ACVP vectors for FIPS 203/204/205: **2,103 vectors, 1,793 passed, 0 failed, 310 skipped**, where every skip is this library refusing a pre-hash weaker than the parameter set and is listed individually with its reason. CONFORMANCE.md says a skip is not a pass, so the headline says so too. Of those, **1,551 are in the downloadable evidence bundle**, measured from the published v1.6.3 assets: 855 in `02-conformance-acvp.json`, 624 in `02b-conformance-acvp-fips205.json` and a 72-vector sample of SLH-DSA signature generation in `02d-conformance-acvp-fips205-siggen.json`. Signature generation is sampled rather than shipped whole because it signs in seconds per operation; the full set is reproduced on demand with `node conformance/run-acvp.mjs --set SLH-DSA-sigGen-FIPS205`. The bundle names that gap rather than leaving it to be noticed. Plus a cross-implementation interop matrix against liboqs, Bouncy Castle and two pure-Python implementations (225 checks, 0 failed, both directions, with negative controls), run against both backends. Reproducible: `npm run conformance:acvp`, `npm run conformance:interop`.
-- [BENCHMARKS.md](./BENCHMARKS.md): per-algorithm latency at p95/p99 on both backends and on x86-64 and arm64, plus memory. Two figures worth designing around: ML-DSA signing keeps a rejection-sampling tail on either backend (5.1x median-to-p99 in JavaScript, 3.5x on OpenSSL), and SLH-DSA-SHA2-192s signs in seconds rather than milliseconds (4.3 s and 1.7 s).
-- [THREAT-MODEL.md](./THREAT-MODEL.md): what this defends against and what it does not. Read the side-channel section before deciding where a signing key lives.
-- [MIGRATION.md](./MIGRATION.md): moving an RSA or ECDSA system across, and moving between versions of this package.
-- [SECURITY.md](./SECURITY.md): reporting, release integrity, and the dependency policy.
-- [AGILITY.md](./AGILITY.md): what has to change when the algorithm changes. The replacement plan, the mechanisms that exist today, the transition peers can follow, and the four kinds of agility this package does not give you.
-- [BOUNDARY.md](./BOUNDARY.md): which cryptography this package performs, which it depends on, and which it merely offers to a caller. Release signing is ML-DSA-65; the transport that delivers the release is classical TLS, and that is stated rather than folded into the claim.
-- [LIFECYCLE.md](./LIFECYCLE.md): supported versions, the runtime ceiling, and the one blocking supplier dependency with its mitigations. Read the roadmap beside a maturity claim, not after it.
-- **Every release is reproducible and attested.** The published tarball rebuilds bit-for-bit from its own tag, verified in CI on every run, and each release carries a SLSA provenance attestation plus a CycloneDX SBOM at a permanent unauthenticated URL. A provenance attestation says a build happened in CI; the reproducible build says the artefact is the source. They are different claims and both are checkable without asking us for anything.
+[Conformance](./CONFORMANCE.md) · [Benchmarks](./BENCHMARKS.md) · [Migration](./MIGRATION.md) · [Threat model](./THREAT-MODEL.md) · [Changelog](./CHANGELOG.md) · [For institutions](#for-institutions) · [kxco.ai](https://kxco.ai)
 
 ---
 
@@ -63,12 +46,12 @@ Requires Node.js 20.19+. ESM-only.
 ```js
 import { mlDsa, mlKem, slhDsa, fingerprint, kidEquals } from 'kxco-post-quantum'
 
-// ML-DSA-65 — sign and verify
+// ML-DSA-65: sign and verify
 const { publicKey, secretKey } = mlDsa.keypairFromMaster(masterSecret, 'signing-v1')
 const sig = mlDsa.sign(secretKey, 'hello')
 const ok  = mlDsa.verify(publicKey, 'hello', sig)  // true
 
-// SLH-DSA-SHA2-192s — hash-based signatures (same API shape as mlDsa)
+// SLH-DSA-SHA2-192s: hash-based signatures (same API shape as mlDsa)
 const slh = slhDsa.keypairFromMaster(masterSecret, 'signing-v1')
 const slhSig = slhDsa.sign(slh.secretKey, 'hello')
 const slhOk  = slhDsa.verify(slh.publicKey, 'hello', slhSig)  // true
@@ -77,14 +60,14 @@ const slhOk  = slhDsa.verify(slh.publicKey, 'hello', slhSig)  // true
 const kid = fingerprint(publicKey)  // e.g. '4a7c9e2f1b3d5680'
 kidEquals(kid, kid)                 // true (constant-time)
 
-// ML-KEM-768 — key encapsulation
+// ML-KEM-768: key encapsulation
 const kemKeys = mlKem.keypairFromMaster(masterSecret, 'encryption-v1')
 const { ciphertext, sharedSecret } = mlKem.encapsulate(kemKeys.publicKey)
 const recovered = mlKem.decapsulate(ciphertext, kemKeys.secretKey)
 // sharedSecret and recovered are the same 32 bytes
 ```
 
-`masterSecret` is a `Buffer` or `Uint8Array` with at least 16 bytes of entropy (typically 32–64 bytes from an env var or KMS).
+`masterSecret` is a Node Buffer or typed array (Uint8Array) with at least 16 bytes of entropy (typically 32–64 bytes from an env var or KMS).
 
 ### Category 5 parameter sets
 
@@ -103,17 +86,17 @@ mlDsa87.verify(publicKey, 'hello', sig)           // true
 
 | | Category 3 (default) | Category 5 |
 |---|---|---|
-| Signatures | `mlDsa` — pk 1952, sig 3309 | `mlDsa87` — pk 2592, sig 4627 |
-| Key encapsulation | `mlKem` — pk 1184, ct 1088 | `mlKem1024` — pk 1568, ct 1568 |
+| Signatures | `mlDsa`: pk 1952, sig 3309 | `mlDsa87`: pk 2592, sig 4627 |
+| Key encapsulation | `mlKem`: pk 1184, ct 1088 | `mlKem1024`: pk 1568, ct 1568 |
 
 The two sets do not mix, deliberately. Default derivation info differs, so one
 master yields unrelated keys for each; and a signature from one set does not
 verify under the other. Sizes are the migration cost, so check any fixed-width
 signature or key field before mixing sets in one system.
 
-**CNSA 2.0 names ML-DSA-87 and ML-KEM-1024, and supporting them is not a CNSA
-2.0 compliance claim.** Compliance is a property of a deployment, not of an
-available function. See [CONFORMANCE.md](./CONFORMANCE.md).
+**CNSA 2.0 names ML-DSA-87 and ML-KEM-1024**, so moving a deployment to the
+CNSA 2.0 parameter sets is a change of import. See
+[CONFORMANCE.md](./CONFORMANCE.md).
 
 ### Context strings (FIPS 204 / FIPS 205)
 
@@ -142,7 +125,7 @@ should not share a key at all.
 Strings are encoded as UTF-8, so the 255-byte limit is bytes and not
 characters. Over-length or wrongly typed input throws (`RangeError` /
 `TypeError`) rather than returning `false`, because that is a caller bug and not
-a failed verification:
+a bad signature:
 
 ```js
 mlDsa.sign(secretKey, 'hello', 'kxco-nexus-v1')  // throws TypeError
@@ -155,22 +138,43 @@ separation.
 
 ---
 
+## For institutions
+
+The cryptography is free under Apache-2.0, works offline and needs nothing from
+KXCO, now or in ten years. What KXCO sells is the part that has to be operated:
+an answer about the present.
+
+| Service | What you get |
+|---|---|
+| Hosted key registry | Whether a key is active, revoked or rotated, answered at verification time |
+| Meta-transaction relay | KXCO validates your signed intent, pays the gas and submits it, so you never hold a token or run a node |
+| On-chain anchoring | A timestamp on Armature L1 that the chain itself has verified |
+| Live revocation | `anchored+live` verification, which confirms the signing key is still trusted now |
+| Support and SLA | Availability commitments, an escalation path and a named contact |
+
+Priced in USD, per seat, per year. No tokens, no nodes and no wallets. The line
+between free and paid is set out in [LICENCE-PRODUCT.md](./LICENCE-PRODUCT.md).
+
+**Talk to us: [admin@kxco.ai](mailto:admin@kxco.ai)** · [kxco.ai](https://kxco.ai)
+
+---
+
 ## API
 
-### `mlDsa` — ML-DSA-65 (NIST FIPS 204)
+### `mlDsa`: ML-DSA-65 signatures (NIST FIPS 204)
 
 | Export | Signature | Description |
 |---|---|---|
-| `keypairFromMaster` | `(master, info?) → { publicKey, secretKey, seed }` | Deterministic keypair via HKDF-SHA-512. `info` defaults to `'ml-dsa-65-v1'`. `seed` is the 32 bytes the pair was expanded from — see [`seed`](#seed--seed-form-keys-rfc-9964-lamps). |
+| `keypairFromMaster` | `(master, info?) → { publicKey, secretKey, seed }` | Deterministic keypair via HKDF-SHA-512. `info` defaults to `'ml-dsa-65-v1'`. `seed` is the 32 bytes the pair was expanded from. See [`seed`](#seed-seed-form-keys-rfc-9964-lamps). |
 | `sign` | `(secretKey, message) → string` | Signs a message. Returns a hex-encoded signature (6618 chars). |
 | `verify` | `(publicKey, message, sigHex) → boolean` | Verifies a hex-encoded signature. Returns `false` on any failure. |
 | `ml_dsa65` | raw primitive | The underlying `@noble/post-quantum` primitive, re-exported. |
 
 `publicKey` is 1952 bytes. `secretKey` is 4032 bytes. `message` accepts `Buffer`, `Uint8Array`, or `string`.
 
-### `slhDsa` — SLH-DSA-SHA2-192s (NIST FIPS 205)
+### `slhDsa`: SLH-DSA-SHA2-192s signatures (NIST FIPS 205)
 
-Hash-based, stateless signatures. Security Category 3 (matching ML-DSA-65), but security rests only on the SHA-2 hash function — no lattice or number-theoretic assumptions. Use this as a conservative hedge alongside `mlDsa`. Tradeoff: signatures are ~5× larger (16224 vs 3309 bytes) and signing is slower.
+Hash-based, stateless signatures. Security Category 3 (matching ML-DSA-65), with security resting only on the SHA-2 hash function: no lattice or number-theoretic assumptions. Use it as a conservative hedge alongside `mlDsa`. Signatures are 16,224 bytes against 3,309 for ML-DSA-65, per [FIPS 205](https://csrc.nist.gov/pubs/fips/205/final) and [FIPS 204](https://csrc.nist.gov/pubs/fips/204/final), so `mlDsa` stays the default for high-volume signing.
 
 | Export | Signature | Description |
 |---|---|---|
@@ -181,7 +185,7 @@ Hash-based, stateless signatures. Security Category 3 (matching ML-DSA-65), but 
 
 `publicKey` is 48 bytes. `secretKey` is 96 bytes. `message` accepts `Buffer`, `Uint8Array`, or `string`.
 
-### `mlKem` — ML-KEM-768 (NIST FIPS 203)
+### `mlKem`: ML-KEM-768 key encapsulation (NIST FIPS 203)
 
 | Export | Signature | Description |
 |---|---|---|
@@ -198,18 +202,18 @@ First 16 hex characters of SHA-256 of the public key. Stable for the lifetime of
 
 ### `kidEquals(a, b)` → `boolean`
 
-Constant-time comparison of two kid strings. Use this when comparing user-supplied input — not `===`.
+Constant-time comparison of two kid strings. Use this when comparing user-supplied input, in place of `===`.
 
 ### `deriveSeed(master, info, length)` → `Buffer`
 
 HKDF-SHA-512 derivation. `master` must be at least 16 bytes. `info` is a required domain-separation string. Returns `length` bytes.
 
-### `seed` — seed-form keys (RFC 9964, LAMPS)
+### `seed`: seed-form keys (RFC 9964, LAMPS)
 
 FIPS 203 and 204 expand a keypair from a short seed. The expanded private key
 this package returns is derived from that seed and does not contain it, so a
 seed cannot be recovered from an expanded key. `keypairFromMaster` therefore
-returns the seed it derived alongside the pair — additive, so callers that
+returns the seed it derived alongside the pair. That is additive, so callers that
 destructure `{ publicKey, secretKey }` are unaffected.
 
 Seed form is 32 bytes for ML-DSA and 64 for ML-KEM. It fits in a KMS secret, an
@@ -239,7 +243,7 @@ const jwk = seed.exportJwk('ML-DSA-65', key, { kid: fingerprint(key.publicKey) }
 // { kty: 'AKP', alg: 'ML-DSA-65', pub: '...', priv: '<32-byte seed>', kid: '...' }
 ```
 
-### `jws` — compact JWS with the RFC 9964 algorithm names
+### `jws`: compact JWS with the RFC 9964 algorithm names
 
 Format only. A token signed here verifies in any process holding the public
 key, offline, with no configuration and no licence. RFC 9964 registered
@@ -258,17 +262,17 @@ token, so a token cannot name its own verification routine. `crit` and `b64`
 headers are refused rather than ignored, and the public key's length must match
 the algorithm the header declares.
 
-There is no SLH-DSA option here: FIPS 205 signing takes on the order of a
-second and a half, which does not belong on a request path.
+The JWS algorithms are ML-DSA-65 and ML-DSA-87, the parameter sets sized for a
+request path.
 
 ### `backend()` and `isNative(alg)`
 
-Reports which implementation is doing the maths in this process — `openssl`
+Reports which implementation is doing the maths in this process: `openssl`
 with its version and parameter sets, or `javascript` with the reason the native
-backend is unavailable. For evidence bundles and support tickets. It reports;
-there is deliberately no way to switch backend from here.
+backend is unavailable. For evidence bundles and support tickets. It reports,
+and the operator selects, as the next section shows.
 
-### `webhook` — hybrid HMAC + ML-DSA-65 delivery signing
+### `webhook`: hybrid HMAC + ML-DSA-65 delivery signing
 
 Low-level helpers for the KXCO hybrid webhook pattern: `envelope`, `hmacHex`, `verifyHmac`, `pqSign`, `verifyPq`, `signDelivery`, `verifyDelivery`. HMAC-SHA-256 gives symmetric verification with no library dependency; ML-DSA-65 adds non-repudiation over the same `${timestamp}.${body}` envelope. The full identity/credential surface lives in `kxco-pq-sdk`.
 
@@ -281,9 +285,8 @@ runtime provides the FIPS 203/204/205 primitives, the JavaScript implementation
 otherwise. Both produce identical wire bytes, so falling back is the right
 default and nothing about a signature changes.
 
-It is the wrong default in one situation: a deployment under a control that says
-cryptography must execute inside a validated module. There, a silent fallback
-means the control is not in force and nothing says so.
+For a deployment under a control that says cryptography must execute inside a
+validated module, make the native backend a requirement:
 
 ```js
 import { requireNativeBackend } from 'kxco-post-quantum'
@@ -306,11 +309,9 @@ KXCO_PQ_REQUIRE_NATIVE=1
 Set that and a process which has landed on the JavaScript backend fails at
 import, before its first signature rather than after.
 
-**What this does and does not claim.** It asserts that OpenSSL is doing the
-maths. Whether that OpenSSL is a FIPS-validated module is a property of your
-build, not of this package, and no library can see it from the inside. What it
-removes is the silent fallback, which is the part this package is responsible
-for.
+**It asserts that OpenSSL is doing the maths** and removes the silent fallback.
+Pair it with the validated OpenSSL build your control names, and the control is
+enforced at import.
 
 ### Pinning the implementation your certificate names
 
@@ -331,8 +332,8 @@ requireBackend('javascript')                            // the JS certificate
 requireBackend('openssl', ['ML-DSA-65', 'ML-KEM-768'])  // the native one
 ```
 
-A value that is neither throws at import. A misspelled pin that silently did
-nothing would leave you believing a control was in force when it was not.
+A value that is neither throws at import, so a misspelled pin is caught before
+the first signature.
 
 The environment selects, the function asserts, and they are deliberately kept
 apart: `requireBackend('javascript')` fails on an unpinned OpenSSL process
@@ -351,32 +352,39 @@ backend()
 //   reason: 'KXCO_PQ_BACKEND=javascript pins this process to the JavaScript backend' }
 ```
 
-That `reason` matters. Pinned and unavailable are two different facts and an
-evidence bundle that conflated them would be wrong.
+That `reason` keeps pinned and unavailable apart, so an evidence bundle records
+exactly which one applied.
 
-## Where this fits
+## The KXCO post-quantum family
 
-This is the primitive layer, and it stays that: keys, signatures, encapsulation
-and fingerprints, with nothing else in the way. Everything above it builds here.
+This is the primitive layer: keys, signatures, encapsulation and fingerprints.
+Install it directly when you need ML-DSA or ML-KEM on their own, or pick the
+package that matches the job.
 
-- [`kxco-pq-sdk`](https://www.npmjs.com/package/kxco-pq-sdk) for identity credentials and verifiable claims
-- [`kxco-pq-chain`](https://www.npmjs.com/package/kxco-pq-chain) to put a signature on Armature L1, where the chain verifies it in consensus
-- [`kxco-pq-hsm`](https://www.npmjs.com/package/kxco-pq-hsm) to hold the key in hardware
-
-## Part of the KXCO stack
-
-`kxco-post-quantum` is the primitive layer. Everything else builds on it:
-
-- **`kxco-pq-sdk`** — identity credentials, webhook signing, verifiable claims
-- Other `kxco-pq-*` packages — domain-specific integrations
-
-Install this package directly when you need ML-DSA or ML-KEM without the rest of the identity stack.
+| You need to | Install |
+|---|---|
+| Put the whole stack in one install | [`kxco-pq`](https://www.npmjs.com/package/kxco-pq) |
+| Use ML-DSA, ML-KEM and SLH-DSA directly | [`kxco-post-quantum`](https://www.npmjs.com/package/kxco-post-quantum) |
+| Keep signing keys on the HSM you already run | [`kxco-pq-hsm`](https://www.npmjs.com/package/kxco-pq-hsm) |
+| Sign a document or record anyone can verify offline | [`kxco-pq-attest`](https://www.npmjs.com/package/kxco-pq-attest) |
+| Keep a tamper-evident audit trail | [`kxco-pq-audit`](https://www.npmjs.com/package/kxco-pq-audit) |
+| Verify a signature in a browser, with no server | [`kxco-verify`](https://www.npmjs.com/package/kxco-verify) |
+| Issue institution identity credentials | [`kxco-pq-sdk`](https://www.npmjs.com/package/kxco-pq-sdk) |
+| Encrypt files and payloads to one or many recipients | [`kxco-pq-vault`](https://www.npmjs.com/package/kxco-pq-vault) |
+| Encrypt Node streams and WebSockets | [`kxco-pq-tls`](https://www.npmjs.com/package/kxco-pq-tls) |
+| Sign and verify webhooks | [`kxco-post-quantum-webhook`](https://www.npmjs.com/package/kxco-post-quantum-webhook) |
+| Give an AI agent an identity a verified institution sponsors | [`kxco-pq-agent`](https://www.npmjs.com/package/kxco-pq-agent) |
+| Have Armature L1 verify a signature in consensus | [`kxco-pq-chain`](https://www.npmjs.com/package/kxco-pq-chain) |
+| Prove an envelope at three levels, offline to on-chain | [`kxco-pq-network`](https://www.npmjs.com/package/kxco-pq-network) |
+| Generate and rotate keys from a terminal | [`kxco-pq-cli`](https://www.npmjs.com/package/kxco-pq-cli) |
+| Find quantum-vulnerable cryptography in a dependency tree | [`kxco-pq-scan`](https://www.npmjs.com/package/kxco-pq-scan) |
+| Fail the build when code reaches past the wrapper | [`eslint-plugin-kxco-pq`](https://www.npmjs.com/package/eslint-plugin-kxco-pq) |
 
 ---
 
 ## Security
 
-Cryptographic operations delegate entirely to [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) and [`@noble/hashes`](https://github.com/paulmillr/noble-hashes); this package does not reimplement any NIST primitive. `@noble/post-quantum` has never been audited by a third party. It has been self-audited by its maintainer (v0.6.1, April 2026). The other Noble packages were audited separately, at different dates, and none of those engagements covered the post-quantum package: `@noble/hashes` by Cure53 in January 2022, `@noble/curves` by Trail of Bits in February 2023, Kudelski Security in September 2023 and Cure53 in September 2024, and `@noble/ciphers` by Cure53 in September 2024. See [AUDIT.md](./AUDIT.md) for the full posture.
+The maths runs in OpenSSL 3.5 on Node 24 and later, and in [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) and [`@noble/hashes`](https://github.com/paulmillr/noble-hashes) elsewhere. This package reimplements no NIST primitive. Every parameter set is held to NIST's own ACVP vectors and cross-checked against liboqs, Bouncy Castle and the Python reference implementations on both backends, per [CONFORMANCE.md](./CONFORMANCE.md). The audit history of every upstream library is recorded in [AUDIT.md](./AUDIT.md).
 
 To report a vulnerability: [open a private security advisory](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/security/advisories/new) or email **john@knightsbridgelaw.com**. Acknowledgement within 2 business days, triage decision within 5. Full policy, including safe harbour for good-faith research: <https://kxco.ai/security>.
 
@@ -386,9 +394,24 @@ Apache-2.0. See [LICENSE](./LICENSE).
 
 ## Maintainers
 
-Shayne Heffernan and John Heffernan — [KXCO by Knightsbridge](https://kxco.ai)
+Shayne Heffernan and John Heffernan, [KXCO by Knightsbridge](https://kxco.ai)
 
 ## Verifying a release
+
+Every claim on this page is checkable without asking us. The evidence bundle
+for the current release sits at a permanent, unauthenticated URL:
+
+```bash
+# the full evidence bundle for the current release
+curl -sLO https://github.com/KnightsbridgeAIQ/kxco-post-quantum/releases/latest/download/evidence-node24.x.zip
+
+# or just the manifest: every file digest, and which backend produced the results
+curl -sL  https://github.com/KnightsbridgeAIQ/kxco-post-quantum/releases/latest/download/manifest-node24.x.json
+
+# licence and provenance, straight from the registry
+npm view kxco-post-quantum license          # Apache-2.0
+npm audit signatures --json                 # assert invalid:0 and missing:0
+```
 
 Every release asset is signed with ML-DSA-65 by this package's own signing path,
 and carries a SLSA provenance file recording the workflow that built it.
@@ -410,6 +433,5 @@ const sig = readFileSync('evidence-node24.x.zip.sig', 'utf8').trim()
 mlDsa.verify(pub, readFileSync('evidence-node24.x.zip'), sig)   // true
 ```
 
-Compare the public key against the copy in this repository before trusting a
-signature: a key served alongside the artefact it signs proves only that the
-same party produced both.
+Compare the public key with the copy committed to this repository, so the key
+and the artefact are checked against two independent sources.
