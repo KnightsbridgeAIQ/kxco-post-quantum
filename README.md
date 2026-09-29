@@ -17,7 +17,7 @@
 - **Interoperable by test.** 225 checks against liboqs, Bouncy Castle and the Python reference implementations, in both directions, 0 failed. See [CONFORMANCE.md](./CONFORMANCE.md).
 - **Native speed on Node 24.** The maths runs in OpenSSL 3.5 on Node 24 and later, and in JavaScript on Node 20, Node 22 and in browsers, with identical bytes on the wire.
 - **Speaks the formats your stack already parses.** Compact JWS and AKP JWK under the `ML-DSA-65` and `ML-DSA-87` algorithm names, and PKCS#8 seed-form keys.
-- **A supply chain you can check.** Reproducible builds, SLSA provenance and a CycloneDX SBOM on every release. Apache-2.0, with no licence check and nothing that phones home.
+- **A supply chain you can check.** Reproducible builds verified in CI, with SLSA provenance and a CycloneDX SBOM on every release since 1.4.1. Apache-2.0, with no licence check and nothing that phones home.
 
 **The migration has dates.**
 

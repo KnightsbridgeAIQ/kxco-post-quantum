@@ -1,6 +1,6 @@
 {
   "name": "kxco-post-quantum",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "description": "NIST post-quantum cryptography for Node.js and browsers: ML-DSA, ML-KEM and SLH-DSA (FIPS 203, 204, 205). 1,793 NIST ACVP vectors passed, 0 failed. OpenSSL 3.5 native on Node 24+, the CNSA 2.0 parameter sets, reproducible builds with provenance.",
   "keywords": [
     "post-quantum",
@@ -29,7 +29,6 @@
     "ml-dsa-87",
     "ml-kem-1024",
     "category-5",
-    "quantum-safe",
     "pqc-migration",
     "cnsa-2.0",
     "crypto-agility",

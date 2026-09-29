@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.7.6
+
+Documentation. No source change.
+
+The release-integrity lines now name the version that SLSA provenance and
+the CycloneDX SBOM start from, and the keyword list drops `quantum-safe`,
+which was removed on purpose in an earlier release.
+
 ## 1.7.5
 
 Documentation. No source change.
