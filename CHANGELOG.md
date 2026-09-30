@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+verifyDelivery accepts an X-KXCO-Timestamp header only as decimal digits.
+
+Hex signatures and keys are accepted only as hex digits, across ML-DSA-65,
+ML-DSA-87, SLH-DSA, fingerprint and the JWS helpers. verifyJws, signJws and the
+seed helpers resolve algorithm names from their own tables only, and verifyJws
+reports a header kid that is not a string without throwing.
+
 ## 1.7.7
 
 Documentation. No source change.
