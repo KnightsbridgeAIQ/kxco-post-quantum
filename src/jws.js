@@ -85,6 +85,7 @@ function bytesToHex(bytes) {
 }
 
 function hexToBytes(hex) {
+  if (typeof hex !== 'string' || hex.length % 2 || !/^[0-9a-fA-F]*$/.test(hex)) throw new Error('invalid hex')
   const b = new Uint8Array(hex.length / 2)
   for (let i = 0; i < b.length; i++) b[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16)
   return b
@@ -199,7 +200,10 @@ export function verifyJws(token, publicKey, opts = {}) {
     return { valid: false, error: `alg mismatch: expected '${opts.alg}', token declares '${header.alg}'` }
   }
   if (opts.kid !== undefined && header.kid !== opts.kid) {
-    return { valid: false, error: `kid mismatch: expected '${opts.kid}', token declares '${header.kid ?? '(none)'}'` }
+    // Named as JSON when it is not a string, for the same reason as alg above.
+    const declared = header.kid === undefined ? '(none)'
+      : typeof header.kid === 'string' ? header.kid : JSON.stringify(header.kid)
+    return { valid: false, error: `kid mismatch: expected '${opts.kid}', token declares '${declared}'` }
   }
 
   // RFC 7515 section 4.1.11: a verifier that does not understand every member

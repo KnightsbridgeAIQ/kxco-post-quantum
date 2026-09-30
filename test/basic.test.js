@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { randomBytes } from 'node:crypto'
 
 import {
-  mlDsa, mlKem, slhDsa, deriveSeed, fingerprint, kidEquals, webhook,
+  mlDsa, mlDsa87, mlKem, slhDsa, deriveSeed, fingerprint, kidEquals, webhook,
 } from '../src/index.js'
 
 test('deriveSeed is deterministic and domain-separated', () => {
@@ -58,6 +58,30 @@ test('ML-KEM-768 encapsulate + decapsulate', () => {
   const recovered = mlKem.decapsulate(ciphertext, secretKey)
   assert.deepEqual(sharedSecret, recovered)
   assert.equal(sharedSecret.length, 32)
+})
+
+// parseInt reads a prefix, so '+a', ' a' and 'a ' would all decode to 0x0a.
+// Each byte has one accepted spelling: two hex digits.
+test('a signature or key in hex with anything but hex digits is refused', () => {
+  const respell = (hex) => {
+    for (let i = 0; i < hex.length; i += 2) {
+      if (hex[i] === '0') return hex.slice(0, i) + '+' + hex.slice(i + 1)
+    }
+    throw new Error('no byte below 0x10 to respell')
+  }
+  for (const [name, scheme] of [['ML-DSA-65', mlDsa], ['ML-DSA-87', mlDsa87], ['SLH-DSA', slhDsa]]) {
+    const { publicKey, secretKey } = scheme.keypairFromMaster(Buffer.alloc(32, 7))
+    const sig = scheme.sign(secretKey, 'hex spelling')
+    assert.ok(scheme.verify(publicKey, 'hex spelling', sig), name)
+    assert.equal(scheme.verify(publicKey, 'hex spelling', respell(sig)), false, name)
+    assert.equal(scheme.verify(publicKey, 'hex spelling', sig.slice(0, -2) + 'zz'), false, name)
+  }
+
+  const { publicKey } = mlDsa.keypairFromMaster(Buffer.alloc(32, 7))
+  const pkHex = Buffer.from(publicKey).toString('hex')
+  assert.equal(fingerprint(pkHex), fingerprint(publicKey))
+  assert.throws(() => fingerprint(respell(pkHex)), /hex/)
+  assert.throws(() => fingerprint(pkHex.slice(0, -2) + ' a'), /hex/)
 })
 
 test('fingerprint is stable 16 hex chars', () => {

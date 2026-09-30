@@ -325,6 +325,17 @@ test('a token naming a built-in object property as its alg is refused as unsuppo
   assert.throws(() => signJws({}, kp.secretKey, { alg: 'constructor' }), /unsupported JWS alg/)
 })
 
+test('a token whose kid is not a string is refused as a kid mismatch, never a throw', () => {
+  const kp = mlDsa.keypairFromMaster(MASTER)
+  const [, p, s] = signJws({ a: 1 }, kp.secretKey).split('.')
+  for (const kid of [{ toString: null }, ['k1'], 5, null, true]) {
+    const header = Buffer.from(JSON.stringify({ alg: 'ML-DSA-65', kid })).toString('base64url')
+    const result = verifyJws([header, p, s].join('.'), kp.publicKey, { kid: 'k1' })
+    assert.equal(result.valid, false, JSON.stringify(kid))
+    assert.match(result.error, /kid mismatch/, JSON.stringify(kid))
+  }
+})
+
 test('crit and b64 headers are refused rather than ignored', () => {
   const kp = mlDsa.keypairFromMaster(MASTER)
   const [, p, s] = signJws({ a: 1 }, kp.secretKey).split('.')
