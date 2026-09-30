@@ -118,7 +118,11 @@ export function verifyDelivery({ headers, rawBody, hmacSecret, pqPublicKey, pinn
   const sigPq   = headers['x-kxco-pq-signature']
   const kid     = headers['x-kxco-pq-kid']
 
-  const tsNum = parseInt(ts, 10)
+  // Both signatures cover the header exactly as it arrives, so it is read
+  // only as the decimal digits it is specified to be. parseInt alone would
+  // take the leading digits of `1700000000.{"a":1` and leave the rest of the
+  // header to be signed, which lets the start of a body move into it.
+  const tsNum = /^[0-9]+$/.test(ts) ? parseInt(ts, 10) : NaN
   const timestampOk = Number.isFinite(tsNum) &&
     Math.abs(Date.now() / 1000 - tsNum) <= windowSeconds
 

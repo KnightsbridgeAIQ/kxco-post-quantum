@@ -64,6 +64,15 @@ test('an unknown parameter set names the ones that exist', () => {
   )
 })
 
+test('a parameter set named after a built-in object property is unknown', () => {
+  const jwk = exportJwk('ML-DSA-65', mlDsa.keypairFromMaster(MASTER))
+  for (const alg of ['constructor', '__proto__', 'toString', 'hasOwnProperty']) {
+    assert.throws(() => seedFromMaster(alg, MASTER, 'info'), /seed form is defined for ML-DSA-65/, alg)
+    assert.throws(() => keypairFromSeed(alg, new Uint8Array(32)), /seed form is defined for ML-DSA-65/, alg)
+    assert.throws(() => importJwk({ ...jwk, alg }), /seed form is defined for ML-DSA-65/, alg)
+  }
+})
+
 // This is the property that makes seed export usable on keys already in
 // production: the seed a caller can now derive is the same seed
 // keypairFromMaster has been deriving all along.
@@ -300,6 +309,20 @@ test('a token cannot name its own verification routine', () => {
     assert.equal(result.valid, false, alg)
     assert.match(result.error, /unsupported JWS alg/, alg)
   }
+})
+
+// The allowlist is an object, so a name it inherits, such as `constructor`,
+// must not resolve to anything.
+test('a token naming a built-in object property as its alg is refused as unsupported', () => {
+  const kp = mlDsa.keypairFromMaster(MASTER)
+  const [, p, s] = signJws({ a: 1 }, kp.secretKey).split('.')
+  for (const alg of ['constructor', '__proto__', 'toString', 'hasOwnProperty', ['ML-DSA-65'], { toString: null }]) {
+    const header = Buffer.from(JSON.stringify({ alg })).toString('base64url')
+    const result = verifyJws([header, p, s].join('.'), kp.publicKey)
+    assert.equal(result.valid, false, JSON.stringify(alg))
+    assert.match(result.error, /unsupported JWS alg/, JSON.stringify(alg))
+  }
+  assert.throws(() => signJws({}, kp.secretKey, { alg: 'constructor' }), /unsupported JWS alg/)
 })
 
 test('crit and b64 headers are refused rather than ignored', () => {

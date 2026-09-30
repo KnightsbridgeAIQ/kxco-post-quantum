@@ -39,6 +39,13 @@ const ALGORITHMS = {
 /** JWS `alg` values this module will sign or verify. */
 export const JWS_ALGORITHMS = Object.keys(ALGORITHMS)
 
+// Own keys only, and only a string: a name the table inherits, such as
+// `constructor`, is not an algorithm, and neither is an array that happens to
+// stringify to one.
+function algorithmFor(alg) {
+  return typeof alg === 'string' && Object.hasOwn(ALGORITHMS, alg) ? ALGORITHMS[alg] : undefined
+}
+
 const DEFAULT_ALG = 'ML-DSA-65'
 
 function b64url(bytes) {
@@ -106,7 +113,7 @@ export function signJws(payload, secretKey, opts = {}) {
     throw new TypeError('expected an options object such as { kid, alg }')
   }
   const alg = opts.alg ?? DEFAULT_ALG
-  const spec = ALGORITHMS[alg]
+  const spec = algorithmFor(alg)
   if (!spec) {
     throw new Error(`unsupported JWS alg '${alg}' — this module signs ${JWS_ALGORITHMS.join(' and ')}`)
   }
@@ -181,9 +188,12 @@ export function verifyJws(token, publicKey, opts = {}) {
     return { valid: false, error: 'malformed JWS: header is not an object' }
   }
 
-  const spec = ALGORITHMS[header.alg]
+  const spec = algorithmFor(header.alg)
   if (!spec) {
-    return { valid: false, error: `unsupported JWS alg '${header.alg}'` }
+    // A header alg that is not a string is named as JSON, which cannot throw
+    // on anything JSON.parse produced; interpolating it could.
+    const named = typeof header.alg === 'string' ? header.alg : JSON.stringify(header.alg)
+    return { valid: false, error: `unsupported JWS alg '${named}'` }
   }
   if (opts.alg !== undefined && header.alg !== opts.alg) {
     return { valid: false, error: `alg mismatch: expected '${opts.alg}', token declares '${header.alg}'` }

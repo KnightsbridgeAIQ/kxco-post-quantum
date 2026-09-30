@@ -140,3 +140,45 @@ test('webhook verify rejects stale timestamp', () => {
   assert.ok(!result.hmacOk)
   assert.ok(!result.pqOk)
 })
+
+// Both signatures cover the timestamp header exactly as it arrives, so the
+// header is accepted only as the decimal digits the contract specifies.
+test('webhook verify refuses a timestamp header that is not all digits', () => {
+  const master = randomBytes(32)
+  const { publicKey, secretKey } = mlDsa.keypairFromMaster(master)
+  const kid = fingerprint(publicKey)
+  const now = String(Math.floor(Date.now() / 1000))
+
+  // Signed normally, then delivered with the start of the body, up to a '.',
+  // moved into the timestamp header.
+  const body = '{"amount":"12.50","to":"acct_1"}'
+  const moved = webhook.verifyDelivery({
+    headers: {
+      'x-kxco-timestamp':    `${now}.{"amount":"12`,
+      'x-kxco-signature':    'sha256=' + webhook.hmacHex('s', now, body),
+      'x-kxco-pq-signature': webhook.pqSign(secretKey, now, body),
+      'x-kxco-pq-kid':       kid,
+    },
+    rawBody: '50","to":"acct_1"}', hmacSecret: 's', pqPublicKey: publicKey, pinnedKid: kid,
+  })
+  assert.ok(!moved.timestampOk)
+  assert.ok(!moved.hmacOk)
+  assert.ok(!moved.pqOk)
+
+  // A header that is not all digits is refused even when both signatures
+  // cover it exactly.
+  for (const ts of [`${now}.x`, `${now}.0`, `${now}e0`, `${now} `, ` ${now}`, `+${now}`, '']) {
+    const result = webhook.verifyDelivery({
+      headers: {
+        'x-kxco-timestamp':    ts,
+        'x-kxco-signature':    'sha256=' + webhook.hmacHex('s', ts, 'x'),
+        'x-kxco-pq-signature': webhook.pqSign(secretKey, ts, 'x'),
+        'x-kxco-pq-kid':       kid,
+      },
+      rawBody: 'x', hmacSecret: 's', pqPublicKey: publicKey, pinnedKid: kid,
+    })
+    assert.ok(!result.timestampOk, JSON.stringify(ts))
+    assert.ok(!result.hmacOk, JSON.stringify(ts))
+    assert.ok(!result.pqOk, JSON.stringify(ts))
+  }
+})

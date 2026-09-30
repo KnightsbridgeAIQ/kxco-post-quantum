@@ -12,17 +12,19 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import fc from 'fast-check'
-import { mlDsa, mlKem, fingerprint, kidEquals, deriveSeed, seed as seedmod, jws } from '../src/index.js'
+import { mlDsa, mlKem, fingerprint, kidEquals, deriveSeed, seed as seedmod, jws, webhook } from '../src/index.js'
 
 // Signing is milliseconds per case, so a modest run count keeps the suite fast
 // while still covering a spread of lengths, encodings and contexts.
 const RUNS = { numRuns: 40 }
 
+// `size: 'max'` spreads lengths over the whole range up to maxLength. Without
+// it fast-check keeps them near ten, whatever maxLength says.
 const master = fc.uint8Array({ minLength: 16, maxLength: 64 })
 const info = fc.string({ minLength: 1, maxLength: 40 })
-const message = fc.oneof(fc.uint8Array({ maxLength: 512 }), fc.string({ maxLength: 256 }))
+const message = fc.oneof(fc.uint8Array({ maxLength: 512, size: 'max' }), fc.string({ maxLength: 256, size: 'max' }))
 // At most 255 bytes of UTF-8: 60 characters of up to 4 bytes each stays inside.
-const context = fc.string({ maxLength: 60 })
+const context = fc.string({ maxLength: 60, size: 'max' })
 
 // One key per run is enough: the properties are about messages and contexts.
 const signer = mlDsa.keypairFromMaster(new Uint8Array(32).fill(7), 'property-tests-v1')
@@ -39,7 +41,7 @@ test('ML-DSA-65: any message signed under any context verifies under that contex
 })
 
 test('ML-DSA-65: a signature does not verify for a different message', () => {
-  fc.assert(fc.property(fc.uint8Array({ minLength: 1, maxLength: 256 }), fc.nat(), (msg, at) => {
+  fc.assert(fc.property(fc.uint8Array({ minLength: 1, maxLength: 256, size: 'max' }), fc.nat(), (msg, at) => {
     const sig = mlDsa.sign(signer.secretKey, msg)
     const other = Uint8Array.from(msg)
     other[at % other.length] ^= 0x01
@@ -56,8 +58,15 @@ test('ML-DSA-65: a signature does not verify under a different context', () => {
 })
 
 test('ML-DSA-65: verify fails closed on an arbitrary signature', () => {
-  fc.assert(fc.property(message, fc.uint8Array({ maxLength: 4000 }), (msg, junk) => {
-    return mlDsa.verify(signer.publicKey, msg, Buffer.from(junk).toString('hex')) === false
+  // Junk of any length up to 4000 bytes, and junk of exactly the 3309 bytes an
+  // ML-DSA-65 signature is, which is the only length that reaches the
+  // verification arithmetic rather than stopping at the length check.
+  const junk = fc.oneof(
+    fc.uint8Array({ maxLength: 4000, size: 'max' }),
+    fc.uint8Array({ minLength: 3309, maxLength: 3309 }),
+  )
+  fc.assert(fc.property(message, junk, (msg, sig) => {
+    return mlDsa.verify(signer.publicKey, msg, Buffer.from(sig).toString('hex')) === false
   }), RUNS)
 })
 
@@ -88,7 +97,7 @@ test('ML-KEM-768: decapsulation recovers exactly the encapsulated secret', () =>
 })
 
 test('fingerprint: always 16 hex characters, and kidEquals agrees with equality', () => {
-  fc.assert(fc.property(fc.uint8Array({ minLength: 1, maxLength: 2600 }), fc.uint8Array({ minLength: 1, maxLength: 2600 }), (a, b) => {
+  fc.assert(fc.property(fc.uint8Array({ minLength: 1, maxLength: 2600, size: 'max' }), fc.uint8Array({ minLength: 1, maxLength: 2600, size: 'max' }), (a, b) => {
     const fa = fingerprint(a)
     const fb = fingerprint(b)
     return /^[0-9a-f]{16}$/.test(fa) && kidEquals(fa, fa) && kidEquals(fa, fb) === (fa === fb)
@@ -110,7 +119,7 @@ test('compact JWS: any JSON payload round-trips, and a changed payload is refuse
 })
 
 test('compact JWS: the header reader never throws on arbitrary text', () => {
-  fc.assert(fc.property(fc.string({ maxLength: 300 }), (text) => {
+  fc.assert(fc.property(fc.string({ maxLength: 300, size: 'max' }), (text) => {
     const h = jws.decodeJwsHeader(text)
     return h === null || (typeof h === 'object' && !Array.isArray(h))
   }), { numRuns: 500 })
@@ -123,5 +132,29 @@ test('seed-form JWK: export then import gives back the same key', () => {
     return back.alg === 'ML-DSA-65' &&
       Buffer.from(back.publicKey).equals(Buffer.from(key.publicKey)) &&
       Buffer.from(back.seed).equals(Buffer.from(key.seed))
+  }), RUNS)
+})
+
+test('webhook: a timestamp header that is not all digits never verifies, however it was signed', () => {
+  const kid = fingerprint(signer.publicKey)
+  const now = () => String(Math.floor(Date.now() / 1000))
+  const text = fc.string({ maxLength: 20, size: 'max' })
+  const malformed = fc.oneof(
+    // The start of a body moved into the header, up to a '.'.
+    text.map((x) => `${now()}.${x}`),
+    // Anything before or after the digits.
+    fc.tuple(fc.oneof(fc.constantFrom('', ' ', '+', '-'), text), text).map(([pre, post]) => `${pre}${now()}${post}`),
+  ).filter((ts) => !/^[0-9]+$/.test(ts))
+  fc.assert(fc.property(malformed, message, (ts, body) => {
+    const r = webhook.verifyDelivery({
+      headers: {
+        'x-kxco-timestamp': ts,
+        'x-kxco-signature': 'sha256=' + webhook.hmacHex('s', ts, body),
+        'x-kxco-pq-signature': webhook.pqSign(signer.secretKey, ts, body),
+        'x-kxco-pq-kid': kid,
+      },
+      rawBody: body, hmacSecret: 's', pqPublicKey: signer.publicKey, pinnedKid: kid,
+    })
+    return !r.timestampOk && !r.hmacOk && !r.pqOk
   }), RUNS)
 })
