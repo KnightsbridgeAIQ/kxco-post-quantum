@@ -4,6 +4,7 @@
   "reviewedBy": "KXCO engineering",
   "policy": {
     "maxProductionDependencies": 4,
+    "maxDevDependencies": 2,
     "allowedLicences": [
       "MIT",
       "Apache-2.0",
@@ -80,6 +81,26 @@
       "auditNote": "Present but not reachable from this package's published surface.",
       "pinning": "transitive",
       "pinningNote": "Resolved from @noble/post-quantum's ~2.3.0 range and locked in package-lock.json.",
+      "reachable": false
+    }
+  ],
+  "devPackages": [
+    {
+      "name": "fast-check",
+      "version": "4.10.2",
+      "licence": "MIT",
+      "why": "Property-based tests in test/property.test.js. Generates inputs for each primitive and shrinks a failure to its smallest case.",
+      "used": "test/property.test.js only. Never imported by src/ or any published entry point.",
+      "provenance": "SLSA provenance on the registry, repository dubzzz/fast-check.",
+      "reachable": false
+    },
+    {
+      "name": "pure-rand",
+      "version": "8.4.2",
+      "licence": "MIT",
+      "why": "The seeded random generator fast-check draws from, so a failing property replays from its seed.",
+      "used": "Through fast-check only.",
+      "provenance": "SLSA provenance on the registry, repository dubzzz/pure-rand.",
       "reachable": false
     }
   ]
