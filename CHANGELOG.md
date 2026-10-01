@@ -9,6 +9,10 @@ ML-DSA-87, SLH-DSA, fingerprint and the JWS helpers. verifyJws, signJws and the
 seed helpers resolve algorithm names from their own tables only, and verifyJws
 reports a header kid that is not a string without throwing.
 
+slhDsa.sign falls back to the JavaScript backend on a Node build that generates
+SLH-DSA keys but cannot import one as a JWK, such as 24.15.0, where it threw.
+CI now tests 24.15.0.
+
 ## 1.7.7
 
 Documentation. No source change.

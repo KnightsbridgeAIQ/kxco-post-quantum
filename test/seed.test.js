@@ -34,6 +34,20 @@ function nativeKeypair(alg) {
   }
 }
 
+// Whether this runtime round-trips an AKP JWK for the set, asked of a key it
+// generated itself. Node 24.15.0 does for ML-DSA and not for ML-KEM, so the
+// interop tests below skip only the sets the runtime cannot speak, and a JWK
+// of ours that it should take and refuses still fails.
+function nodeTakesJwk(alg) {
+  try {
+    const { privateKey } = crypto.generateKeyPairSync(nodeName(alg))
+    crypto.createPrivateKey({ key: privateKey.export({ format: 'jwk' }), format: 'jwk' })
+    return true
+  } catch {
+    return false
+  }
+}
+
 // ── seeds and expansion ─────────────────────────────────────────────────────
 
 test('every parameter set expands its seed to the documented lengths', () => {
@@ -200,6 +214,7 @@ test('seed-form PKCS#8 is what OpenSSL reads, and what it writes when it writes 
     return t.skip(`no native backend on this runtime (${backend().reason})`)
   }
   for (const alg of SEED_ALGORITHMS) {
+    if (!nodeTakesJwk(alg)) { t.diagnostic(`${alg}: no AKP JWK on this runtime`); continue }
     const theirs = nativeKeypair(alg)
     const ours = Buffer.from(exportSeedPkcs8(alg, theirs.seed))
 
@@ -228,6 +243,7 @@ test('seed-form PKCS#8 is what OpenSSL reads, and what it writes when it writes 
 test('a seed expands to the same public key under both backends', (t) => {
   if (!isNative('ML-DSA-65')) return t.skip('no native backend on this runtime')
   for (const alg of SEED_ALGORITHMS) {
+    if (!nodeTakesJwk(alg)) { t.diagnostic(`${alg}: no AKP JWK on this runtime`); continue }
     const theirs = nativeKeypair(alg)
     const ours = keypairFromSeed(alg, theirs.seed)
     assert.deepEqual(Buffer.from(ours.publicKey), theirs.publicKey, alg)
@@ -238,10 +254,14 @@ test('OpenSSL accepts the JWKs and the DER this package writes', (t) => {
   if (!isNative('ML-DSA-65')) return t.skip('no native backend on this runtime')
   for (const alg of SEED_ALGORITHMS) {
     const kp = keypairFromSeed(alg, seedFromMaster(alg, MASTER))
-    assert.doesNotThrow(
-      () => crypto.createPrivateKey({ key: exportJwk(alg, kp), format: 'jwk' }),
-      `${alg} JWK`,
-    )
+    if (nodeTakesJwk(alg)) {
+      assert.doesNotThrow(
+        () => crypto.createPrivateKey({ key: exportJwk(alg, kp), format: 'jwk' }),
+        `${alg} JWK`,
+      )
+    } else {
+      t.diagnostic(`${alg}: no AKP JWK on this runtime, seed PKCS#8 only`)
+    }
     assert.doesNotThrow(
       () => crypto.createPrivateKey({
         key: Buffer.from(exportSeedPkcs8(alg, kp.seed)), format: 'der', type: 'pkcs8',

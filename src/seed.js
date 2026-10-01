@@ -168,8 +168,9 @@ export function seedFromMaster(alg, master, info) {
  * Export an AKP JWK (RFC 9964).
  *
  * With `seed`, the result is a private JWK carrying the seed in `priv` and is
- * accepted directly by `crypto.createPrivateKey({ format: 'jwk' })` on Node
- * 24+. Without it, the result is a public JWK.
+ * accepted directly by `crypto.createPrivateKey({ format: 'jwk' })` on a Node
+ * build that imports AKP JWKs for that set. Node 24.15.0 does for ML-DSA and
+ * not for ML-KEM. Without it, the result is a public JWK.
  *
  * An expanded secret key is NOT accepted in place of a seed: RFC 9964 has no
  * encoding for one, and silently deriving something else would produce a JWK

@@ -113,8 +113,7 @@ function der(tag, payload) {
 // The AlgorithmIdentifier is read back off a key OpenSSL generates itself rather
 // than hard-coded from the OID registry, so a build that spells one differently
 // cannot produce a subtly wrong encoding here.
-function algorithmIdentifier(nodeName) {
-  const { privateKey } = crypto.generateKeyPairSync(nodeName)
+function algorithmIdentifier(privateKey) {
   const pkcs8 = privateKey.export({ format: 'der', type: 'pkcs8' })
   const headerLength = pkcs8[1] & 0x80 ? 2 + (pkcs8[1] & 0x7f) : 2
   const start = headerLength + 3 // skip the version INTEGER
@@ -155,13 +154,23 @@ const ALGORITHMS = {
 
 // Probed once, by actually generating a key. Asking the Node version would be a
 // guess about which build shipped which OpenSSL; generating a key is the fact.
+//
+// For the JWK form, generating is not the whole fact. Node 24.15.0 generates
+// SLH-DSA keys but refuses one as a JWK, which is the only way sign() can load
+// it, so every SLH-DSA signature threw there instead of falling back. The
+// import sign() makes is probed too, in the exact shape it makes it.
 function probe() {
   const table = new Map()
   for (const [name, spec] of Object.entries(ALGORITHMS)) {
     try {
+      const { privateKey } = crypto.generateKeyPairSync(spec.nodeName)
+      if (spec.privateForm === 'jwk') {
+        const { pub, priv } = privateKey.export({ format: 'jwk' })
+        crypto.createPrivateKey({ key: { kty: 'AKP', alg: name, pub, priv }, format: 'jwk' })
+      }
       // jwkAlg is the FIPS name: SLH-DSA goes in as a JWK, which names the
       // algorithm in the payload rather than in an AlgorithmIdentifier.
-      table.set(name, { ...spec, jwkAlg: name, algid: algorithmIdentifier(spec.nodeName) })
+      table.set(name, { ...spec, jwkAlg: name, algid: algorithmIdentifier(privateKey) })
     } catch {
       // Not in this build. The JavaScript backend covers it.
     }
