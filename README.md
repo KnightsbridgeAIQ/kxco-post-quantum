@@ -34,7 +34,7 @@
 | "PQC-agile libraries for all new applications", OMB M-26-15 | `mlDsa87` and `mlKem1024` behind the same API: Category 5 is a change of import |
 | "API gateways and application workloads must be configured to issue and validate PQC-signed tokens", OMB M-26-15 | `jws.signJws` and `jws.verifyJws`: compact JWS under ML-DSA-65 or ML-DSA-87, algorithm pinned at the verifier |
 | "re-encrypting long-lived sensitive data using keys protected by PQC mechanisms", OMB M-26-15 | [`kxco-pq-vault`](https://www.npmjs.com/package/kxco-pq-vault) |
-| Minimum elements for a cryptographic bill of materials, due 19 Mar 2027, EO 14412 s.5(d) | [`kxco-pq-scan`](https://www.npmjs.com/package/kxco-pq-scan) `--cbom`, CycloneDX 1.6 |
+| Minimum elements for a cryptographic bill of materials, in CISA guidance due by 19 Mar 2027, EO 14412 s.5(d) | [`kxco-pq-scan`](https://www.npmjs.com/package/kxco-pq-scan) `--cbom`: a CycloneDX 1.6 CBOM today, ready to check against those elements when CISA publishes them |
 
 **TLS has already moved, so this is the rest.** A stock Node.js client on 22.23.3, 24.21.0 and 26.1.0 negotiates X25519MLKEM768, the hybrid of X25519 and ML-KEM-768, with no options set (measured 30 September 2026). What TLS never reaches is what your application signs, issues and stores, and that is this package. The walkthrough, with every block run against this package: [The 2030 Post-Quantum Deadline in Code](https://www.livetradingnews.com/the-2030-post-quantum-deadline-in-code-6-changes-and-the-test-for-each).
 
