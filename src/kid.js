@@ -12,6 +12,7 @@ import { sha256 } from '@noble/hashes/sha2.js'
 
 function hexToBytes(hex) {
   if (hex.length % 2) throw new Error('odd hex length')
+  if (!/^[0-9a-fA-F]*$/.test(hex)) throw new Error('invalid hex')
   const b = new Uint8Array(hex.length / 2)
   for (let i = 0; i < b.length; i++) b[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16)
   return b

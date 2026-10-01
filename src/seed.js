@@ -71,7 +71,9 @@ const PARAMS = {
 export const SEED_ALGORITHMS = Object.keys(PARAMS)
 
 function paramsFor(alg) {
-  const p = PARAMS[alg]
+  // Own keys only, so a name the table inherits, such as `constructor`, is an
+  // unsupported algorithm rather than a parameter set with no sizes.
+  const p = typeof alg === 'string' && Object.hasOwn(PARAMS, alg) ? PARAMS[alg] : undefined
   if (!p) {
     throw new Error(
       `unsupported algorithm '${alg}' — seed form is defined for ${SEED_ALGORITHMS.join(', ')}`,

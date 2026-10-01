@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { randomBytes } from 'node:crypto'
 
 import {
-  mlDsa, mlKem, slhDsa, deriveSeed, fingerprint, kidEquals, webhook,
+  mlDsa, mlDsa87, mlKem, slhDsa, deriveSeed, fingerprint, kidEquals, webhook,
 } from '../src/index.js'
 
 test('deriveSeed is deterministic and domain-separated', () => {
@@ -58,6 +58,30 @@ test('ML-KEM-768 encapsulate + decapsulate', () => {
   const recovered = mlKem.decapsulate(ciphertext, secretKey)
   assert.deepEqual(sharedSecret, recovered)
   assert.equal(sharedSecret.length, 32)
+})
+
+// parseInt reads a prefix, so '+a', ' a' and 'a ' would all decode to 0x0a.
+// Each byte has one accepted spelling: two hex digits.
+test('a signature or key in hex with anything but hex digits is refused', () => {
+  const respell = (hex) => {
+    for (let i = 0; i < hex.length; i += 2) {
+      if (hex[i] === '0') return hex.slice(0, i) + '+' + hex.slice(i + 1)
+    }
+    throw new Error('no byte below 0x10 to respell')
+  }
+  for (const [name, scheme] of [['ML-DSA-65', mlDsa], ['ML-DSA-87', mlDsa87], ['SLH-DSA', slhDsa]]) {
+    const { publicKey, secretKey } = scheme.keypairFromMaster(Buffer.alloc(32, 7))
+    const sig = scheme.sign(secretKey, 'hex spelling')
+    assert.ok(scheme.verify(publicKey, 'hex spelling', sig), name)
+    assert.equal(scheme.verify(publicKey, 'hex spelling', respell(sig)), false, name)
+    assert.equal(scheme.verify(publicKey, 'hex spelling', sig.slice(0, -2) + 'zz'), false, name)
+  }
+
+  const { publicKey } = mlDsa.keypairFromMaster(Buffer.alloc(32, 7))
+  const pkHex = Buffer.from(publicKey).toString('hex')
+  assert.equal(fingerprint(pkHex), fingerprint(publicKey))
+  assert.throws(() => fingerprint(respell(pkHex)), /hex/)
+  assert.throws(() => fingerprint(pkHex.slice(0, -2) + ' a'), /hex/)
 })
 
 test('fingerprint is stable 16 hex chars', () => {
@@ -139,4 +163,46 @@ test('webhook verify rejects stale timestamp', () => {
   assert.ok(!result.timestampOk)
   assert.ok(!result.hmacOk)
   assert.ok(!result.pqOk)
+})
+
+// Both signatures cover the timestamp header exactly as it arrives, so the
+// header is accepted only as the decimal digits the contract specifies.
+test('webhook verify refuses a timestamp header that is not all digits', () => {
+  const master = randomBytes(32)
+  const { publicKey, secretKey } = mlDsa.keypairFromMaster(master)
+  const kid = fingerprint(publicKey)
+  const now = String(Math.floor(Date.now() / 1000))
+
+  // Signed normally, then delivered with the start of the body, up to a '.',
+  // moved into the timestamp header.
+  const body = '{"amount":"12.50","to":"acct_1"}'
+  const moved = webhook.verifyDelivery({
+    headers: {
+      'x-kxco-timestamp':    `${now}.{"amount":"12`,
+      'x-kxco-signature':    'sha256=' + webhook.hmacHex('s', now, body),
+      'x-kxco-pq-signature': webhook.pqSign(secretKey, now, body),
+      'x-kxco-pq-kid':       kid,
+    },
+    rawBody: '50","to":"acct_1"}', hmacSecret: 's', pqPublicKey: publicKey, pinnedKid: kid,
+  })
+  assert.ok(!moved.timestampOk)
+  assert.ok(!moved.hmacOk)
+  assert.ok(!moved.pqOk)
+
+  // A header that is not all digits is refused even when both signatures
+  // cover it exactly.
+  for (const ts of [`${now}.x`, `${now}.0`, `${now}e0`, `${now} `, ` ${now}`, `+${now}`, '']) {
+    const result = webhook.verifyDelivery({
+      headers: {
+        'x-kxco-timestamp':    ts,
+        'x-kxco-signature':    'sha256=' + webhook.hmacHex('s', ts, 'x'),
+        'x-kxco-pq-signature': webhook.pqSign(secretKey, ts, 'x'),
+        'x-kxco-pq-kid':       kid,
+      },
+      rawBody: 'x', hmacSecret: 's', pqPublicKey: publicKey, pinnedKid: kid,
+    })
+    assert.ok(!result.timestampOk, JSON.stringify(ts))
+    assert.ok(!result.hmacOk, JSON.stringify(ts))
+    assert.ok(!result.pqOk, JSON.stringify(ts))
+  }
 })

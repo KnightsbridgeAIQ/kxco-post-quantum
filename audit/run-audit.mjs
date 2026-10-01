@@ -53,11 +53,12 @@ function check(name, ok, detail, extra = {}) {
 // the installer does and a report can be produced without a working install.
 
 const treePackages = new Map()
+const devTreePackages = new Map()
 for (const [path, entry] of Object.entries(lock.packages ?? {})) {
   if (!path.startsWith('node_modules/')) continue
-  if (entry.dev || entry.optional || entry.peer) continue
+  if (entry.optional || entry.peer) continue
   const name = path.slice(path.lastIndexOf('node_modules/') + 'node_modules/'.length)
-  treePackages.set(name, {
+  ;(entry.dev ? devTreePackages : treePackages).set(name, {
     name,
     version: entry.version,
     resolved: entry.resolved,
@@ -200,8 +201,42 @@ for (const [name, range] of Object.entries(pkg.dependencies ?? {})) {
   check(`${name} is pinned exactly`, /^\d+\.\d+\.\d+$/.test(range),
     `declared as "${range}", which accepts versions this audit has not reviewed`)
 }
-check('no devDependencies', Object.keys(pkg.devDependencies ?? {}).length === 0,
-  'devDependencies are present and are not covered by this audit')
+// 2b. The dev tree is reviewed too. It never ships, so the question for it is
+//     narrower: is it what was reviewed, can it run code at install time, and
+//     does anything a consumer loads reach it. Each answer is checked, so a new
+//     or bumped test dependency breaks the build exactly as a production one does.
+const devReview = review.devPackages ?? []
+const devReviewed = new Set(devReview.map((p) => p.name))
+const devInTree = new Set(devTreePackages.keys())
+const devUnreviewed = [...devInTree].filter((n) => !devReviewed.has(n))
+const devDeparted = [...devReviewed].filter((n) => !devInTree.has(n))
+
+check('every devDependency is reviewed', devUnreviewed.length === 0,
+  `not in audit/dependency-review.json devPackages: ${devUnreviewed.join(', ')}`)
+check('the review names no devDependency that has left the tree', devDeparted.length === 0,
+  `reviewed but absent from the lockfile: ${devDeparted.join(', ')}`)
+check('the dev tree is within the declared ceiling', devInTree.size <= (review.policy.maxDevDependencies ?? 0),
+  `${devInTree.size} dev dependencies, policy allows ${review.policy.maxDevDependencies ?? 0}`)
+for (const [name, range] of Object.entries(pkg.devDependencies ?? {})) {
+  check(`${name} is pinned exactly`, /^\d+\.\d+\.\d+$/.test(range),
+    `declared as "${range}", which accepts versions this audit has not reviewed`)
+}
+const perDevPackage = []
+for (const r of devReview) {
+  const actual = devTreePackages.get(r.name)
+  if (!actual) continue
+  const versionOk = check(`${r.name} (dev) is at the reviewed version`, actual.version === r.version,
+    `lockfile has ${actual.version}, the review covers ${r.version}`)
+  const licenceOk = check(`${r.name} (dev) licence is allowed`,
+    review.policy.allowedLicences.includes(actual.licence ?? r.licence),
+    `licence is ${actual.licence ?? 'undeclared'}, allowed: ${review.policy.allowedLicences.join(', ')}`)
+  const scriptOk = check(`${r.name} (dev) runs no install script`,
+    review.policy.allowInstallScripts || !actual.hasInstallScript,
+    'the lockfile marks this package as having an install script')
+  const unreachedOk = check(`${r.name} (dev) is not reachable from what ships`, !reach.packages.has(r.name),
+    'an import path from the published entry points reaches this dev dependency, so it would ship unreviewed as production code')
+  perDevPackage.push({ ...r, resolvedVersion: actual.version, checks: { versionOk, licenceOk, scriptOk, unreachedOk } })
+}
 
 // 3. Per package: version, licence, install scripts, reachability.
 const perPackage = []
@@ -339,6 +374,9 @@ if (!quiet) {
     console.log(`  ${p.name}@${p.resolvedVersion}  ${p.licence}  ${p.reachableNow ? 'reachable' : 'not reachable'}  ${p.pinning}`)
     console.log(`      external audit: ${p.externalAudit}`)
   }
+  for (const p of perDevPackage) {
+    console.log(`  ${p.name}@${p.resolvedVersion}  ${p.licence}  dev only, not shipped  ${p.why}`)
+  }
   console.log(`\nwalked ${reach.filesWalked} files from ${Object.keys(pkg.exports ?? {}).length} entry points`)
   console.log(`node builtins reached: ${[...reach.builtins].sort().join(', ') || 'none'}`)
   console.log(`\n${passed} checks passed, ${failed} failed, ${skipped} skipped`)
@@ -354,6 +392,8 @@ if (jsonOut) {
     totals: { passed, failed, skipped },
     productionDependencies: inTree.size,
     devDependencies: Object.keys(pkg.devDependencies ?? {}).length,
+    devTree: devInTree.size,
+    devPackages: perDevPackage,
     advisories,
     signatures,
     reachability: {

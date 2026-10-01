@@ -39,6 +39,13 @@ const ALGORITHMS = {
 /** JWS `alg` values this module will sign or verify. */
 export const JWS_ALGORITHMS = Object.keys(ALGORITHMS)
 
+// Own keys only, and only a string: a name the table inherits, such as
+// `constructor`, is not an algorithm, and neither is an array that happens to
+// stringify to one.
+function algorithmFor(alg) {
+  return typeof alg === 'string' && Object.hasOwn(ALGORITHMS, alg) ? ALGORITHMS[alg] : undefined
+}
+
 const DEFAULT_ALG = 'ML-DSA-65'
 
 function b64url(bytes) {
@@ -78,6 +85,7 @@ function bytesToHex(bytes) {
 }
 
 function hexToBytes(hex) {
+  if (typeof hex !== 'string' || hex.length % 2 || !/^[0-9a-fA-F]*$/.test(hex)) throw new Error('invalid hex')
   const b = new Uint8Array(hex.length / 2)
   for (let i = 0; i < b.length; i++) b[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16)
   return b
@@ -106,7 +114,7 @@ export function signJws(payload, secretKey, opts = {}) {
     throw new TypeError('expected an options object such as { kid, alg }')
   }
   const alg = opts.alg ?? DEFAULT_ALG
-  const spec = ALGORITHMS[alg]
+  const spec = algorithmFor(alg)
   if (!spec) {
     throw new Error(`unsupported JWS alg '${alg}' — this module signs ${JWS_ALGORITHMS.join(' and ')}`)
   }
@@ -181,15 +189,21 @@ export function verifyJws(token, publicKey, opts = {}) {
     return { valid: false, error: 'malformed JWS: header is not an object' }
   }
 
-  const spec = ALGORITHMS[header.alg]
+  const spec = algorithmFor(header.alg)
   if (!spec) {
-    return { valid: false, error: `unsupported JWS alg '${header.alg}'` }
+    // A header alg that is not a string is named as JSON, which cannot throw
+    // on anything JSON.parse produced; interpolating it could.
+    const named = typeof header.alg === 'string' ? header.alg : JSON.stringify(header.alg)
+    return { valid: false, error: `unsupported JWS alg '${named}'` }
   }
   if (opts.alg !== undefined && header.alg !== opts.alg) {
     return { valid: false, error: `alg mismatch: expected '${opts.alg}', token declares '${header.alg}'` }
   }
   if (opts.kid !== undefined && header.kid !== opts.kid) {
-    return { valid: false, error: `kid mismatch: expected '${opts.kid}', token declares '${header.kid ?? '(none)'}'` }
+    // Named as JSON when it is not a string, for the same reason as alg above.
+    const declared = header.kid === undefined ? '(none)'
+      : typeof header.kid === 'string' ? header.kid : JSON.stringify(header.kid)
+    return { valid: false, error: `kid mismatch: expected '${opts.kid}', token declares '${declared}'` }
   }
 
   // RFC 7515 section 4.1.11: a verifier that does not understand every member
