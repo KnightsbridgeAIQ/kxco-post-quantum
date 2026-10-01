@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.7.8
 
 verifyDelivery accepts an X-KXCO-Timestamp header only as decimal digits.
 
@@ -12,6 +12,13 @@ reports a header kid that is not a string without throwing.
 slhDsa.sign falls back to the JavaScript backend on a Node build that generates
 SLH-DSA keys but cannot import one as a JWK, such as 24.15.0, where it threw.
 CI now tests 24.15.0.
+
+The npm page gives each parameter set its own label in the examples, so no two
+share seed bytes, and maps each EO 14412 and OMB M-26-15 requirement to the
+export that answers it.
+
+The dependency audit reviews the dev tree the way it reviews the production
+tree, so the property tests' fast-check no longer fails the conformance workflow.
 
 ## 1.7.7
 
