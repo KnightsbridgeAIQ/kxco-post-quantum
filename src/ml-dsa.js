@@ -42,7 +42,7 @@ function toBytes(input) {
   throw new Error('expected Uint8Array or string')
 }
 function hexToBytes(hex) {
-  if (typeof hex !== 'string' || hex.length % 2) throw new Error('invalid hex')
+  if (typeof hex !== 'string' || hex.length % 2 || !/^[0-9a-fA-F]*$/.test(hex)) throw new Error('invalid hex')
   const b = new Uint8Array(hex.length / 2)
   for (let i = 0; i < b.length; i++) b[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16)
   return b
