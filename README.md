@@ -25,6 +25,19 @@
 - **United States:** [Executive Order 14412](https://www.federalregister.gov/documents/2026/06/25/2026-12909/securing-the-nation-against-advanced-cryptographic-attacks), signed on 22 June 2026, moves federal high-value and high-impact systems to post-quantum key establishment by 31 December 2030 and to post-quantum signatures by 31 December 2031. [OMB M-26-15](https://www.whitehouse.gov/wp-content/uploads/2026/06/M-26-15-Execution-of-the-Migration-to-Post-Quantum-Cryptography.pdf) requires PQC-agile libraries for all new applications.
 - **United Kingdom:** the [NCSC](https://www.ncsc.gov.uk/guidance/pqc-migration-timelines) sets 2028, 2031 and 2035 as its migration milestones.
 
+**Each requirement has an export.**
+
+| The requirement | What answers it |
+|---|---|
+| Post-quantum key establishment by 31 Dec 2030, EO 14412 s.4(b)(ii) | `mlKem.encapsulate` and `mlKem.decapsulate`, ML-KEM-768 |
+| Post-quantum signatures by 31 Dec 2031, EO 14412 s.4(b)(iii) | `mlDsa.sign` and `mlDsa.verify`, ML-DSA-65 |
+| "PQC-agile libraries for all new applications", OMB M-26-15 | `mlDsa87` and `mlKem1024` behind the same API: Category 5 is a change of import |
+| "API gateways and application workloads must be configured to issue and validate PQC-signed tokens", OMB M-26-15 | `jws.signJws` and `jws.verifyJws`: compact JWS under ML-DSA-65 or ML-DSA-87, algorithm pinned at the verifier |
+| "re-encrypting long-lived sensitive data using keys protected by PQC mechanisms", OMB M-26-15 | [`kxco-pq-vault`](https://www.npmjs.com/package/kxco-pq-vault) |
+| Minimum elements for a cryptographic bill of materials, due 19 Mar 2027, EO 14412 s.5(d) | [`kxco-pq-scan`](https://www.npmjs.com/package/kxco-pq-scan) `--cbom`, CycloneDX 1.6 |
+
+**TLS has already moved, so this is the rest.** A stock Node.js client on 22.23.3, 24.21.0 and 26.1.0 negotiates X25519MLKEM768, the hybrid of X25519 and ML-KEM-768, with no options set (measured 30 September 2026). What TLS never reaches is what your application signs, issues and stores, and that is this package. The walkthrough, with every block run against this package: [The 2030 Post-Quantum Deadline in Code](https://www.livetradingnews.com/the-2030-post-quantum-deadline-in-code-6-changes-and-the-test-for-each).
+
 This is the primitive layer every other `kxco-pq-*` package builds on.
 
 [Conformance](./CONFORMANCE.md) · [Benchmarks](./BENCHMARKS.md) · [Migration](./MIGRATION.md) · [Threat model](./THREAT-MODEL.md) · [Changelog](./CHANGELOG.md) · [For institutions](#for-institutions) · [kxco.ai](https://kxco.ai)
@@ -47,12 +60,12 @@ Requires Node.js 20.19+. ESM-only.
 import { mlDsa, mlKem, slhDsa, fingerprint, kidEquals } from 'kxco-post-quantum'
 
 // ML-DSA-65: sign and verify
-const { publicKey, secretKey } = mlDsa.keypairFromMaster(masterSecret, 'signing-v1')
+const { publicKey, secretKey } = mlDsa.keypairFromMaster(masterSecret, 'signing-65-v1')
 const sig = mlDsa.sign(secretKey, 'hello')
 const ok  = mlDsa.verify(publicKey, 'hello', sig)  // true
 
 // SLH-DSA-SHA2-192s: hash-based signatures (same API shape as mlDsa)
-const slh = slhDsa.keypairFromMaster(masterSecret, 'signing-v1')
+const slh = slhDsa.keypairFromMaster(masterSecret, 'signing-slh-v1')
 const slhSig = slhDsa.sign(slh.secretKey, 'hello')
 const slhOk  = slhDsa.verify(slh.publicKey, 'hello', slhSig)  // true
 
@@ -69,6 +82,8 @@ const recovered = mlKem.decapsulate(ciphertext, kemKeys.secretKey)
 
 `masterSecret` is a Node Buffer or typed array (Uint8Array) with at least 16 bytes of entropy (typically 32–64 bytes from an env var or KMS).
 
+**One label per key.** The label is the domain separation: one master under one label yields the same seed bytes, whichever parameter set reads them. Give every parameter set and every purpose its own label, as above, and version it (`-v1`, `-v2`) so a rotation is a new label.
+
 ### Category 5 parameter sets
 
 `mlDsa87` (ML-DSA-87) and `mlKem1024` (ML-KEM-1024) have the same API as `mlDsa`
@@ -79,7 +94,7 @@ Category 3.
 ```js
 import { mlDsa87, mlKem1024 } from 'kxco-post-quantum'
 
-const { publicKey, secretKey } = mlDsa87.keypairFromMaster(masterSecret, 'signing-v1')
+const { publicKey, secretKey } = mlDsa87.keypairFromMaster(masterSecret, 'signing-87-v1')
 const sig = mlDsa87.sign(secretKey, 'hello')      // 4627 bytes, 9254 hex chars
 mlDsa87.verify(publicKey, 'hello', sig)           // true
 ```
@@ -90,8 +105,8 @@ mlDsa87.verify(publicKey, 'hello', sig)           // true
 | Key encapsulation | `mlKem`: pk 1184, ct 1088 | `mlKem1024`: pk 1568, ct 1568 |
 
 The two sets do not mix, deliberately. Default derivation info differs, so one
-master yields unrelated keys for each; and a signature from one set does not
-verify under the other. Sizes are the migration cost, so check any fixed-width
+master yields unrelated keys for each, and so does a distinct label of your own;
+a signature from one set does not verify under the other. Sizes are the migration cost, so check any fixed-width
 signature or key field before mixing sets in one system.
 
 **CNSA 2.0 names ML-DSA-87 and ML-KEM-1024**, so moving a deployment to the
