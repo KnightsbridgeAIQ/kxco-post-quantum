@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+verifyDelivery reads each header only as a string. A header that arrives as an
+array, as some frameworks deliver a repeated header, counts as missing, so the
+result reports the failed check where an array signature header used to throw.
+
 ## 1.7.8
 
 verifyDelivery accepts an X-KXCO-Timestamp header only as decimal digits.

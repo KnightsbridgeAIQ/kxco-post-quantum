@@ -206,3 +206,34 @@ test('webhook verify refuses a timestamp header that is not all digits', () => {
     assert.ok(!result.pqOk, JSON.stringify(ts))
   }
 })
+
+// Some frameworks hand a repeated header over as an array. Each header is read
+// only as a string, so any other type fails the checks that depend on it, and
+// the rest of the delivery still verifies.
+test('webhook verify reports a header that is not a string without throwing', () => {
+  const master = randomBytes(32)
+  const { publicKey, secretKey } = mlDsa.keypairFromMaster(master)
+  const kid = fingerprint(publicKey)
+  const signed = Object.fromEntries(Object.entries(webhook.signDelivery({
+    rawBody: 'x', hmacSecret: 's', pqSecretKey: secretKey, pqKid: kid,
+  })).map(([k, v]) => [k.toLowerCase(), v]))
+
+  const fails = {
+    'x-kxco-timestamp':    ['timestampOk', 'hmacOk', 'pqOk'],
+    'x-kxco-signature':    ['hmacOk'],
+    'x-kxco-pq-signature': ['pqOk'],
+    'x-kxco-pq-kid':       ['kidOk', 'pqOk'],
+  }
+  for (const [name, failing] of Object.entries(fails)) {
+    const value = signed[name]
+    for (const bad of [[value], [value, value], { toString: () => value }, 5, null]) {
+      const result = webhook.verifyDelivery({
+        headers: { ...signed, [name]: bad },
+        rawBody: 'x', hmacSecret: 's', pqPublicKey: publicKey, pinnedKid: kid,
+      })
+      for (const check of ['timestampOk', 'kidOk', 'hmacOk', 'pqOk']) {
+        assert.equal(result[check], !failing.includes(check), `${name} as ${JSON.stringify(bad)}: ${check}`)
+      }
+    }
+  }
+})

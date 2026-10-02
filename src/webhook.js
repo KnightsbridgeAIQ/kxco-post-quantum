@@ -41,6 +41,9 @@ function constTimeEqualStrings(a, b) {
   for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i)
   return diff === 0
 }
+function headerString(value) {
+  return typeof value === 'string' ? value : undefined
+}
 
 /**
  * Build the canonical signed envelope: timestamp + "." + raw body string.
@@ -113,10 +116,13 @@ export function signDelivery({ rawBody, hmacSecret, pqSecretKey, pqKid, event, d
  * Verify a webhook delivery on the receiving side.
  */
 export function verifyDelivery({ headers, rawBody, hmacSecret, pqPublicKey, pinnedKid, windowSeconds = 300 }) {
-  const ts      = headers['x-kxco-timestamp']
-  const sigHmac = headers['x-kxco-signature']
-  const sigPq   = headers['x-kxco-pq-signature']
-  const kid     = headers['x-kxco-pq-kid']
+  // Each header is read only as a string. Some frameworks hand a repeated
+  // header over as an array; that counts as missing rather than being coerced,
+  // so a header of any other type fails its check instead of throwing.
+  const ts      = headerString(headers['x-kxco-timestamp'])
+  const sigHmac = headerString(headers['x-kxco-signature'])
+  const sigPq   = headerString(headers['x-kxco-pq-signature'])
+  const kid     = headerString(headers['x-kxco-pq-kid'])
 
   // Both signatures cover the header exactly as it arrives, so it is read
   // only as the decimal digits it is specified to be. parseInt alone would

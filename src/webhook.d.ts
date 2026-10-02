@@ -89,8 +89,11 @@ export interface SignDeliveryHeaders {
 export function signDelivery(args: SignDeliveryArgs): SignDeliveryHeaders
 
 export interface VerifyDeliveryArgs {
-  /** HTTP headers with LOWERCASE keys */
-  headers: Record<string, string | undefined>
+  /**
+   * HTTP headers with LOWERCASE keys. Each KXCO header is read only as a
+   * string; a header that arrives as an array counts as missing.
+   */
+  headers: Record<string, string | string[] | undefined>
   /** The EXACT request body bytes as received */
   rawBody: string | Buffer
   /** Optional: enable HMAC verification by providing the shared secret */
