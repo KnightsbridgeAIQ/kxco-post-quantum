@@ -4,7 +4,7 @@
 //
 // Usage: node test/generate-vectors.js > test/vectors.json
 
-import { createHash, createHmac } from 'node:crypto'
+import { createHash } from 'node:crypto'
 import {
   mlDsa, mlKem, slhDsa, deriveSeed, fingerprint, webhook,
 } from '../src/index.js'
