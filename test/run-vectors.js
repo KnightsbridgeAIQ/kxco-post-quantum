@@ -132,7 +132,6 @@ for (const v of vectors.webhook_hybrid_roundtrip) {
   const master = Buffer.from(v.master_hex, 'hex')
   const kp = mlDsa.keypairFromMaster(master, v.info)
   const kid = fingerprint(kp.publicKey)
-  const freshTs = Math.floor(Date.now() / 1000).toString()
   const headers = webhook.signDelivery({
     rawBody:     v.body_utf8,
     hmacSecret:  v.hmac_secret_utf8,

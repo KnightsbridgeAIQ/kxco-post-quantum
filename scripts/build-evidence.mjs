@@ -247,15 +247,24 @@ if (existsSync(productLicence)) {
 
 const files = []
 for (const step of steps) void step
-const { readdirSync, statSync } = await import('node:fs')
+const { readdirSync, openSync, fstatSync, closeSync } = await import('node:fs')
 for (const name of readdirSync(outDir).sort()) {
-  const path = join(outDir, name)
-  if (!statSync(path).isFile() || name === '00-MANIFEST.json' || name === 'README.md') continue
-  files.push({
-    file: name,
-    bytes: statSync(path).size,
-    sha256: createHash('sha256').update(readFileSync(path)).digest('hex'),
-  })
+  if (name === '00-MANIFEST.json' || name === 'README.md') continue
+  // One handle for the check and the read, so the file that was checked is the
+  // file that is hashed: no window for it to be swapped between the two.
+  let fd
+  try { fd = openSync(join(outDir, name), 'r') } catch { continue }
+  try {
+    if (!fstatSync(fd).isFile()) continue
+    const data = readFileSync(fd)
+    files.push({
+      file: name,
+      bytes: data.length,
+      sha256: createHash('sha256').update(data).digest('hex'),
+    })
+  } finally {
+    closeSync(fd)
+  }
 }
 
 const failed = steps.filter((s) => !s.ok)

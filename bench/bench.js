@@ -7,7 +7,7 @@
 // Reports: ops/sec for envelope, hmac, ml-dsa sign, ml-dsa verify, and the
 // full hybrid signDelivery + verifyDelivery round-trip.
 
-import { randomBytes, createHmac } from 'node:crypto'
+import { randomBytes } from 'node:crypto'
 import {
   mlDsa, fingerprint, webhook,
 } from '../src/index.js'
