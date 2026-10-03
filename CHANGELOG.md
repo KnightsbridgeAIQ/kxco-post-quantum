@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.7.9
 
 verifyDelivery reads each header only as a string. A header that arrives as an
 array, as some frameworks deliver a repeated header, counts as missing, so the
