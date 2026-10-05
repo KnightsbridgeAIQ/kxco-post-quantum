@@ -17,6 +17,19 @@
 import { hmac } from '@noble/hashes/hmac.js'
 import { sha256 } from '@noble/hashes/sha2.js'
 import { sign as mlDsaSign, verify as mlDsaVerify } from './ml-dsa.js'
+import { sign as mlDsa87Sign, verify as mlDsa87Verify } from './ml-dsa-87.js'
+
+// The PQ signature header names its parameter set: `ml-dsa-65=<hex>`, or
+// `ml-dsa-87=<hex>` for an ML-DSA-87 key. The key decides which: an ML-DSA-87
+// key (4896-byte secret, 2592-byte public) signs and verifies the -87 form,
+// and every other key the -65 form, exactly as before -87 existed. A header
+// whose prefix names the other set fails, so a key is never checked as the
+// set it is not.
+const ML_DSA_65 = { prefix: 'ml-dsa-65=', sign: mlDsaSign, verify: mlDsaVerify }
+const ML_DSA_87 = { prefix: 'ml-dsa-87=', sign: mlDsa87Sign, verify: mlDsa87Verify }
+const ML_DSA_87_SECRET_KEY_BYTES = 4896
+const ML_DSA_87_PUBLIC_KEY_BYTES = 2592
+const ML_DSA_65_PUBLIC_KEY_BYTES = 1952
 
 const HAS_BUFFER = typeof Buffer !== 'undefined'
 const enc = new TextEncoder()
@@ -77,21 +90,34 @@ export function verifyHmac(secret, timestamp, rawBody, sigHeader) {
 }
 
 /**
- * Produce the X-KXCO-PQ-Signature header value.
+ * Produce the X-KXCO-PQ-Signature header value: `ml-dsa-65=<hex>`, or
+ * `ml-dsa-87=<hex>` when `secretKey` is an ML-DSA-87 key.
  */
 export function pqSign(secretKey, timestamp, rawBody) {
-  const sig = mlDsaSign(secretKey, envelope(timestamp, rawBody))
-  return `ml-dsa-65=${sig}`
+  const set = secretKey?.length === ML_DSA_87_SECRET_KEY_BYTES ? ML_DSA_87 : ML_DSA_65
+  const sig = set.sign(secretKey, envelope(timestamp, rawBody))
+  return `${set.prefix}${sig}`
 }
 
 /**
- * Verify a hex ML-DSA-65 signature header.
+ * Verify a hex ML-DSA signature header under the set `publicKey` belongs to.
+ *
+ * An ML-DSA-65 key takes `ml-dsa-65=<hex>` or, as it always has, the bare hex.
+ * An ML-DSA-87 key takes only `ml-dsa-87=<hex>`. A prefix naming the other set
+ * is false.
  */
 export function verifyPq(publicKey, timestamp, rawBody, sigHeader) {
-  const hex = sigHeader.startsWith('ml-dsa-65=')
-    ? sigHeader.slice('ml-dsa-65='.length)
-    : sigHeader
-  return mlDsaVerify(publicKey, envelope(timestamp, rawBody), hex)
+  const is87 = publicKey?.length === ML_DSA_87_PUBLIC_KEY_BYTES
+  // A key of neither set's size is refused here, not left to the primitive.
+  if (!is87 && publicKey?.length !== ML_DSA_65_PUBLIC_KEY_BYTES) return false
+  const set = is87 ? ML_DSA_87 : ML_DSA_65
+  // Only the key's own prefix is stripped. A header naming the other set is
+  // then neither that prefix nor bare hex, and fails.
+  if (sigHeader.startsWith(set.prefix)) {
+    return set.verify(publicKey, envelope(timestamp, rawBody), sigHeader.slice(set.prefix.length))
+  }
+  if (is87) return false
+  return set.verify(publicKey, envelope(timestamp, rawBody), sigHeader)
 }
 
 /**

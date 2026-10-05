@@ -291,6 +291,8 @@ and the operator selects, as the next section shows.
 
 Low-level helpers for the KXCO hybrid webhook pattern: `envelope`, `hmacHex`, `verifyHmac`, `pqSign`, `verifyPq`, `signDelivery`, `verifyDelivery`. HMAC-SHA-256 gives symmetric verification with no library dependency; ML-DSA-65 adds non-repudiation over the same `${timestamp}.${body}` envelope. The full identity/credential surface lives in `kxco-pq-sdk`.
 
+The key decides the PQ header form. An ML-DSA-65 key signs `ml-dsa-65=<hex>`, and an ML-DSA-87 key signs `ml-dsa-87=<hex>` over the same envelope. `verifyPq` and `verifyDelivery` accept only the form that matches the public key they are given: a header whose prefix names the other set fails, and an ML-DSA-87 key takes no bare-hex form.
+
 ---
 
 ## Requiring the native backend

@@ -34,8 +34,10 @@ export function verifyHmac(
 ): boolean
 
 /**
- * Produce the X-KXCO-PQ-Signature header value: the hex ML-DSA-65
- * signature over the envelope, prefixed with `ml-dsa-65=`.
+ * Produce the X-KXCO-PQ-Signature header value: the hex ML-DSA signature
+ * over the envelope, prefixed with its parameter set. The key decides it: an
+ * ML-DSA-87 secret key (4896 bytes) gives `ml-dsa-87=<hex>`, and an
+ * ML-DSA-65 key gives `ml-dsa-65=<hex>` as it always has.
  */
 export function pqSign(
   secretKey: Buffer | Uint8Array,
@@ -44,8 +46,10 @@ export function pqSign(
 ): string
 
 /**
- * Verify a hex ML-DSA-65 signature header.
- * Accepts the value with or without the `ml-dsa-65=` prefix.
+ * Verify a hex ML-DSA signature header under the set `publicKey` belongs to.
+ * An ML-DSA-65 key accepts the value with or without the `ml-dsa-65=` prefix.
+ * An ML-DSA-87 key (2592 bytes) accepts only `ml-dsa-87=<hex>`. A prefix
+ * naming the other set returns false.
  */
 export function verifyPq(
   publicKey: Buffer | Uint8Array,
@@ -59,7 +63,7 @@ export interface SignDeliveryArgs {
   rawBody:     string | Buffer
   /** Per-endpoint shared secret for HMAC */
   hmacSecret:  string | Buffer
-  /** Raw ML-DSA-65 secret key */
+  /** Raw ML-DSA-65 or ML-DSA-87 secret key. The key decides the header form. */
   pqSecretKey: Buffer | Uint8Array
   /** 16-hex kid fingerprint of the matching public key */
   pqKid:       string
@@ -73,7 +77,7 @@ export interface SignDeliveryHeaders {
   'Content-Type':         'application/json'
   'X-KXCO-Timestamp':     string
   'X-KXCO-Signature':     string   // sha256=<hex>
-  'X-KXCO-PQ-Signature':  string   // ml-dsa-65=<hex>
+  'X-KXCO-PQ-Signature':  string   // ml-dsa-65=<hex>, or ml-dsa-87=<hex> for an ML-DSA-87 key
   'X-KXCO-PQ-Kid':        string
   'X-KXCO-Event'?:        string
   'X-KXCO-Delivery'?:     string
