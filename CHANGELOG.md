@@ -1,7 +1,6 @@
 # Changelog
 
-## Unreleased
-
+## 1.8.0
 The webhook helpers sign and verify with ML-DSA-87 keys. The key decides the
 X-KXCO-PQ-Signature form: pqSign and signDelivery give `ml-dsa-87=<hex>` for
 an ML-DSA-87 secret key and `ml-dsa-65=<hex>` for an ML-DSA-65 one, unchanged.
