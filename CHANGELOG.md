@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.8.0
+The webhook helpers sign and verify with ML-DSA-87 keys. The key decides the
+X-KXCO-PQ-Signature form: pqSign and signDelivery give `ml-dsa-87=<hex>` for
+an ML-DSA-87 secret key and `ml-dsa-65=<hex>` for an ML-DSA-65 one, unchanged.
+verifyPq and verifyDelivery verify under the set of the public key they are
+given and accept only that set's prefix, so a header naming the other set
+fails. An ML-DSA-65 key still accepts the bare hex value, and a delivery signed
+by 1.7.9 verifies unchanged, which a fixture now tests. The webhook contract in
+`spec/` describes the `ml-dsa-87=` form.
+
 ## 1.7.9
 
 verifyDelivery reads each header only as a string. A header that arrives as an

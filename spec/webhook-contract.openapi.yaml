@@ -96,9 +96,16 @@ components:
         ML-DSA-65 (NIST FIPS 204) signature of `${X-KXCO-Timestamp}.${raw_body}`.
         Hex-encoded. Prefixed with `ml-dsa-65=`. 6618 hex characters
         (3309 bytes raw).
+
+        A sender whose platform key is ML-DSA-87 uses the `ml-dsa-87=` form
+        instead: 9254 hex characters (4627 bytes raw) over the same envelope.
+        The prefix names the parameter set of the key that signed, and a
+        receiver verifies only the form that matches its pinned key: an
+        ML-DSA-87 key (2592 bytes) takes only `ml-dsa-87=`, and a header whose
+        prefix names the other set fails.
       schema:
         type: string
-        pattern: "^ml-dsa-65=[0-9a-f]{6618}$"
+        pattern: "^(ml-dsa-65=[0-9a-f]{6618}|ml-dsa-87=[0-9a-f]{9254})$"
     XKxcoPqKid:
       name: X-KXCO-PQ-Kid
       in: header
