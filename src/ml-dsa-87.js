@@ -4,9 +4,9 @@
 // bytes, secret key 4896 bytes, signature 4627 bytes. Resistant to attacks by
 // quantum computers.
 //
-// Same API as ./ml-dsa.js, one security category higher. Use this where a
-// counterparty specifies Category 5 or names ML-DSA-87. ML-DSA-65 remains the
-// default for the KXCO stack; see the note on parameter choice below.
+// Same API as ./ml-dsa.js, one security category higher. This is the set for
+// new keys and signatures. ML-DSA-65 (./ml-dsa.js) stays for keys that already
+// exist; see the note on parameter choice below.
 //
 // Isomorphic: works in Node and modern browsers. Returns Buffer on Node
 // (backwards compatible), Uint8Array in browsers.

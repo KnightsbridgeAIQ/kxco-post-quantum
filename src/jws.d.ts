@@ -13,7 +13,10 @@ export interface JwsHeader {
 }
 
 export interface SignJwsOptions {
-  /** Defaults to 'ML-DSA-65'. */
+  /**
+   * Without it the secret key decides: a 4032-byte ML-DSA-65 key signs
+   * 'ML-DSA-65', and every other key 'ML-DSA-87', the default.
+   */
   alg?: JwsAlgorithm
   /** Key identifier, e.g. the 16-hex `fingerprint()` of the public key. */
   kid?: string
