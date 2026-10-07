@@ -32,8 +32,8 @@ const dec = new TextDecoder()
 // and nowhere else, so a token cannot name its own verification routine — the
 // alg-confusion failure that has broken JWT libraries repeatedly.
 const ALGORITHMS = {
-  'ML-DSA-65': { mod: mlDsa,   publicKeyBytes: 1952, signatureBytes: 3309 },
-  'ML-DSA-87': { mod: mlDsa87, publicKeyBytes: 2592, signatureBytes: 4627 },
+  'ML-DSA-65': { mod: mlDsa,   publicKeyBytes: 1952, secretKeyBytes: 4032, signatureBytes: 3309 },
+  'ML-DSA-87': { mod: mlDsa87, publicKeyBytes: 2592, secretKeyBytes: 4896, signatureBytes: 4627 },
 }
 
 /** JWS `alg` values this module will sign or verify. */
@@ -46,7 +46,16 @@ function algorithmFor(alg) {
   return typeof alg === 'string' && Object.hasOwn(ALGORITHMS, alg) ? ALGORITHMS[alg] : undefined
 }
 
-const DEFAULT_ALG = 'ML-DSA-65'
+// Without opts.alg the secret key decides: its size names the set it belongs
+// to, so an ML-DSA-65 key that already exists keeps signing ML-DSA-65 tokens.
+// A key of neither size gets the default, ML-DSA-87. The size is the byte
+// length, so a key held as an ArrayBuffer is measured too.
+const DEFAULT_ALG = 'ML-DSA-87'
+
+function algorithmForSecretKey(secretKey) {
+  const size = secretKey?.byteLength ?? secretKey?.length
+  return JWS_ALGORITHMS.find((alg) => ALGORITHMS[alg].secretKeyBytes === size)
+}
 
 function b64url(bytes) {
   if (HAS_BUFFER) return Buffer.from(bytes).toString('base64url')
@@ -104,6 +113,9 @@ function payloadBytes(payload) {
 /**
  * Sign a payload into a compact JWS.
  *
+ * Without `opts.alg` the key decides: a 4032-byte ML-DSA-65 secret key signs
+ * ML-DSA-65, and every other key ML-DSA-87.
+ *
  * @param {object|string|Uint8Array} payload — objects are JSON-serialised
  * @param {Buffer|Uint8Array} secretKey
  * @param {{ alg?: string, kid?: string, typ?: string, header?: object }} [opts]
@@ -113,7 +125,7 @@ export function signJws(payload, secretKey, opts = {}) {
   if (opts === null || typeof opts !== 'object') {
     throw new TypeError('expected an options object such as { kid, alg }')
   }
-  const alg = opts.alg ?? DEFAULT_ALG
+  const alg = opts.alg ?? algorithmForSecretKey(secretKey) ?? DEFAULT_ALG
   const spec = algorithmFor(alg)
   if (!spec) {
     throw new Error(`unsupported JWS alg '${alg}' — this module signs ${JWS_ALGORITHMS.join(' and ')}`)

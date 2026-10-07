@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.9.0 (2026-10-07)
+
+`jws.signJws` takes its default from the key, and the default is ML-DSA-87.
+Without `opts.alg`, a 4032-byte ML-DSA-65 secret key signs `ML-DSA-65`, as it
+always has, and every other key signs `ML-DSA-87`. An ML-DSA-87 key no longer
+needs `alg` named, where before it threw. The key is measured by its byte
+length, so a key held as an ArrayBuffer is read as its own set. A token signed
+by 1.8.0 verifies unchanged, which a fixture now tests.
+
+To keep the old behaviour, name the set:
+`signJws(payload, secretKey, { alg: 'ML-DSA-65' })`. An existing ML-DSA-65 key
+needs no change, because its size already selects ML-DSA-65.
+
+The README leads with ML-DSA-87. The quick start, the examples and the API
+section use `mlDsa87`, and `mlDsa` is described as the ML-DSA-65 namespace kept
+for keys that already exist. Its name and exports do not change. MIGRATION.md
+and the source comments recommend ML-DSA-87 for every new signing key.
+
 ## 1.8.0
 The webhook helpers sign and verify with ML-DSA-87 keys. The key decides the
 X-KXCO-PQ-Signature form: pqSign and signDelivery give `ml-dsa-87=<hex>` for

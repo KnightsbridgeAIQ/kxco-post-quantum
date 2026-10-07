@@ -7,7 +7,7 @@
 // hedge alongside ML-DSA-65.
 //
 // Tradeoff: signatures are ~5x larger than ML-DSA-65 (16224 vs 3309 bytes) and
-// signing is slower. Use ML-DSA-65 as the default; reach for SLH-DSA when you
+// signing is slower. Use ML-DSA-87 as the default; reach for SLH-DSA when you
 // want a signature whose security does not depend on lattice hardness.
 //
 // Isomorphic: works in Node and modern browsers. Returns Buffer on Node

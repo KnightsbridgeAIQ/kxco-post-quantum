@@ -1,6 +1,6 @@
 {
   "name": "kxco-post-quantum",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "NIST post-quantum cryptography for Node.js and browsers: ML-DSA, ML-KEM and SLH-DSA (FIPS 203, 204, 205). 1,793 NIST ACVP vectors passed, 0 failed. OpenSSL 3.5 native on Node 24+, the CNSA 2.0 parameter sets, reproducible builds with provenance.",
   "keywords": [
     "post-quantum",
@@ -159,7 +159,7 @@
   },
   "scripts": {
     "fuzz": "node fuzz/fuzz.mjs",
-    "test": "node --test test/basic.test.js && node --test test/webhook-ml-dsa-87.test.js && node --test test/backend.test.js && node --test test/context.test.js && node --test test/category5.test.js && node --test test/edge-cases.test.js && node --test test/seed.test.js && node --test test/browser-smoke.test.js && node --test test/property.test.js && node test/run-vectors.js",
+    "test": "node --test test/basic.test.js && node --test test/webhook-ml-dsa-87.test.js && node --test test/jws-ml-dsa-87-default.test.js && node --test test/backend.test.js && node --test test/context.test.js && node --test test/category5.test.js && node --test test/edge-cases.test.js && node --test test/seed.test.js && node --test test/browser-smoke.test.js && node --test test/property.test.js && node test/run-vectors.js",
     "test:vectors": "node test/run-vectors.js",
     "generate:vectors": "node test/generate-vectors.js > test/vectors.json",
     "bench": "node bench/bench.js",

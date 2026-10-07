@@ -11,12 +11,12 @@
 [![conformance](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/conformance.yml/badge.svg)](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/conformance.yml)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue)](./LICENSE)
 
-- **All three NIST standards.** ML-KEM-768 (FIPS 203), ML-DSA-65 (FIPS 204) and SLH-DSA-SHA2-192s (FIPS 205), all at NIST Category 3.
-- **The CNSA 2.0 parameter sets ship.** ML-DSA-87 and ML-KEM-1024 at Category 5, with the same API as the defaults.
+- **All three NIST standards.** ML-DSA-87 and ML-DSA-65 (FIPS 204), ML-KEM-768 (FIPS 203) and SLH-DSA-SHA2-192s (FIPS 205). ML-DSA-87 is the signature set for new keys, and ML-DSA-65 stays for keys that already exist.
+- **The CNSA 2.0 parameter sets ship.** ML-DSA-87 and ML-KEM-1024 at Category 5, with the same API as the Category 3 sets.
 - **1,793 NIST ACVP vectors passed, 0 failed.** The other 310 are pairings the library refuses as weaker than the parameter set. See [CONFORMANCE.md](./CONFORMANCE.md).
 - **Interoperable by test.** 225 checks against liboqs, Bouncy Castle and the Python reference implementations, in both directions, 0 failed. See [CONFORMANCE.md](./CONFORMANCE.md).
 - **Native speed on Node 24.** The maths runs in OpenSSL 3.5 on Node 24 and later, and in JavaScript on Node 20, Node 22 and in browsers, with identical bytes on the wire.
-- **Speaks the formats your stack already parses.** Compact JWS and AKP JWK under the `ML-DSA-65` and `ML-DSA-87` algorithm names, and PKCS#8 seed-form keys.
+- **Speaks the formats your stack already parses.** Compact JWS and AKP JWK under the `ML-DSA-87` and `ML-DSA-65` algorithm names, and PKCS#8 seed-form keys.
 - **A supply chain you can check.** Reproducible builds verified in CI, with SLSA provenance and a CycloneDX SBOM on every release since 1.4.1. Apache-2.0, with no licence check and nothing that phones home.
 
 **The migration has dates.**
@@ -30,9 +30,9 @@
 | The requirement | What answers it |
 |---|---|
 | Post-quantum key establishment by 31 Dec 2030, EO 14412 s.4(b)(ii) | `mlKem.encapsulate` and `mlKem.decapsulate`, ML-KEM-768 |
-| Post-quantum signatures by 31 Dec 2031, EO 14412 s.4(b)(iii) | `mlDsa.sign` and `mlDsa.verify`, ML-DSA-65 |
+| Post-quantum signatures by 31 Dec 2031, EO 14412 s.4(b)(iii) | `mlDsa87.sign` and `mlDsa87.verify`, ML-DSA-87 |
 | "PQC-agile libraries for all new applications", OMB M-26-15 | `mlDsa87` and `mlKem1024` behind the same API: Category 5 is a change of import |
-| "API gateways and application workloads must be configured to issue and validate PQC-signed tokens", OMB M-26-15 | `jws.signJws` and `jws.verifyJws`: compact JWS under ML-DSA-65 or ML-DSA-87, algorithm pinned at the verifier |
+| "API gateways and application workloads must be configured to issue and validate PQC-signed tokens", OMB M-26-15 | `jws.signJws` and `jws.verifyJws`: compact JWS under ML-DSA-87 or ML-DSA-65, algorithm pinned at the verifier |
 | "re-encrypting long-lived sensitive data using keys protected by PQC mechanisms", OMB M-26-15 | [`kxco-pq-vault`](https://www.npmjs.com/package/kxco-pq-vault) |
 | Minimum elements for a cryptographic bill of materials, in CISA guidance due by 19 Mar 2027, EO 14412 s.5(d) | [`kxco-pq-scan`](https://www.npmjs.com/package/kxco-pq-scan) `--cbom`: a CycloneDX 1.6 CBOM today, ready to check against those elements when CISA publishes them |
 
@@ -57,14 +57,14 @@ Requires Node.js 20.19+. ESM-only.
 ## Quick start
 
 ```js
-import { mlDsa, mlKem, slhDsa, fingerprint, kidEquals } from 'kxco-post-quantum'
+import { mlDsa87, mlKem, slhDsa, fingerprint, kidEquals } from 'kxco-post-quantum'
 
-// ML-DSA-65: sign and verify
-const { publicKey, secretKey } = mlDsa.keypairFromMaster(masterSecret, 'signing-65-v1')
-const sig = mlDsa.sign(secretKey, 'hello')
-const ok  = mlDsa.verify(publicKey, 'hello', sig)  // true
+// ML-DSA-87: sign and verify
+const { publicKey, secretKey } = mlDsa87.keypairFromMaster(masterSecret, 'signing-87-v1')
+const sig = mlDsa87.sign(secretKey, 'hello')
+const ok  = mlDsa87.verify(publicKey, 'hello', sig)  // true
 
-// SLH-DSA-SHA2-192s: hash-based signatures (same API shape as mlDsa)
+// SLH-DSA-SHA2-192s: hash-based signatures (same API shape as mlDsa87)
 const slh = slhDsa.keypairFromMaster(masterSecret, 'signing-slh-v1')
 const slhSig = slhDsa.sign(slh.secretKey, 'hello')
 const slhOk  = slhDsa.verify(slh.publicKey, 'hello', slhSig)  // true
@@ -86,10 +86,11 @@ const recovered = mlKem.decapsulate(ciphertext, kemKeys.secretKey)
 
 ### Category 5 parameter sets
 
-`mlDsa87` (ML-DSA-87) and `mlKem1024` (ML-KEM-1024) have the same API as `mlDsa`
-and `mlKem`, one security category higher. Reach for them when a counterparty
-specifies Category 5 or names the parameter set. The KXCO default stays
-Category 3.
+`mlDsa87` (ML-DSA-87) is the signature set for new keys. `mlDsa` (ML-DSA-65) has
+the same API, one security category lower, and stays for the keys that already
+exist, whose signatures keep verifying. `mlKem1024` (ML-KEM-1024) has the same
+API as `mlKem`, one security category higher. Reach for it when a counterparty
+specifies Category 5 or names the parameter set.
 
 ```js
 import { mlDsa87, mlKem1024 } from 'kxco-post-quantum'
@@ -99,10 +100,10 @@ const sig = mlDsa87.sign(secretKey, 'hello')      // 4627 bytes, 9254 hex chars
 mlDsa87.verify(publicKey, 'hello', sig)           // true
 ```
 
-| | Category 3 (default) | Category 5 |
+| | Category 5 | Category 3 |
 |---|---|---|
-| Signatures | `mlDsa`: pk 1952, sig 3309 | `mlDsa87`: pk 2592, sig 4627 |
-| Key encapsulation | `mlKem`: pk 1184, ct 1088 | `mlKem1024`: pk 1568, ct 1568 |
+| Signatures | `mlDsa87`: pk 2592, sig 4627, for new keys | `mlDsa`: pk 1952, sig 3309, for existing keys |
+| Key encapsulation | `mlKem1024`: pk 1568, ct 1568 | `mlKem`: pk 1184, ct 1088 |
 
 The two sets do not mix, deliberately. Default derivation info differs, so one
 master yields unrelated keys for each, and so does a distinct label of your own;
@@ -120,16 +121,16 @@ signature made under a context does not verify without it, or under a different
 one.
 
 ```js
-const sig = mlDsa.sign(secretKey, 'hello', { context: 'kxco-nexus-v1' })
+const sig = mlDsa87.sign(secretKey, 'hello', { context: 'kxco-nexus-v1' })
 
-mlDsa.verify(publicKey, 'hello', sig, { context: 'kxco-nexus-v1' })  // true
-mlDsa.verify(publicKey, 'hello', sig)                                // false
-mlDsa.verify(publicKey, 'hello', sig, { context: 'other-v1' })       // false
+mlDsa87.verify(publicKey, 'hello', sig, { context: 'kxco-nexus-v1' })  // true
+mlDsa87.verify(publicKey, 'hello', sig)                                // false
+mlDsa87.verify(publicKey, 'hello', sig, { context: 'other-v1' })       // false
 ```
 
 The parameter is optional and defaults to no context, so every existing call
-site is unaffected. An empty context is identical to omitting it. `slhDsa` takes
-the same option.
+site is unaffected. An empty context is identical to omitting it. `mlDsa` and
+`slhDsa` take the same option.
 
 **Context separates at the signature level; `keypairFromMaster(master, info)`
 separates at the key level.** They are complementary. Use a context when one key
@@ -143,8 +144,8 @@ characters. Over-length or wrongly typed input throws (`RangeError` /
 a bad signature:
 
 ```js
-mlDsa.sign(secretKey, 'hello', 'kxco-nexus-v1')  // throws TypeError
-                                                 // (needs { context: ... })
+mlDsa87.sign(secretKey, 'hello', 'kxco-nexus-v1')  // throws TypeError
+                                                   // (needs { context: ... })
 ```
 
 That last case is worth guarding: without the throw it would silently sign with
@@ -176,7 +177,24 @@ between free and paid is set out in [LICENCE-PRODUCT.md](./LICENCE-PRODUCT.md).
 
 ## API
 
+### `mlDsa87`: ML-DSA-87 signatures (NIST FIPS 204)
+
+The signature set for new keys. Security Category 5.
+
+| Export | Signature | Description |
+|---|---|---|
+| `keypairFromMaster` | `(master, info?) → { publicKey, secretKey, seed }` | Deterministic keypair via HKDF-SHA-512. `info` defaults to `'ml-dsa-87-v1'`. `seed` is the 32 bytes the pair was expanded from. See [`seed`](#seed-seed-form-keys-rfc-9964-lamps). |
+| `sign` | `(secretKey, message) → string` | Signs a message. Returns a hex-encoded signature (9254 chars). |
+| `verify` | `(publicKey, message, sigHex) → boolean` | Verifies a hex-encoded signature. Returns `false` on any failure. |
+| `ml_dsa87` | raw primitive | The underlying `@noble/post-quantum` primitive, re-exported. |
+
+`publicKey` is 2592 bytes. `secretKey` is 4896 bytes. `message` accepts `Buffer`, `Uint8Array`, or `string`.
+
 ### `mlDsa`: ML-DSA-65 signatures (NIST FIPS 204)
+
+The ML-DSA-65 namespace, kept for keys that already exist. Same API as
+`mlDsa87`, at Security Category 3. Its name and exports are unchanged, and every
+signature it has made keeps verifying.
 
 | Export | Signature | Description |
 |---|---|---|
@@ -189,7 +207,7 @@ between free and paid is set out in [LICENCE-PRODUCT.md](./LICENCE-PRODUCT.md).
 
 ### `slhDsa`: SLH-DSA-SHA2-192s signatures (NIST FIPS 205)
 
-Hash-based, stateless signatures. Security Category 3 (matching ML-DSA-65), with security resting only on the SHA-2 hash function: no lattice or number-theoretic assumptions. Use it as a conservative hedge alongside `mlDsa`. Signatures are 16,224 bytes against 3,309 for ML-DSA-65, per [FIPS 205](https://csrc.nist.gov/pubs/fips/205/final) and [FIPS 204](https://csrc.nist.gov/pubs/fips/204/final), so `mlDsa` stays the default for high-volume signing.
+Hash-based, stateless signatures. Security Category 3 (matching ML-DSA-65), with security resting only on the SHA-2 hash function: no lattice or number-theoretic assumptions. Use it as a conservative hedge alongside `mlDsa87`. Signatures are 16,224 bytes against 4,627 for ML-DSA-87 and 3,309 for ML-DSA-65, per [FIPS 205](https://csrc.nist.gov/pubs/fips/205/final) and [FIPS 204](https://csrc.nist.gov/pubs/fips/204/final), so ML-DSA stays the choice for high-volume signing.
 
 | Export | Signature | Description |
 |---|---|---|
@@ -251,24 +269,24 @@ OpenSSL writes, for every parameter set, and skips with a reason where there is
 no native backend to compare against.
 
 ```js
-import { mlDsa, seed } from 'kxco-post-quantum'
+import { mlDsa87, seed } from 'kxco-post-quantum'
 
-const key = mlDsa.keypairFromMaster(process.env.KXCO_MASTER_KEY)
-const jwk = seed.exportJwk('ML-DSA-65', key, { kid: fingerprint(key.publicKey) })
-// { kty: 'AKP', alg: 'ML-DSA-65', pub: '...', priv: '<32-byte seed>', kid: '...' }
+const key = mlDsa87.keypairFromMaster(process.env.KXCO_MASTER_KEY)
+const jwk = seed.exportJwk('ML-DSA-87', key, { kid: fingerprint(key.publicKey) })
+// { kty: 'AKP', alg: 'ML-DSA-87', pub: '...', priv: '<32-byte seed>', kid: '...' }
 ```
 
 ### `jws`: compact JWS with the RFC 9964 algorithm names
 
 Format only. A token signed here verifies in any process holding the public
 key, offline, with no configuration and no licence. RFC 9964 registered
-`ML-DSA-65` and `ML-DSA-87` as JWS algorithms so a post-quantum signature can
+`ML-DSA-87` and `ML-DSA-65` as JWS algorithms so a post-quantum signature can
 travel the path an institution's gateway, IdP and partner verifier already
 parse.
 
 | Export | Signature | Description |
 |---|---|---|
-| `signJws` | `(payload, secretKey, opts?) → string` | Compact JWS. Objects are JSON-serialised. `opts.alg` defaults to `ML-DSA-65`. |
+| `signJws` | `(payload, secretKey, opts?) → string` | Compact JWS. Objects are JSON-serialised. Without `opts.alg` the key decides: an ML-DSA-65 secret key signs `ML-DSA-65`, and every other key `ML-DSA-87`, the default. |
 | `verifyJws` | `(token, publicKey, opts?) → { valid, ... }` | Fails closed. `{ alg }` and `{ kid }` pin what the header may declare. |
 | `decodeJwsHeader` | `(token) → object \| null` | Unauthenticated read, for choosing which key to fetch. |
 
@@ -277,7 +295,7 @@ token, so a token cannot name its own verification routine. `crit` and `b64`
 headers are refused rather than ignored, and the public key's length must match
 the algorithm the header declares.
 
-The JWS algorithms are ML-DSA-65 and ML-DSA-87, the parameter sets sized for a
+The JWS algorithms are ML-DSA-87 and ML-DSA-65, the parameter sets sized for a
 request path.
 
 ### `backend()` and `isNative(alg)`
@@ -287,11 +305,11 @@ with its version and parameter sets, or `javascript` with the reason the native
 backend is unavailable. For evidence bundles and support tickets. It reports,
 and the operator selects, as the next section shows.
 
-### `webhook`: hybrid HMAC + ML-DSA-65 delivery signing
+### `webhook`: hybrid HMAC + ML-DSA delivery signing
 
-Low-level helpers for the KXCO hybrid webhook pattern: `envelope`, `hmacHex`, `verifyHmac`, `pqSign`, `verifyPq`, `signDelivery`, `verifyDelivery`. HMAC-SHA-256 gives symmetric verification with no library dependency; ML-DSA-65 adds non-repudiation over the same `${timestamp}.${body}` envelope. The full identity/credential surface lives in `kxco-pq-sdk`.
+Low-level helpers for the KXCO hybrid webhook pattern: `envelope`, `hmacHex`, `verifyHmac`, `pqSign`, `verifyPq`, `signDelivery`, `verifyDelivery`. HMAC-SHA-256 gives symmetric verification with no library dependency; ML-DSA adds non-repudiation over the same `${timestamp}.${body}` envelope. The full identity/credential surface lives in `kxco-pq-sdk`.
 
-The key decides the PQ header form. An ML-DSA-65 key signs `ml-dsa-65=<hex>`, and an ML-DSA-87 key signs `ml-dsa-87=<hex>` over the same envelope. `verifyPq` and `verifyDelivery` accept only the form that matches the public key they are given: a header whose prefix names the other set fails, and an ML-DSA-87 key takes no bare-hex form.
+The key decides the PQ header form. An ML-DSA-87 key signs `ml-dsa-87=<hex>`, and an ML-DSA-65 key signs `ml-dsa-65=<hex>` over the same envelope. `verifyPq` and `verifyDelivery` accept only the form that matches the public key they are given: a header whose prefix names the other set fails, and an ML-DSA-87 key takes no bare-hex form.
 
 ---
 
@@ -308,7 +326,7 @@ validated module, make the native backend a requirement:
 ```js
 import { requireNativeBackend } from 'kxco-post-quantum'
 
-requireNativeBackend(['ML-DSA-65', 'ML-KEM-768'])
+requireNativeBackend(['ML-DSA-87', 'ML-KEM-768'])
 ```
 
 It throws `ERR_KXCO_PQ_BACKEND` if the JavaScript backend is live, or if the
@@ -346,7 +364,7 @@ KXCO_PQ_BACKEND=openssl       prefer OpenSSL, which is the default anyway
 import { requireBackend } from 'kxco-post-quantum'
 
 requireBackend('javascript')                            // the JS certificate
-requireBackend('openssl', ['ML-DSA-65', 'ML-KEM-768'])  // the native one
+requireBackend('openssl', ['ML-DSA-87', 'ML-KEM-768'])  // the native one
 ```
 
 A value that is neither throws at import, so a misspelled pin is caught before

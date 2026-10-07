@@ -15,8 +15,8 @@ Two separate problems, in order:
 
 | You need | Use | Why |
 |---|---|---|
-| Signatures, general use | `mlDsa` (ML-DSA-65) | Category 3. Fast, 3309-byte signatures. The default. |
-| Signatures, Category 5 required | `mlDsa87` (ML-DSA-87) | When a counterparty specifies Category 5 or names ML-DSA-87. Signatures are 4627 bytes. |
+| Signatures, new keys | `mlDsa87` (ML-DSA-87) | Category 5. 4627-byte signatures. The default, and what `jws.signJws` signs with unless the key is an ML-DSA-65 one. |
+| Signatures, existing ML-DSA-65 keys | `mlDsa` (ML-DSA-65) | Category 3. 3309-byte signatures. Kept so the keys and signatures that already exist keep working. |
 | Signatures, no lattice assumption | `slhDsa` (SLH-DSA-SHA2-192s) | Hash-based, so it does not share ML-DSA's underlying assumption. Signatures are 16 KB and signing takes seconds. |
 | Key establishment | `mlKem` (ML-KEM-768) | Category 3, matching ML-DSA-65. |
 | Key establishment, Category 5 required | `mlKem1024` (ML-KEM-1024) | Public key and ciphertext are 1568 bytes each. The shared secret stays 32 bytes. |
@@ -24,9 +24,10 @@ Two separate problems, in order:
 **On CNSA 2.0.** It names ML-DSA-87 and ML-KEM-1024, and both are available
 here. Availability is not compliance: CNSA 2.0 compliance is a property of a
 deployment, and picking `mlDsa87` for one call path does not confer it on a
-system whose other signatures, identities and anchors are Category 3. Use the
-Category 5 sets when someone asks for the parameter set. Do not use their
-presence as the basis for a compliance statement.
+system whose other signatures, identities and anchors are Category 3. Use
+ML-DSA-87 for every new signing key, and ML-KEM-1024 when someone asks for the
+parameter set. Do not use their presence as the basis for a compliance
+statement.
 
 Two points that catch people out:
 
