@@ -448,24 +448,25 @@ npm view kxco-post-quantum license          # Apache-2.0
 npm audit signatures --json                 # assert invalid:0 and missing:0
 ```
 
-Every release asset is signed with ML-DSA-65 by this package's own signing path,
+Every release asset is signed with ML-DSA-87 by this package's own signing path,
 and carries a SLSA provenance file recording the workflow that built it.
 
 ```
 manifest-node24.x.json          the bundle's manifest
 evidence-node24.x.zip           the bundle
-evidence-node24.x.zip.sig       ML-DSA-65 signature over the zip, hex
+evidence-node24.x.zip.sig       ML-DSA-87 signature over the zip, hex
 evidence.intoto.jsonl           SLSA provenance
-release-signing-key.pub.hex     the public key, also committed to this repository
+release-signing-key-87.pub.hex  the ML-DSA-87 public key, also committed to this repository
+release-signing-key.pub.hex     the ML-DSA-65 key that signed releases before 1.9.0
 ```
 
 ```js
 import { readFileSync } from 'node:fs'
-import { mlDsa } from 'kxco-post-quantum'
+import { mlDsa87 } from 'kxco-post-quantum'
 
-const pub = Buffer.from(readFileSync('release-signing-key.pub.hex', 'utf8').trim(), 'hex')
+const pub = Buffer.from(readFileSync('release-signing-key-87.pub.hex', 'utf8').trim(), 'hex')
 const sig = readFileSync('evidence-node24.x.zip.sig', 'utf8').trim()
-mlDsa.verify(pub, readFileSync('evidence-node24.x.zip'), sig)   // true
+mlDsa87.verify(pub, readFileSync('evidence-node24.x.zip'), sig)   // true
 ```
 
 Compare the public key with the copy committed to this repository, so the key
