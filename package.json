@@ -159,7 +159,7 @@
   },
   "scripts": {
     "fuzz": "node fuzz/fuzz.mjs",
-    "test": "node --test test/basic.test.js && node --test test/webhook-ml-dsa-87.test.js && node --test test/jws-ml-dsa-87-default.test.js && node --test test/backend.test.js && node --test test/context.test.js && node --test test/category5.test.js && node --test test/edge-cases.test.js && node --test test/seed.test.js && node --test test/browser-smoke.test.js && node --test test/property.test.js && node test/run-vectors.js",
+    "test": "node --test test/basic.test.js && node --test test/webhook-ml-dsa-87.test.js && node --test test/jws-ml-dsa-87-default.test.js && node --test test/backend.test.js && node --test test/context.test.js && node --test test/category5.test.js && node --test test/edge-cases.test.js && node --test test/seed.test.js && node --test test/browser-smoke.test.js && node --test test/property.test.js && node --test test/cbom.test.js && node test/run-vectors.js",
     "test:vectors": "node test/run-vectors.js",
     "generate:vectors": "node test/generate-vectors.js > test/vectors.json",
     "bench": "node bench/bench.js",
@@ -169,6 +169,7 @@
     "conformance:protocol": "node conformance/protocol/run-protocol.mjs --json conformance/results/protocol.json",
     "audit:deps": "node audit/run-audit.mjs --json audit/results/dependencies.json",
     "sbom": "npm sbom --sbom-format cyclonedx --sbom-type library",
+    "cbom": "node scripts/build-cbom.mjs",
     "bench:timing": "node --expose-gc bench/timing.mjs --iterations 20000 --json bench/results/timing.json",
     "bench:primitives": "node --expose-gc bench/primitives.mjs --iterations 100 --json bench/results/primitives.json",
     "evidence": "node scripts/build-evidence.mjs",
@@ -179,6 +180,8 @@
     "access": "public"
   },
   "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
     "fast-check": "4.10.2"
   }
 }

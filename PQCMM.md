@@ -36,6 +36,7 @@ request to us, no expiring artifact.
 | Evidence manifest | `releases/latest/download/manifest-node24.x.json` |
 | Evidence bundle | `releases/latest/download/evidence-node24.x.zip` |
 | CycloneDX SBOM | `releases/latest/download/sbom.cyclonedx.json` |
+| CycloneDX CBOM | `releases/latest/download/cbom.cyclonedx.json` |
 | In-toto attestation | `releases/latest/download/evidence.intoto.jsonl` |
 | Release signing key | `releases/latest/download/release-signing-key.pub.hex` |
 
@@ -60,7 +61,9 @@ manifest rather than taken on our word.
 | 3 | Documented for evaluation | Yes | `README.md`, with a per-function API reference. |
 
 Release channel is stable and public, available to all consumers, with no
-programme enrolment. Ten SLH-DSA parameter sets are exposed, not one.
+programme enrolment. One SLH-DSA parameter set is offered, SLH-DSA-SHA2-192s,
+and the conformance suite checks the underlying implementation against NIST's
+vectors for all twelve.
 
 ## Level 2, Foundational: MET
 
@@ -113,7 +116,7 @@ answer is the PKCS#11 path in `kxco-pq-hsm`, not an algorithm choice here.
 
 | # | Criterion | Answer | Evidence or gap |
 |---|---|---|---|
-| 1 | CBOM maintained | **No** | The product publishes an SBOM, not a CBOM. `CRYPTO-INVENTORY.md` now records each algorithm with its protocol context and usage purpose, which is the human-readable half of what a CBOM carries, but it is prose rather than a machine-readable CBOM and key sizes are stated by parameter set rather than per field. Closing this means emitting a CycloneDX CBOM as a release asset, which is a build change rather than a document. |
+| 1 | CBOM maintained | Yes, from 1.9.0 | A CycloneDX 1.6 CBOM ships on every release from 1.9.0 at `releases/latest/download/cbom.cyclonedx.json` and inside the ML-DSA-signed evidence bundle. It carries each algorithm with its OID, NIST category, usage purpose and protocol context; key, signature, ciphertext and seed sizes per field, in bits; and the file and line where the source uses it. It includes what the package executes but does not offer (the native backend's capability probes) and the classical release layer (the npm registry and Sigstore signatures, both ECDSA). It is maintained by construction: `scripts/build-cbom.mjs` reconciles it against `src/` and the build fails if the source uses an algorithm it does not declare, or if a declared use has gone. |
 | 2 | Zero-legacy capability across every in-scope component | **Not determined** | Not assessed against the model's wording, which extends to boot, firmware update signing, hardware-bound operations and internal diagnostics. Claiming it without that determination would be an overclaim. |
 | 3 | Symmetric and hash strengths adequate beyond CRQC availability | Yes | SHA-256 for key identifiers and webhook HMAC, SHA-512 under HKDF for seed derivation, via `@noble/hashes` 2.4.0. Per-use detail in `CRYPTO-INVENTORY.md`. |
 | 4 | Hybrid and composite support documented, with contexts | Partial | Hybrid is documented: `webhook` performs HMAC plus ML-DSA-65 delivery signing, and `deriveSeed` exists to combine an ML-KEM shared secret with a classical secret through a KDF. Composite, in the algorithm-fused sense, is not supported and is not currently stated as unsupported. |
