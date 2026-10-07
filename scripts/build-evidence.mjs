@@ -217,6 +217,13 @@ if (sbom !== null) {
   if (tree !== null) write('05-dependencies.json', tree)
 }
 
+// The CBOM is required, unlike the SBOM. It reconciles its declaration against
+// src/ and exits non-zero when they disagree, and that disagreement is exactly
+// what should stop a release: a bundle without it would read as a release that
+// had no CBOM, and one built past the check would describe code that is not here.
+const cbom = run('cbom', process.execPath, ['scripts/build-cbom.mjs'])
+if (cbom !== null) write('05b-cbom.cyclonedx.json', cbom)
+
 const signatures = run('npm-audit-signatures', 'npm', ['audit', 'signatures'], { optional: true })
 if (signatures !== null) write('06-npm-audit-signatures.txt', signatures)
 
@@ -302,7 +309,7 @@ command in this bundle, not from a claim.
 | Backend used for this run | **${identity.backend.kind}**${identity.backend.openssl ? ` (OpenSSL ${identity.backend.openssl})` : ''} |
 | Conformance | NIST ACVP vectors, pinned by digest — see \`02-conformance-acvp.json\` |
 | Interoperability | OpenSSL 3.5, liboqs, Bouncy Castle, dilithium-py/kyber-py — see \`03-conformance-interop.json\` |
-| Supply chain | SLSA provenance and a CycloneDX SBOM — \`05\` and \`06\` |
+| Supply chain | SLSA provenance, a CycloneDX SBOM and a CycloneDX CBOM: \`05\`, \`05b\` and \`06\` |
 
 Dependency audit history is in \`07-AUDIT.md\`, generated from a dependency
 review rather than written by hand.
@@ -321,6 +328,7 @@ here came from a command you can run yourself, on this commit, and
 | \`03-conformance-interop.json\` | Cross-implementation matrix: OpenSSL, liboqs, Bouncy Castle, dilithium-py/kyber-py |
 | \`04-tests.txt\` | Full test suite output |
 | \`05-*\` | Bill of materials |
+| \`05b-cbom.cyclonedx.json\` | Cryptographic bill of materials: every algorithm, its purpose, key sizes and where the source uses it |
 | \`06-npm-audit-signatures.txt\` | Registry signature and provenance attestation check |
 | \`07-*\` | ${copied.length ? copied.join(', ') : 'no documents were found to copy'} |
 

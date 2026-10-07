@@ -18,6 +18,24 @@ section use `mlDsa87`, and `mlDsa` is described as the ML-DSA-65 namespace kept
 for keys that already exist. Its name and exports do not change. MIGRATION.md
 and the source comments recommend ML-DSA-87 for every new signing key.
 
+**Each release carries a CycloneDX 1.6 CBOM**, at
+`releases/latest/download/cbom.cyclonedx.json` and inside the signed evidence
+bundle as `05b-cbom.cyclonedx.json`. It lists every algorithm the package offers
+(ML-DSA-65, ML-DSA-87, ML-KEM-768, ML-KEM-1024, SLH-DSA-SHA2-192s, HKDF-SHA-512,
+HMAC-SHA-256, SHA-256), the four the native backend runs only to probe OpenSSL,
+and the classical ECDSA of the npm registry and Sigstore signatures. Each carries
+its OID, NIST category, purpose, protocol context, key and signature sizes in
+bits, and the file and line where the source uses it.
+
+`scripts/build-cbom.mjs` reconciles the CBOM against `src/`, and `npm test` and
+the evidence build fail if the source uses an algorithm the CBOM does not
+declare. PQCMM Level 4 criterion 1 moves to met; Level 4 as a whole stays not
+met while zero-legacy capability is undetermined.
+
+`PQCMM.md` and `CRYPTO-INVENTORY.md` said SLH-DSA was offered in ten parameter
+sets. The API offers one, SLH-DSA-SHA2-192s, and the conformance suite checks the
+underlying implementation for all twelve. Both documents now say so.
+
 ## 1.8.0
 The webhook helpers sign and verify with ML-DSA-87 keys. The key decides the
 X-KXCO-PQ-Signature form: pqSign and signDelivery give `ml-dsa-87=<hex>` for

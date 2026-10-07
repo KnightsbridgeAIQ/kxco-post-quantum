@@ -197,6 +197,14 @@ jobs:
           cp dist/evidence/00-MANIFEST.json "manifest-node${{ matrix.node }}.json"
           gh release upload "$TAG" "manifest-node${{ matrix.node }}.json" --clobber
 
+          # The CBOM goes up loose under the stable name PQCMM.md cites. Both
+          # legs upload it: the build reads nothing from the runtime and takes
+          # its timestamp from the commit, so the two copies are byte-identical
+          # and --clobber cannot change what is served. It goes up before the
+          # draft flag comes off, so releases/latest never lacks it.
+          cp dist/evidence/05b-cbom.cyclonedx.json cbom.cyclonedx.json
+          gh release upload "$TAG" cbom.cyclonedx.json --clobber
+
           # The bundle is attached, so the release can stop being a draft. Until
           # this runs, releases/latest still points at the last release that has
           # its evidence, which is the behaviour the README's permanent URL needs.
