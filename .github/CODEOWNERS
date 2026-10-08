@@ -1,7 +1,8 @@
 # Code owners for kxco-post-quantum.
 # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 #
-# Required reviewer on every PR. Pair with a branch-protection rule on `main`
-# that requires "Require review from Code Owners" to be checked.
+# GitHub requests a review from every owner except the PR's author, so a PR
+# opened by JackKXCO goes to JohnKHeff and KeralPatel, and one opened by
+# Dependabot goes to all three. One approval satisfies branch protection on main.
 
-* @JackKXCO
+* @JohnKHeff @KeralPatel @JackKXCO
