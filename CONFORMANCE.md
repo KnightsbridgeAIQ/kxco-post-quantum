@@ -329,10 +329,11 @@ marketing.
   the matrix above, and `mlDsa87` and `mlKem1024` are published helpers. That is
   a support claim, not a compliance claim, and the distinction is not
   decorative. CNSA 2.0 compliance is a property of a deployment, not of an
-  available function. The KXCO estate signs at Category 3 with ML-DSA-65,
-  including Armature L1 from block 0 and every issued KXCO ID, none of which
-  these modules change. The accurate sentences are "NIST FIPS 203/204/205
-  conformant" and "supports ML-DSA-87 and ML-KEM-1024". Anything stronger,
+  available function. KXCO's platform signing keys moved to ML-DSA-87 on 6 and
+  7 October 2026, and releases from 1.9.0 and the published evidence index sign
+  with it. Records signed before then, including every KXCO ID issued so far,
+  carry ML-DSA-65 and still verify. The accurate sentences are "NIST FIPS
+  203/204/205 conformant" and "supports ML-DSA-87 and ML-KEM-1024". Anything stronger,
   including "CNSA 2.0 ready", would be an overclaim.
 - **Protocol coverage is X.509 and CMS, for the ML-DSA sets.** Section 5 covers
   certificates and CMS SignedData against OpenSSL 3.5 for ML-DSA-44/65/87. COSE,
