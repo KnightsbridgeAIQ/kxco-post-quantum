@@ -305,7 +305,7 @@ command in this bundle, not from a claim.
 
 | | |
 |---|---|
-| Algorithms | ML-DSA-65 (FIPS 204), ML-KEM-768 (FIPS 203), SLH-DSA (FIPS 205) |
+| Algorithms | ML-DSA-87 and ML-DSA-65 (FIPS 204), ML-KEM-768 and ML-KEM-1024 (FIPS 203), SLH-DSA-SHA2-192s (FIPS 205) |
 | Backend used for this run | **${identity.backend.kind}**${identity.backend.openssl ? ` (OpenSSL ${identity.backend.openssl})` : ''} |
 | Conformance | NIST ACVP vectors, pinned by digest — see \`02-conformance-acvp.json\` |
 | Interoperability | OpenSSL 3.5, liboqs, Bouncy Castle, dilithium-py/kyber-py — see \`03-conformance-interop.json\` |
