@@ -30,7 +30,7 @@
 //     execution. It is the absence of a leak this test could detect, at this
 //     sample size, on this machine, in this runtime. That is a weaker
 //     statement and it is the only one available.
-//   * On Node 24+ this measures OpenSSL; on Node 20 and 22 it measures the
+//   * On Node 24+ this measures OpenSSL; on Node 22 it measures the
 //     JavaScript backend. They are different implementations and the report
 //     records which one it measured.
 //

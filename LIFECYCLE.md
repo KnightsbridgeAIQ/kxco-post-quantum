@@ -51,7 +51,7 @@ rather than a capability one:
 | Runtime | Backend | Effect |
 |---|---|---|
 | Node 24 and later | OpenSSL 3.5 primitives | Roughly 4x to 8x faster, measured per operation in [BENCHMARKS.md](BENCHMARKS.md) |
-| Node 20.19 to 23, browsers | JavaScript | Every algorithm available, identical wire bytes, slower |
+| Node 22.12 to 23, browsers | JavaScript | Every algorithm available, identical wire bytes, slower |
 
 Nothing becomes unavailable on the slower path. If a request budget cannot
 absorb the JavaScript figures, the fix is a Node upgrade, which is not a

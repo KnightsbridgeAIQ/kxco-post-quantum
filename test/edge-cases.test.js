@@ -16,8 +16,8 @@
 //   there would let a program that can never verify anything look like a
 //   program that is merely receiving bad signatures.
 //
-// Running on Node 24 or later exercises the OpenSSL backend, and on Node 20 or
-// 22 the JavaScript one. Both are expected to behave identically here, which is
+// Running on Node 24 or later exercises the OpenSSL backend, and on Node 22
+// the JavaScript one. Both are expected to behave identically here, which is
 // most of the point of asserting it.
 
 import test from 'node:test'

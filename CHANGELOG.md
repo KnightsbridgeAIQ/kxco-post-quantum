@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.10.0 (2026-10-09)
+
+Runtime support. No change to the API or its behaviour.
+
+**Node.js 22.12 or later is required.** `engines.node` moves from `>=20.19`
+to `>=22.12`. Node 20 reached end of life on 30 April 2026. 22.12 is the
+first Node 22 release that loads ES modules through `require()` without a
+flag, the same property the 20.19 floor provided.
+
+**CI tests every change on Node 22, 24, 24.15.0 and 26.** It tested Node 20, 22, 24 and 24.15.0 before.
+
+**Releases are built on Node 26**, where they were built on Node 24.
+
 ## 1.9.0 (2026-10-07)
 
 `jws.signJws` takes its default from the key, and the default is ML-DSA-87.

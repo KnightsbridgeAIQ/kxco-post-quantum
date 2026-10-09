@@ -2,9 +2,9 @@
 // silently fall back to the JavaScript implementation.
 //
 // This file is its own negative control, without any mocking. CI runs the suite
-// on Node 20, 22 and 24. Node 20 and 22 have no OpenSSL 3.5 post-quantum
+// on Node 22, 24 and 26. Node 22 has no OpenSSL 3.5 post-quantum
 // primitives, so the JavaScript backend is live there and the refusal path is
-// exercised for real; Node 24 exercises the accept path. Each test asserts the
+// exercised for real; Node 24 and 26 exercise the accept path. Each test asserts the
 // behaviour the live backend should produce, so both are covered by CI rather
 // than by a stub that could drift from the real module.
 

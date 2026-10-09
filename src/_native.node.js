@@ -2,7 +2,7 @@
 //
 // Node 24 and later expose the FIPS 203/204/205 parameter sets through OpenSSL
 // 3.5. Where that is available this module supplies the primitives and the
-// JavaScript backend is not called; on Node 20 and 22, and on any runtime
+// JavaScript backend is not called; on Node 22, and on any runtime
 // without them, `native` is null and nothing changes.
 //
 // Why prefer it. The C implementation is the one the wider ecosystem tests

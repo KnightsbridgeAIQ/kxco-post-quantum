@@ -1,7 +1,7 @@
 name: CI
 
 # Runs on every push and PR. Matrix over the Node versions we declare
-# support for in package.json engines (>=20.19). All actions pinned by
+# support for in package.json engines (>=22.12). All actions pinned by
 # 40-char commit SHA.
 
 on:
@@ -24,7 +24,7 @@ jobs:
         # 24.15.0 generates SLH-DSA keys but cannot import one as a JWK. The
         # latest 24 can, so without the pin the native probe's fallback for
         # that case would go untested.
-        node: ['20', '22', '24', '24.15.0']
+        node: ['22', '24', '24.15.0', '26']
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
