@@ -92,7 +92,7 @@ What that does and does not buy:
   JavaScript backend's own statement that it does not defend against side
   channels. OpenSSL's post-quantum side-channel posture is likewise theirs to
   state, not ours to assert on their behalf.
-- It **does not** apply to Node 20 or 22, to browsers, or to any runtime without
+- It **does not** apply to Node 22, to browsers, or to any runtime without
   those primitives. Those keep the JavaScript backend and everything above
   applies to them unchanged.
 - It **does not** cover power or electromagnetic analysis on any path.

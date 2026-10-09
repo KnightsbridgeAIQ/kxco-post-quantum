@@ -195,7 +195,7 @@ Everything else is exercised against liboqs, in both directions, including FIPS
 
 Passing vectors in the middle of the range says nothing about the ends. These are
 run by `npm test` on every supported runtime, so they cover both backends:
-OpenSSL on Node 24 and later, JavaScript on Node 20 and 22.
+OpenSSL on Node 24 and later, JavaScript on Node 22.
 
 | Case | Asserted |
 |---|---|

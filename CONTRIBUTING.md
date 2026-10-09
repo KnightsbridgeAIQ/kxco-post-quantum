@@ -18,7 +18,7 @@ npm ci
 npm test
 ```
 
-Requires Node.js 20.19 or newer. The package is ESM-only.
+Requires Node.js 22.12 or newer. The package is ESM-only.
 
 ## Running tests
 
@@ -39,7 +39,7 @@ deterministic and pinned. If you change anything in `src/derive.js`,
 2. Keep PRs focused — one logical change per PR.
 3. Add or update tests for any behaviour change. Cryptographic code without a
    test vector won't be merged.
-4. Run `npm test` locally and make sure it passes on Node 20, 22, and 24.
+4. Run `npm test` locally and make sure it passes on Node 22, 24 and 26.
 5. Open the PR. CI must pass and a code owner must review.
 
 ## Commit messages
