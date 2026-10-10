@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.11.0 (2026-10-10)
+
+Documentation only. No change to the API or its behaviour.
+
+- The README quick start and the requirement map lead with `mlKem1024` (ML-KEM-1024, FIPS 203, Category 5), the recommended key-establishment set for new keys. `mlKem` keeps its name and meaning and stays for ML-KEM-768 keys that already exist.
+- The comments in `src/index.js` and `src/ml-kem-1024.js` no longer call ML-KEM-768 the default, and `MIGRATION.md` matches.
+- The README states, beside the CNSA 2.0 parameter sets: KXCO does not claim CNSA 2.0 compliance.
+
 ## 1.10.0 (2026-10-09)
 
 Runtime support. No change to the API or its behaviour.
