@@ -11,8 +11,8 @@
 [![conformance](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/conformance.yml/badge.svg)](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/conformance.yml)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue)](./LICENSE)
 
-- **All three NIST standards.** ML-DSA-87 and ML-DSA-65 (FIPS 204), ML-KEM-768 (FIPS 203) and SLH-DSA-SHA2-192s (FIPS 205). ML-DSA-87 is the signature set for new keys, and ML-DSA-65 stays for keys that already exist.
-- **The CNSA 2.0 parameter sets ship.** ML-DSA-87 and ML-KEM-1024 at Category 5, with the same API as the Category 3 sets.
+- **All three NIST standards.** ML-DSA-87 and ML-DSA-65 (FIPS 204), ML-KEM-1024 and ML-KEM-768 (FIPS 203) and SLH-DSA-SHA2-192s (FIPS 205). ML-DSA-87 and ML-KEM-1024 are the sets recommended for new keys, and ML-DSA-65 and ML-KEM-768 stay for keys that already exist.
+- **The CNSA 2.0 parameter sets ship.** ML-DSA-87 and ML-KEM-1024 at Category 5, with the same API as the Category 3 sets. KXCO does not claim CNSA 2.0 compliance.
 - **1,793 NIST ACVP vectors passed, 0 failed.** The other 310 are pairings the library refuses as weaker than the parameter set. See [CONFORMANCE.md](./CONFORMANCE.md).
 - **Interoperable by test.** 225 checks against liboqs, Bouncy Castle and the Python reference implementations, in both directions, 0 failed. See [CONFORMANCE.md](./CONFORMANCE.md).
 - **Native speed on Node 24.** The maths runs in OpenSSL 3.5 on Node 24 and later, and in JavaScript on Node 22 and in browsers, with identical bytes on the wire.
@@ -29,9 +29,9 @@
 
 | The requirement | What answers it |
 |---|---|
-| Post-quantum key establishment by 31 Dec 2030, EO 14412 s.4(b)(ii) | `mlKem.encapsulate` and `mlKem.decapsulate`, ML-KEM-768 |
+| Post-quantum key establishment by 31 Dec 2030, EO 14412 s.4(b)(ii) | `mlKem1024.encapsulate` and `mlKem1024.decapsulate`, ML-KEM-1024 (`mlKem` is the ML-KEM-768 set, for keys that already exist) |
 | Post-quantum signatures by 31 Dec 2031, EO 14412 s.4(b)(iii) | `mlDsa87.sign` and `mlDsa87.verify`, ML-DSA-87 |
-| "PQC-agile libraries for all new applications", OMB M-26-15 | `mlDsa87` and `mlKem1024` behind the same API: Category 5 is a change of import |
+| "PQC-agile libraries for all new applications", OMB M-26-15 | `mlKem1024` and `mlDsa87` behind the same API as the Category 3 sets |
 | "API gateways and application workloads must be configured to issue and validate PQC-signed tokens", OMB M-26-15 | `jws.signJws` and `jws.verifyJws`: compact JWS under ML-DSA-87 or ML-DSA-65, algorithm pinned at the verifier |
 | "re-encrypting long-lived sensitive data using keys protected by PQC mechanisms", OMB M-26-15 | [`kxco-pq-vault`](https://www.npmjs.com/package/kxco-pq-vault) |
 | Minimum elements for a cryptographic bill of materials, in CISA guidance due by 19 Mar 2027, EO 14412 s.5(d) | [`kxco-pq-scan`](https://www.npmjs.com/package/kxco-pq-scan) `--cbom`: a CycloneDX 1.6 CBOM today, ready to check against those elements when CISA publishes them |
@@ -57,7 +57,7 @@ Requires Node.js 22.12+. CI tests every change on Node 22, 24 and 26. ESM-only.
 ## Quick start
 
 ```js
-import { mlDsa87, mlKem, slhDsa, fingerprint, kidEquals } from 'kxco-post-quantum'
+import { mlDsa87, mlKem1024, slhDsa, fingerprint, kidEquals } from 'kxco-post-quantum'
 
 // ML-DSA-87: sign and verify
 const { publicKey, secretKey } = mlDsa87.keypairFromMaster(masterSecret, 'signing-87-v1')
@@ -73,10 +73,10 @@ const slhOk  = slhDsa.verify(slh.publicKey, 'hello', slhSig)  // true
 const kid = fingerprint(publicKey)  // e.g. '4a7c9e2f1b3d5680'
 kidEquals(kid, kid)                 // true (constant-time)
 
-// ML-KEM-768: key encapsulation
-const kemKeys = mlKem.keypairFromMaster(masterSecret, 'encryption-v1')
-const { ciphertext, sharedSecret } = mlKem.encapsulate(kemKeys.publicKey)
-const recovered = mlKem.decapsulate(ciphertext, kemKeys.secretKey)
+// ML-KEM-1024: key encapsulation
+const kemKeys = mlKem1024.keypairFromMaster(masterSecret, 'encryption-1024-v1')
+const { ciphertext, sharedSecret } = mlKem1024.encapsulate(kemKeys.publicKey)
+const recovered = mlKem1024.decapsulate(ciphertext, kemKeys.secretKey)
 // sharedSecret and recovered are the same 32 bytes
 ```
 
@@ -89,8 +89,9 @@ const recovered = mlKem.decapsulate(ciphertext, kemKeys.secretKey)
 `mlDsa87` (ML-DSA-87) is the signature set for new keys. `mlDsa` (ML-DSA-65) has
 the same API, one security category lower, and stays for the keys that already
 exist, whose signatures keep verifying. `mlKem1024` (ML-KEM-1024) has the same
-API as `mlKem`, one security category higher. Reach for it when a counterparty
-specifies Category 5 or names the parameter set.
+API as `mlKem`, one security category higher, and is the recommended set for new
+keys. `mlKem` (ML-KEM-768) keeps its name and meaning for the keys that already
+exist.
 
 ```js
 import { mlDsa87, mlKem1024 } from 'kxco-post-quantum'
@@ -111,8 +112,8 @@ a signature from one set does not verify under the other. Sizes are the migratio
 signature or key field before mixing sets in one system.
 
 **CNSA 2.0 names ML-DSA-87 and ML-KEM-1024**, so moving a deployment to the
-CNSA 2.0 parameter sets is a change of import. See
-[CONFORMANCE.md](./CONFORMANCE.md).
+CNSA 2.0 parameter sets is a change of import. KXCO does not claim CNSA 2.0
+compliance. See [CONFORMANCE.md](./CONFORMANCE.md).
 
 ### Context strings (FIPS 204 / FIPS 205)
 
