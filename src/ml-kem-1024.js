@@ -4,9 +4,9 @@
 // key 1568 bytes, ciphertext 1568 bytes, shared secret 32 bytes. Resistant to
 // attacks by quantum computers.
 //
-// Same API as ./ml-kem.js, one security category higher. Use this where a
-// counterparty specifies Category 5 or names ML-KEM-1024. ML-KEM-768 remains
-// the default for the KXCO stack.
+// Same API as ./ml-kem.js, one security category higher. This is the recommended
+// set for new keys. ML-KEM-768 (./ml-kem.js) keeps its name and meaning for
+// the keys that already exist.
 //
 // Isomorphic: works in Node and modern browsers. Returns Buffer on Node
 // (backwards compatible), Uint8Array in browsers.

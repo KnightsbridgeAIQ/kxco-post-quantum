@@ -19,9 +19,9 @@ export * as mlKem  from './ml-kem.js'
 export * as slhDsa from './slh-dsa.js'
 
 // Category 5 parameter sets. mlDsa87 is the signature set for new keys, and
-// mlDsa stays for the ML-DSA-65 keys that already exist. mlKem1024 is for
-// callers given ML-KEM-1024 as a requirement, and mlKem stays the default for
-// key establishment. Supporting these sets is not a CNSA 2.0 compliance claim;
+// mlDsa stays for the ML-DSA-65 keys that already exist. mlKem1024 is the
+// recommended set for new key-establishment keys, and mlKem (ML-KEM-768) keeps
+// its name and meaning for the keys that already exist. Supporting these sets is not a CNSA 2.0 compliance claim;
 // see the notes at the top of each module and CONFORMANCE.md.
 export * as mlDsa87   from './ml-dsa-87.js'
 export * as mlKem1024 from './ml-kem-1024.js'
