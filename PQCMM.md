@@ -151,8 +151,9 @@ The model requires this record to accompany an assessment.
   2.4.0 in the JavaScript backend; `node:crypto` on OpenSSL 3.5.8 in the native
   backend. Both versions are recorded in the manifest. `@noble/post-quantum` is
   maintained, and its PQC support is confirmed from its public repository. It
-  has **not** been independently audited. Version 0.7.1 is deliberately not
-  adopted because it regressed SLH-DSA, so the dependency is pinned at 0.7.0.
+  has **not** been independently audited. The dependency is pinned at exactly
+  0.7.0. An earlier version of this assessment said 0.7.1 regressed SLH-DSA. It did
+  not: the fault was in our own ACVP runner, as the CHANGELOG records.
 - **Reproduction attempts.** All conformance, interop, test and SBOM steps in
   the manifest ran in CI from a clean tree at commit `45ad12b`, the `v1.9.0`
   tag, on Node 24.21.0, linux-x64, on 2026-10-07. Every step reports `ok: true`, and

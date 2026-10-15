@@ -72,18 +72,15 @@ the FIPS 203/204/205 arithmetic. This package does not reimplement it.
 
 **Why it is a blocker and not just a dependency.** It is the one package in the
 tree with no independent review. The maintainer's own self-audit covers 0.6.1,
-which is not the version shipped. Version 0.7.1 regressed nine NIST SLH-DSA
-verification vectors that 0.7.0 passes, shipped in this package's 1.5.1 and was
-reverted in 1.5.2. So the supply risk here is demonstrated rather than
-theoretical.
+which is not the version shipped. An earlier version of this section cited a
+0.7.1 regression as evidence of that risk. There was none: the fault was in
+this repository's ACVP runner, as the CHANGELOG records.
 
 **Mitigations, in the order they actually help.**
 
 1. *Evidence instead of trust.* Every parameter set is checked against NIST's
    ACVP vectors and cross-checked against liboqs, Bouncy Castle and two Python
-   implementations in both directions. That regression was caught by this
-   harness within hours of the dependency's release, which is the concrete
-   demonstration that the control works.
+   implementations in both directions.
 2. *A second implementation on the same wire format.* On Node 24 and later the
    OpenSSL backend performs ML-DSA, ML-KEM and SLH-DSA for the sets OpenSSL
    expresses, and the dependency is not doing that arithmetic at all. The
@@ -91,8 +88,7 @@ theoretical.
    JavaScript path, because OpenSSL does not express it. So the dependency is
    reduced on modern runtimes rather than removed.
 3. *An exact pin, enforced.* No ranges in `dependencies`, and the audit harness
-   fails the build on one. 0.7.1 is separately blocked in dependabot so it
-   cannot return through an automated bump.
+   fails the build on one.
 4. *A conformance gate on every bump.* A change to this dependency is a change
    to the primitives, so it is not merged on a green test run. The full ACVP
    and interoperability evidence has to regenerate clean.

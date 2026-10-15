@@ -36,7 +36,7 @@
       "externalAudit": "none",
       "auditNote": "Self-audited by the maintainer at 0.7.0's predecessor 0.6.1 in Apr 2026. No independent audit. This is the reason conformance/ exists in this repository: every parameter set is checked against NIST's own ACVP vectors and cross-checked against liboqs, Bouncy Castle and dilithium-py/kyber-py in both directions, so the primitive is evidenced here rather than taken on the dependency's word.",
       "pinning": "exact",
-      "pinningNote": "Pinned exactly, not caret-ranged. 0.7.1 regressed nine NIST SLH-DSA verify vectors that 0.7.0 passes; it shipped in 1.5.1, was reverted in 1.5.2, and is blocked in dependabot. A caret range would have taken that regression automatically.",
+      "pinningNote": "Pinned exactly, not caret-ranged, so every bump passes the ACVP and interoperability gate. An earlier note said 0.7.1 regressed nine NIST SLH-DSA verify vectors; that was a fault in our ACVP runner, not in 0.7.1.",
       "reachable": true
     },
     {

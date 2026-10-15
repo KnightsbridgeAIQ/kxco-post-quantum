@@ -248,7 +248,10 @@ function runMlDsaKeyGen(tally, { prompt, expectedById }) {
 function signerFor(alg, g, t) {
   if (g.signatureInterface === 'internal') {
     if (!alg.internal) return { reason: 'backend exposes no internal interface' }
-    return { signer: alg.internal, extraOpts: { externalMu: g.externalMu === true } }
+    // externalMu is an ML-DSA option. SLH-DSA groups do not carry the field, and
+    // @noble/post-quantum 0.7.1 rejects an option it does not recognise.
+    const extraOpts = 'externalMu' in g ? { externalMu: g.externalMu === true } : {}
+    return { signer: alg.internal, extraOpts }
   }
   if (g.preHash === 'preHash') {
     const hashName = g.hashAlg ?? t.hashAlg
@@ -329,14 +332,19 @@ function runSigVer(tally, { prompt, expectedById }, table) {
 
       // A negative vector may be malformed enough to throw. A throw and a
       // false return are the same verdict here: the signature was rejected.
+      // A failure still reports the error, because a throw can also be this
+      // runner calling the backend wrongly rather than the backend rejecting.
       let ok
+      let threw
       try {
         ok = signer.verify(bytes(t.signature), msg, bytes(t.pk), opts)
-      } catch {
+      } catch (err) {
         ok = false
+        threw = err
       }
 
       if (ok === exp.testPassed) tally.pass(g.parameterSet)
+      else if (threw) tally.fail(g.parameterSet, g.tgId, t.tcId, `verify threw ${threw.name}: ${threw.message}, expected ${exp.testPassed}`)
       else tally.fail(g.parameterSet, g.tgId, t.tcId, `verify returned ${ok}, expected ${exp.testPassed}`)
     }
   }
