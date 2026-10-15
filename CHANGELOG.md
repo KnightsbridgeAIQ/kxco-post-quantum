@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 1.11.1 (2026-10-15)
+
+Documentation and conformance runner only. No change to the API or its behaviour.
 
 **Correction: `@noble/post-quantum` 0.7.1 did not regress.** The 1.5.2 and 1.5.3 entries below said 0.7.1
 fails nine NIST ACVP SLH-DSA verification vectors that 0.7.0 passes. It does not. The failures came from
@@ -430,7 +432,7 @@ provenance attestation. Those are the parts that distinguish this from any other
 post-quantum wrapper, and they were absent from the one line most readers see.
 
 A dependabot ignore blocked @noble/post-quantum 0.7.1. It rested on the mistaken
-regression finding in 1.5.2 and has been removed. See Unreleased.
+regression finding in 1.5.2 and has been removed. See 1.11.1.
 
 ## 1.5.2
 
@@ -441,7 +443,7 @@ verification vectors that 0.7.0 passes. That was wrong. The failures came from t
 runner, which passed `externalMu`, an ML-DSA option, to SLH-DSA verification. 0.7.1 rejects an option
 it does not recognise, and the runner counted the throw as a rejected signature. 0.7.1 itself passes
 every vector that 0.7.0 passes. The revert in this release, and the npm deprecation of 1.5.1, rested on
-that mistaken finding. See Unreleased.
+that mistaken finding. See 1.11.1.
 
 ## 1.5.1
 
