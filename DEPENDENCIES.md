@@ -45,11 +45,11 @@ signed messages that OpenSSL 3.5 issued. The primitives are evidenced here rathe
 than accepted on the dependency's word, and that evidence is reproducible on any
 machine.
 
-The pin is exact and deliberately so. Version 0.7.1 regressed nine NIST SLH-DSA
-verification vectors that 0.7.0 passes. It shipped in this package's 1.5.1, was
-reverted in 1.5.2, is deprecated on npm and is blocked in dependabot. A caret
-range would have taken that regression automatically, which is why the harness
-fails the build on any range in `dependencies`.
+The pin is exact and deliberately so. A caret range would take a new release
+without the conformance gate every bump has to pass, which is why the harness
+fails the build on any range in `dependencies`. An earlier version of this file
+said 0.7.1 regressed nine NIST SLH-DSA verification vectors. It did not: the
+fault was in this repository's ACVP runner, as the CHANGELOG records.
 
 **`@noble/hashes`** supplies SHA-256, SHA-512, SHAKE-256 and HKDF, for key
 derivation from a master secret, public-key fingerprinting and the hashing FIPS

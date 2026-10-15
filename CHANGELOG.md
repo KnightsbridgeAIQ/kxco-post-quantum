@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+**Correction: `@noble/post-quantum` 0.7.1 did not regress.** The 1.5.2 and 1.5.3 entries below said 0.7.1
+fails nine NIST ACVP SLH-DSA verification vectors that 0.7.0 passes. It does not. The failures came from
+this repository's ACVP runner, which passed `externalMu`, an ML-DSA option, to SLH-DSA's internal verify.
+0.7.0 ignored the stray option. 0.7.1 rejects an option it does not recognise, and the runner recorded the
+throw as a rejected signature. Called correctly, 0.7.1 passes every vector 0.7.0 passes. The upstream report
+filed on that finding, paulmillr/noble-post-quantum#57, was wrong.
+
+- The runner passes `externalMu` only to the groups that carry it, and a failed vector now reports the error
+  the backend threw instead of "verify returned false".
+- The dependabot ignore for 0.7.1 is removed, and the documents that described the regression are corrected:
+  `DEPENDENCIES.md`, `LIFECYCLE.md`, `AUDIT.md`, `PQCMM.md` and `audit/`.
+- The dependency stays at 0.7.0 in this change. Moving to 0.7.1 is a separate bump, through the same ACVP and
+  interoperability gate as any other.
+
 ## 1.11.0 (2026-10-10)
 
 Documentation only. No change to the API or its behaviour.
@@ -413,48 +429,19 @@ not the 225-check interoperability matrix, not the reproducible build or the
 provenance attestation. Those are the parts that distinguish this from any other
 post-quantum wrapper, and they were absent from the one line most readers see.
 
-A dependabot ignore blocks @noble/post-quantum 0.7.1 specifically, so it is not
-reproposed weekly. The ACVP job fails the build on it regardless; this stops the
-pull request being opened. 0.7.2 and later will still be offered and should be
-accepted once the vectors pass.
+A dependabot ignore blocked @noble/post-quantum 0.7.1. It rested on the mistaken
+regression finding in 1.5.2 and has been removed. See Unreleased.
 
 ## 1.5.2
 
-**Reverts `@noble/post-quantum` to 0.7.0. Upgrade from 1.5.1 immediately if you
-verify SLH-DSA signatures.**
+Reverts `@noble/post-quantum` to 0.7.0.
 
-1.5.1 bumped the backend to 0.7.1. That version **fails nine NIST ACVP SLH-DSA
-verification vectors that 0.7.0 passes**, returning `false` where the vectors
-require `true`. In practice that means a valid SLH-DSA signature can be
-rejected. It is a correctness and availability fault, not a security weakening:
-nothing invalid is accepted. No other algorithm family is affected, and ML-DSA
-and ML-KEM pass unchanged on both versions.
-
-The failures are confined to the **internal** signature interface
-(`SLH-DSA.Verify_internal`), not the pre-hash interface, and appear across both
-SHA2 and SHAKE parameter sets: SHA2-128s, SHA2-192f, SHA2-256f, SHA2-256s,
-SHAKE-128f, SHAKE-128s, SHAKE-256f, SHAKE-256s. Reproduce with:
-
-```
-npm run conformance:fetch
-node conformance/run-acvp.mjs --set SLH-DSA-sigVer-FIPS205 --max-per-group 3
-```
-
-0.7.0 returns 87 passed, 0 failed, 21 skipped. 0.7.1 returns 78 passed, 9
-failed.
-
-This has been reported upstream. Until it is resolved the pin stays at 0.7.0,
-and the ACVP job will fail the build on any attempt to move it, which is the
-behaviour we want.
-
-**Why this is worth saying plainly rather than quietly reverting.** The
-conformance evidence in this repository is not decoration. It caught a real
-regression in a dependency within hours of that dependency's release, on a
-version bump whose own release notes described only hardening. A test suite that
-passes is not evidence; a test suite that fails when something breaks is. Ours
-did.
-
-1.5.1 is deprecated on npm.
+**Corrected 15 October 2026.** This entry said `@noble/post-quantum` 0.7.1 fails nine NIST ACVP SLH-DSA
+verification vectors that 0.7.0 passes. That was wrong. The failures came from this repository's ACVP
+runner, which passed `externalMu`, an ML-DSA option, to SLH-DSA verification. 0.7.1 rejects an option
+it does not recognise, and the runner counted the throw as a rejected signature. 0.7.1 itself passes
+every vector that 0.7.0 passes. The revert in this release, and the npm deprecation of 1.5.1, rested on
+that mistaken finding. See Unreleased.
 
 ## 1.5.1
 
