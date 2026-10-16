@@ -10,7 +10,7 @@ quote against the same guess made differently.
 ## 1. What is being validated
 
 `kxco-post-quantum`, a JavaScript library implementing the three NIST
-post-quantum standards over `@noble/post-quantum` 0.7.0. It is a software module
+post-quantum standards over `@noble/post-quantum` 0.7.1. It is a software module
 with no network path: nothing in `src/` opens a socket.
 
 **Scope is CAVP algorithm validation.** A FIPS 140-3 module certificate through

@@ -119,7 +119,7 @@ const moduleUrl = await create('module', '/acvp/v1/modules', {
   contactUrls: [personUrl],
   description:
     'JavaScript library providing FIPS 203 ML-KEM, FIPS 204 ML-DSA and FIPS 205 SLH-DSA. ' +
-    'The post-quantum primitives under test are @noble/post-quantum 0.7.0 as built and ' +
+    'The post-quantum primitives under test are @noble/post-quantum 0.7.1 as built and ' +
     'distributed in this package. Algorithm testing covers those primitives directly.',
 })
 
