@@ -133,7 +133,7 @@ answer is the PKCS#11 path in `kxco-pq-hsm`, not an algorithm choice here.
 | 1 | Quantum-safe by default, legacy requires explicit enablement | Yes | There is no classical algorithm to fall back to. From 1.9.0 the default signature set is ML-DSA-87, Category 5, and the default key encapsulation set is ML-KEM-768, Category 3. |
 | 2 | Benchmarked and tuned against operational requirements | Yes | `BENCHMARKS.md`. Two figures stated rather than hidden: ML-DSA signing keeps a rejection-sampling tail on either backend, and SLH-DSA-SHA2-192s signs in seconds rather than milliseconds. |
 | 3 | Primarily follows standards from a recognised body | Yes | FIPS 203, 204 and 205. |
-| 4 | **Independently verified or certified** | **No** | No FIPS 140 validation. No Common Criteria evaluation. The underlying `@noble/post-quantum` 0.7.0 has no published third-party formal security analysis covering the implemented PQC algorithms, so the library-based route in the model's wording is not available either. |
+| 4 | **Independently verified or certified** | **No** | No FIPS 140 validation. No Common Criteria evaluation. The underlying `@noble/post-quantum` 0.7.1 has no published third-party formal security analysis covering the implemented PQC algorithms, so the library-based route in the model's wording is not available either. |
 
 Criterion 4 is the binding constraint and it cannot be closed by documentation.
 It requires a paid engagement: a CAVP or CMVP validation through an accredited
@@ -147,12 +147,12 @@ The model requires this record to accompany an assessment.
 - **Evidence method.** Documentation review, plus the published evidence
   manifest, plus verification of the licence state of every published package
   against the public npm registry on 2026-10-08.
-- **Cryptographic library.** `@noble/post-quantum` 0.7.0 and `@noble/hashes`
+- **Cryptographic library.** `@noble/post-quantum` 0.7.1 and `@noble/hashes`
   2.4.0 in the JavaScript backend; `node:crypto` on OpenSSL 3.5.8 in the native
   backend. Both versions are recorded in the manifest. `@noble/post-quantum` is
   maintained, and its PQC support is confirmed from its public repository. It
   has **not** been independently audited. The dependency is pinned at exactly
-  0.7.0. An earlier version of this assessment said 0.7.1 regressed SLH-DSA. It did
+  0.7.1. An earlier version of this assessment said 0.7.1 regressed SLH-DSA. It did
   not: the fault was in our own ACVP runner, as the CHANGELOG records.
 - **Reproduction attempts.** All conformance, interop, test and SBOM steps in
   the manifest ran in CI from a clean tree at commit `45ad12b`, the `v1.9.0`

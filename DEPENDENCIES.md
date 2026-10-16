@@ -20,7 +20,7 @@ Current result: **26 checks passed, 0 failed, 0 skipped.**
 
 | Package | Version | Licence | Pinning | On the code path | Independently reviewed by |
 |---|---|---|---|---|---|
-| `@noble/post-quantum` | 0.7.0 | MIT | exact | yes | maintainer self-audit at 0.6.1, Apr 2026 |
+| `@noble/post-quantum` | 0.7.1 | MIT | exact | yes | maintainer self-audit at 0.6.1, Apr 2026 |
 | `@noble/hashes` | 2.3.0 | MIT | exact | yes | Cure53, Jan 2022 |
 | `@noble/curves` | 2.3.0 | MIT | transitive | yes | Trail of Bits, Feb 2023; Kudelski Security, Sep 2023; Cure53, Sep 2024 |
 | `@noble/ciphers` | 2.3.0 | MIT | transitive | no | Cure53, Sep 2024 |

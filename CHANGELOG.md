@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 1.11.1 (2026-10-16)
+
+**`@noble/post-quantum` 0.7.0 to 0.7.1, exact pin.** Taken through the same gate as any other bump: the full NIST ACVP set on the corrected runner, JavaScript backend, Node 26.1.0, ACVP-Server 975de31e, returns 1793 passed, 0 failed, 310 skipped, the same totals as 0.7.0. 0.7.1 snapshots the options object so a caller cannot mutate it mid-call, rejects options it does not recognise, and carries the maintainer's Falcon fixes; none of that touches the ML-DSA, ML-KEM or SLH-DSA bytes on the wire. No API change.
 
 **Correction: `@noble/post-quantum` 0.7.1 did not regress.** The 1.5.2 and 1.5.3 entries below said 0.7.1
 fails nine NIST ACVP SLH-DSA verification vectors that 0.7.0 passes. It does not. The failures came from
@@ -13,8 +15,7 @@ filed on that finding, paulmillr/noble-post-quantum#57, was wrong.
   the backend threw instead of "verify returned false".
 - The dependabot ignore for 0.7.1 is removed, and the documents that described the regression are corrected:
   `DEPENDENCIES.md`, `LIFECYCLE.md`, `AUDIT.md`, `PQCMM.md` and `audit/`.
-- The dependency stays at 0.7.0 in this change. Moving to 0.7.1 is a separate bump, through the same ACVP and
-  interoperability gate as any other.
+- The dependency moved to 0.7.1 in this release, through the ACVP gate above.
 
 ## 1.11.0 (2026-10-10)
 

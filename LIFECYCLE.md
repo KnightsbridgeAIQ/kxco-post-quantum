@@ -67,7 +67,7 @@ proving that at stage 1 for exactly this reason.
 
 ## Blocking supplier dependency
 
-**The dependency.** `@noble/post-quantum`, pinned at exactly 0.7.0, supplies
+**The dependency.** `@noble/post-quantum`, pinned at exactly 0.7.1, supplies
 the FIPS 203/204/205 arithmetic. This package does not reimplement it.
 
 **Why it is a blocker and not just a dependency.** It is the one package in the

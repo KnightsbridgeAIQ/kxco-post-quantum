@@ -101,7 +101,7 @@ server has already graded the same computation and passed it.
 ## Results, 12 and 13 September 2026
 
 Against `demo.acvts.nist.gov`, non-sample sessions, `kxco-post-quantum` 1.7.2 on
-`@noble/post-quantum` 0.7.0, Node.js 26.1.0.
+`@noble/post-quantum` 0.7.1, Node.js 26.1.0.
 
 | Session | Vector sets | Cases | Result |
 | --- | --- | --- | --- |
