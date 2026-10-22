@@ -47,6 +47,13 @@ function hexToBytes(hex) {
   for (let i = 0; i < b.length; i++) b[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16)
   return b
 }
+// A signature arrives as hex, the form sign() returns, or as the raw bytes a
+// hardware signer or another library hands over. Bytes are used as they are.
+// Anything else goes to hexToBytes, which refuses it, so verify() still fails
+// closed on a number, an object or a string that is not hex.
+function signatureBytes(sig) {
+  return sig instanceof Uint8Array ? sig : hexToBytes(sig)
+}
 function bytesToHex(bytes) {
   let s = ''
   for (let i = 0; i < bytes.length; i++) s += bytes[i].toString(16).padStart(2, '0')
@@ -100,32 +107,34 @@ export function sign(secretKey, message, opts) {
 }
 
 /**
- * Verify a hex-encoded signature.
+ * Verify a signature given as hex, as sign() returns it, or as raw bytes.
  *
  * Pass the same context the signer used. A signature made under a context
  * returns false here if the context is omitted or differs, which is the point
  * of it.
  *
- * Returns false for any cryptographic failure. Throws only on caller misuse of
- * `opts` (wrong type, or a context over 255 bytes), because that is a bug
- * rather than a failed verification and should not be silently swallowed.
+ * Returns false for any cryptographic failure, including a signature of the
+ * wrong length, a string that is not hex, or a value that is neither a string
+ * nor a Uint8Array. Throws only on caller misuse of `opts` (wrong type, or a
+ * context over 255 bytes), because that is a bug rather than a failed
+ * verification and should not be silently swallowed.
  *
  * @param {Buffer|Uint8Array} publicKey
  * @param {Buffer|Uint8Array|string} message
- * @param {string} sigHex
+ * @param {string|Buffer|Uint8Array} signature hex, or the raw 3309 bytes
  * @param {{ context?: Uint8Array|Buffer|string }} [opts]
  * @returns {boolean}
  */
-export function verify(publicKey, message, sigHex, opts) {
+export function verify(publicKey, message, signature, opts) {
   // Outside the try: misuse must surface, not be swallowed as "invalid".
   const context = normalizeContext(opts)
   try {
     if (usesNative(context)) {
-      return native.verify(NATIVE_ALG, publicKey, toBytes(message), hexToBytes(sigHex), context)
+      return native.verify(NATIVE_ALG, publicKey, toBytes(message), signatureBytes(signature), context)
     }
     return context === undefined
-      ? ml_dsa65.verify(hexToBytes(sigHex), toBytes(message), publicKey)
-      : ml_dsa65.verify(hexToBytes(sigHex), toBytes(message), publicKey, { context })
+      ? ml_dsa65.verify(signatureBytes(signature), toBytes(message), publicKey)
+      : ml_dsa65.verify(signatureBytes(signature), toBytes(message), publicKey, { context })
   } catch {
     return false
   }

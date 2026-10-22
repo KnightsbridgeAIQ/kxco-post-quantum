@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.12.0 (2026-10-22)
+
+**`verify` takes the signature as raw bytes as well as hex.** `mlDsa87.verify`, `mlDsa.verify` and `slhDsa.verify` accept the signature as the hex string `sign` returns, exactly as before, or as a `Uint8Array` or `Buffer` holding the raw signature bytes. A signer that returns bytes, such as a hardware security module, no longer needs its signature converted to hex first. Until this release a byte signature returned `false` whatever it held, which read as a bad signature.
+
+Hex callers are unaffected. A hex string is decoded exactly as before, and a string that is not hex still returns `false`. A byte signature of the wrong length or with any byte changed returns `false`, and so does any value that is neither a string nor a `Uint8Array`. `sign` still returns hex. On Node 24 and later the bytes reach the OpenSSL backend with no hex conversion, and the TypeScript declarations type the signature as `string | Uint8Array`.
+
+`test/verify-bytes.test.js` checks hex, `Uint8Array`, `Buffer` and a view into a larger buffer for all three sets, including a signature made by `@noble/post-quantum` directly as raw bytes, with the failing cases as controls. A property test holds that hex and bytes give the same answer for any message, and the fuzz harness hands its corpus to `verify` as bytes as well as hex.
+
 ## 1.11.1 (2026-10-16)
 
 **`@noble/post-quantum` 0.7.0 to 0.7.1, exact pin.** Taken through the same gate as any other bump: the full NIST ACVP set on the corrected runner, JavaScript backend, Node 26.1.0, ACVP-Server 975de31e, returns 1793 passed, 0 failed, 310 skipped, the same totals as 0.7.0. 0.7.1 snapshots the options object so a caller cannot mutate it mid-call, rejects options it does not recognise, and carries the maintainer's Falcon fixes; none of that touches the ML-DSA, ML-KEM or SLH-DSA bytes on the wire. No API change.

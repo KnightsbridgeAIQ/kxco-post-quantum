@@ -186,7 +186,7 @@ The signature set for new keys. Security Category 5.
 |---|---|---|
 | `keypairFromMaster` | `(master, info?) → { publicKey, secretKey, seed }` | Deterministic keypair via HKDF-SHA-512. `info` defaults to `'ml-dsa-87-v1'`. `seed` is the 32 bytes the pair was expanded from. See [`seed`](#seed-seed-form-keys-rfc-9964-lamps). |
 | `sign` | `(secretKey, message) → string` | Signs a message. Returns a hex-encoded signature (9254 chars). |
-| `verify` | `(publicKey, message, sigHex) → boolean` | Verifies a hex-encoded signature. Returns `false` on any failure. |
+| `verify` | `(publicKey, message, signature) → boolean` | Verifies a signature given as hex or as raw bytes (`Uint8Array` or `Buffer`). Returns `false` on any failure. |
 | `ml_dsa87` | raw primitive | The underlying `@noble/post-quantum` primitive, re-exported. |
 
 `publicKey` is 2592 bytes. `secretKey` is 4896 bytes. `message` accepts `Buffer`, `Uint8Array`, or `string`.
@@ -201,7 +201,7 @@ signature it has made keeps verifying.
 |---|---|---|
 | `keypairFromMaster` | `(master, info?) → { publicKey, secretKey, seed }` | Deterministic keypair via HKDF-SHA-512. `info` defaults to `'ml-dsa-65-v1'`. `seed` is the 32 bytes the pair was expanded from. See [`seed`](#seed-seed-form-keys-rfc-9964-lamps). |
 | `sign` | `(secretKey, message) → string` | Signs a message. Returns a hex-encoded signature (6618 chars). |
-| `verify` | `(publicKey, message, sigHex) → boolean` | Verifies a hex-encoded signature. Returns `false` on any failure. |
+| `verify` | `(publicKey, message, signature) → boolean` | Verifies a signature given as hex or as raw bytes (`Uint8Array` or `Buffer`). Returns `false` on any failure. |
 | `ml_dsa65` | raw primitive | The underlying `@noble/post-quantum` primitive, re-exported. |
 
 `publicKey` is 1952 bytes. `secretKey` is 4032 bytes. `message` accepts `Buffer`, `Uint8Array`, or `string`.
@@ -214,7 +214,7 @@ Hash-based, stateless signatures. Security Category 3 (matching ML-DSA-65), with
 |---|---|---|
 | `keypairFromMaster` | `(master, info?) → { publicKey, secretKey }` | Deterministic keypair via HKDF-SHA-512. `info` defaults to `'slh-dsa-sha2-192s-v1'`. |
 | `sign` | `(secretKey, message) → string` | Signs a message. Returns a hex-encoded signature (32448 chars). |
-| `verify` | `(publicKey, message, sigHex) → boolean` | Verifies a hex-encoded signature. Returns `false` on any failure. |
+| `verify` | `(publicKey, message, signature) → boolean` | Verifies a signature given as hex or as raw bytes (`Uint8Array` or `Buffer`). Returns `false` on any failure. |
 | `slh_dsa_sha2_192s` | raw primitive | The underlying `@noble/post-quantum` primitive, re-exported. |
 
 `publicKey` is 48 bytes. `secretKey` is 96 bytes. `message` accepts `Buffer`, `Uint8Array`, or `string`.

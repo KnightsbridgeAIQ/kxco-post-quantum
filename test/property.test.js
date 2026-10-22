@@ -12,7 +12,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import fc from 'fast-check'
-import { mlDsa, mlKem, fingerprint, kidEquals, deriveSeed, seed as seedmod, jws, webhook } from '../src/index.js'
+import { mlDsa, mlDsa87, mlKem, fingerprint, kidEquals, deriveSeed, seed as seedmod, jws, webhook } from '../src/index.js'
 
 // Signing is milliseconds per case, so a modest run count keeps the suite fast
 // while still covering a spread of lengths, encodings and contexts.
@@ -28,6 +28,7 @@ const context = fc.string({ maxLength: 60, size: 'max' })
 
 // One key per run is enough: the properties are about messages and contexts.
 const signer = mlDsa.keypairFromMaster(new Uint8Array(32).fill(7), 'property-tests-v1')
+const signer87 = mlDsa87.keypairFromMaster(new Uint8Array(32).fill(7), 'property-tests-87-v1')
 
 test('the harness fails a property that is false', () => {
   assert.throws(() => fc.assert(fc.property(fc.integer(), (n) => n + 1 === n), { numRuns: 10 }))
@@ -67,6 +68,22 @@ test('ML-DSA-65: verify fails closed on an arbitrary signature', () => {
   )
   fc.assert(fc.property(message, junk, (msg, sig) => {
     return mlDsa.verify(signer.publicKey, msg, Buffer.from(sig).toString('hex')) === false
+  }), RUNS)
+})
+
+test('ML-DSA-65 and ML-DSA-87: verify gives the same answer for a signature as hex and as bytes', () => {
+  // Half the cases change one byte first, so the property is held on both
+  // answers. The last line is the control: an implementation that returned
+  // false for every form would agree with itself and still fail here.
+  const sets = [[mlDsa, signer], [mlDsa87, signer87]]
+  fc.assert(fc.property(fc.constantFrom(0, 1), message, fc.boolean(), fc.nat(), (which, msg, tamper, at) => {
+    const [impl, kp] = sets[which]
+    const bytes = Buffer.from(impl.sign(kp.secretKey, msg), 'hex')
+    if (tamper) bytes[at % bytes.length] ^= 0x01
+    const viaHex = impl.verify(kp.publicKey, msg, bytes.toString('hex'))
+    return impl.verify(kp.publicKey, msg, bytes) === viaHex &&
+      impl.verify(kp.publicKey, msg, new Uint8Array(bytes)) === viaHex &&
+      viaHex === !tamper
   }), RUNS)
 })
 
