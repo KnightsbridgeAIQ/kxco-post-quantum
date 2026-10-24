@@ -26,7 +26,7 @@ is no transport for it to protect.
 Its own delivery is a different matter and is not quantum-safe. Fetching the
 package is classical TLS to the npm registry or to GitHub, as was the transport
 that delivered any git clone. That residual is stated in `BOUNDARY.md` and is
-mitigated by an ML-DSA-65 signature over every release asset plus a second copy
+mitigated by an ML-DSA-87 signature over every release asset plus a second copy
 of the public key committed to the repository, so that a verifier is not
 trusting the same channel twice. Mitigated, not eliminated.
 
@@ -67,7 +67,7 @@ pretend to be a PKI.
 | Key identifier | SHA-256 over the public key, truncated to 16 hex characters (`kid.js`) | Yes, second-preimage bound |
 | Key interchange | JWK `kty: AKP` per RFC 9964, and PKCS#8 seed export | Format, not an algorithm |
 | JWS signing | ML-DSA over the JWS signing input (`jws.js`) | Yes |
-| Webhook delivery signing | HMAC-SHA-256 **and** ML-DSA-65, both (`webhook.js`) | Yes, hybrid |
+| Webhook delivery signing | HMAC-SHA-256 **and** ML-DSA-87 or ML-DSA-65, both (`webhook.js`) | Yes, hybrid |
 
 The `kid` is a truncated SHA-256, so it is a 64-bit identifier and not a
 security boundary. It identifies which key to try; it does not authenticate
@@ -79,10 +79,10 @@ decision on a `kid` alone.
 
 **Applicable, and quantum-safe.**
 
-Every release asset is signed with ML-DSA-65 by this package's own signing
+Every release asset is signed with ML-DSA-87 (ML-DSA-65 before 1.9.0) by this package's own signing
 path, which means the signing of the package is performed by the thing being
 signed. The public key is committed to the repository at
-`release-signing-key.pub.hex` and published as a release asset, so a verifier
+`release-signing-key-87.pub.hex` and published as a release asset, so a verifier
 can obtain it by a path other than the one that delivered the artefact.
 Verification is four lines and is in `README.md`.
 
@@ -91,8 +91,8 @@ native path calls the OpenSSL already present in the host runtime.
 
 | Use | Algorithm | Quantum-safe |
 |---|---|---|
-| Release asset signing | ML-DSA-65 | Yes |
-| Signature over the evidence bundle | ML-DSA-65, `.sig` beside each bundle | Yes |
+| Release asset signing | ML-DSA-87 | Yes |
+| Signature over the evidence bundle | ML-DSA-87, `.sig` beside each bundle | Yes |
 
 ## 5. Key wrapping and key-encryption keys
 
@@ -152,7 +152,7 @@ public-key primitive; the risk here is classical and it is entropy starvation.
 no state between calls, so there is no audit trail of its own to protect.
 
 Log integrity in the wider KXCO estate is `kxco-pq-audit`, a separate package:
-SHA-256 hash-chained entries, each signed with ML-DSA-65, with periodic seals
+SHA-256 hash-chained entries, each signed with ML-DSA-87 or ML-DSA-65, with periodic seals
 anchored on Armature L1 so that a verifier who does not trust the log operator
 still has an independent time bound. What this package contributes to that is
 the signature primitive and nothing else.
@@ -165,7 +165,7 @@ overclaim.
 
 | Use | Algorithm | Quantum-safe |
 |---|---|---|
-| Release assets and evidence bundle | ML-DSA-65, ours | Yes |
+| Release assets and evidence bundle | ML-DSA-87, ours | Yes |
 | SLSA provenance attestation | Sigstore, classical (ECDSA and the Fulcio and Rekor chain) | **No** |
 | npm registry signature and provenance | npm's own, classical | **No** |
 | Reproducible build | Not a signature. The published tarball rebuilds bit-for-bit from its own tag, verified in CI on every run | Not applicable |
@@ -189,7 +189,7 @@ What exists is build attestation: an in-toto statement at
 toolchain, the backend, the dependency versions and every step with its exact
 command, result and duration, with a SHA-256 for each file in the bundle. The
 in-toto and SLSA layer is signed classically by Sigstore, as row 2 of category
-8 records. The manifest and bundle are additionally signed with ML-DSA-65 by us.
+8 records. The manifest and bundle are additionally signed with ML-DSA-87 by us.
 
 ## 10. Backup, archival and long-term storage
 

@@ -17,7 +17,7 @@ parameter sets that implementation can express.
 
 ## Start and update
 
-**Quantum-safe.** Every release asset is signed with ML-DSA-65 by this
+**Quantum-safe.** Every release asset is signed with ML-DSA-87 (ML-DSA-65 before 1.9.0) by this
 package's own signing path, and the public key is committed to the repository
 rather than served only beside the artefact. Verification is four lines and is
 in [README.md](README.md#verifying-a-release). Releases also carry SLSA
@@ -52,7 +52,7 @@ and keeps no state between calls.
 
 Not this package's role, and it does not pretend otherwise. Log integrity and
 timestamping in the KXCO estate are `kxco-pq-audit`: SHA-256 hash-chained
-entries, each ML-DSA-65 signed, with periodic seals anchored on Armature L1 so
+entries, each ML-DSA-87 or ML-DSA-65 signed, with periodic seals anchored on Armature L1 so
 a verifier who does not trust the log operator has an independent time bound.
 
 What this package contributes to that is the signature primitive and nothing
@@ -95,8 +95,8 @@ included, and will verify Category 1 signatures from a peer. That is a customer
 output, not a statement about this package's own operation, and the two should
 not be reported as one number.
 
-The KXCO estate itself signs at Category 3 with ML-DSA-65, including Armature
-L1 from block 0 and every issued KXCO ID. Support for ML-DSA-87 and ML-KEM-1024
+KXCO's platform signing keys moved from ML-DSA-65 to ML-DSA-87 in October 2026,
+and Armature's validators attest every finalised block with ML-DSA-87 keys. Support for ML-DSA-87 and ML-KEM-1024
 is a support claim and not a CNSA 2.0 compliance claim, for the reasons set out
 in [CONFORMANCE.md](CONFORMANCE.md#what-this-evidence-does-not-cover).
 
