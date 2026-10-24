@@ -46,6 +46,18 @@ test('ML-DSA sign + verify round-trip in browser-mode', () => {
   assert.ok(!mlDsa.verify(publicKey, 'tampered', sig))
 })
 
+test('ML-DSA verify takes the signature as raw bytes in browser-mode', () => {
+  // A browser has no Buffer, so a byte signature arrives as a plain Uint8Array.
+  const { publicKey, secretKey } = mlDsa.keypairFromMaster(new Uint8Array(32).fill(7))
+  const hex = mlDsa.sign(secretKey, 'browser-bytes')
+  const bytes = new Uint8Array(hex.length / 2)
+  for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16)
+  assert.equal(bytes.constructor.name, 'Uint8Array')
+  assert.ok(mlDsa.verify(publicKey, 'browser-bytes', bytes))
+  bytes[0] ^= 0x01
+  assert.ok(!mlDsa.verify(publicKey, 'browser-bytes', bytes))
+})
+
 test('SLH-DSA sign + verify round-trip in browser-mode', () => {
   const master = new Uint8Array(32).fill(0x5a)
   const { publicKey, secretKey } = slhDsa.keypairFromMaster(master)

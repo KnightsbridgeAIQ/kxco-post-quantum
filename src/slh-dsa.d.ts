@@ -46,12 +46,14 @@ export function sign(
 ): string
 
 /**
- * Verify a hex-encoded SLH-DSA-SHA2-192s signature against a public key +
- * message.
+ * Verify an SLH-DSA-SHA2-192s signature against a public key + message.
+ *
+ * The signature is the hex string `sign` returns, or the raw 16224 signature
+ * bytes as a `Uint8Array` or `Buffer`.
  *
  * Returns `false` on any cryptographic failure (invalid hex, wrong length,
- * mismatch, or a missing/incorrect context). Throws only on caller misuse of
- * `opts`.
+ * mismatch, a missing/incorrect context, or a value that is neither a string
+ * nor a `Uint8Array`). Throws only on caller misuse of `opts`.
  *
  * @throws {TypeError}  if `opts` is not an options object, or `context` is
  *                      neither a string nor a Uint8Array
@@ -60,7 +62,7 @@ export function sign(
 export function verify(
   publicKey: Buffer | Uint8Array,
   message:   Buffer | Uint8Array | string,
-  sigHex:    string,
+  signature: string | Uint8Array,
   opts?:     SignatureOptions,
 ): boolean
 

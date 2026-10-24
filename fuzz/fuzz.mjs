@@ -90,6 +90,8 @@ for (let i = 0; i < ITERATIONS; i++) {
   // Fail closed. verify() must answer false, not throw and not answer true.
   try {
     if (mlDsa.verify(kp.publicKey, message, input.toString('hex')) === true) verifyTrueOnGarbage++
+    // The same input handed over as raw bytes, which verify() also accepts.
+    if (mlDsa.verify(kp.publicKey, message, input) === true) verifyTrueOnGarbage++
     if (mlDsa.verify(input, message, goodSig) === true) verifyTrueOnGarbage++
     if (mlDsa.verify(kp.publicKey, input, goodSig) === true) verifyTrueOnGarbage++
   } catch (e) {

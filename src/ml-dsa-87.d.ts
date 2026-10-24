@@ -62,10 +62,14 @@ export function sign(
 ): string
 
 /**
- * Verify a hex-encoded ML-DSA-87 signature against a public key + message.
+ * Verify an ML-DSA-87 signature against a public key + message.
+ *
+ * The signature is the hex string `sign` returns, or the raw 4627 signature
+ * bytes as a `Uint8Array` or `Buffer`.
  *
  * Returns `false` on any cryptographic failure, including a signature or key
- * from a different parameter set.
+ * from a different parameter set, a signature of the wrong length, a string
+ * that is not hex, or a value that is neither a string nor a `Uint8Array`.
  *
  * Throws only on caller misuse of `opts`, which is a programming error rather
  * than a failed verification and is not swallowed.
@@ -77,7 +81,7 @@ export function sign(
 export function verify(
   publicKey: Buffer | Uint8Array,
   message:   Buffer | Uint8Array | string,
-  sigHex:    string,
+  signature: string | Uint8Array,
   opts?:     SignatureOptions,
 ): boolean
 
