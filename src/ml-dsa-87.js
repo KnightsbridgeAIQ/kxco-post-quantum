@@ -18,8 +18,8 @@
 // makes that parameter set available to callers. It does not make any deployed
 // system CNSA 2.0 compliant, and it must not be cited as a compliance badge.
 // Compliance is a property of a deployment, not of an available function: the
-// KXCO estate signs with ML-DSA-65 at Category 3, including Armature L1 from
-// block 0 and every issued KXCO ID, none of which this module changes.
+// KXCO platform signing keys and Armature's block attestations moved to ML-DSA-87
+// in October 2026 by deployment decision, and this module alone makes neither compliant.
 //
 // The accurate sentence is "supports ML-DSA-87". See CONFORMANCE.md.
 //

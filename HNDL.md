@@ -31,8 +31,8 @@ rows below say so.
 | 2 | Master secret used by `keypairFromMaster` | **Yes, and it is worse than a single key** | Nothing in this package. Caller's storage | Not a cryptographic control | Compromise derives every child key, past and future |
 | 3 | ML-KEM shared secret, in transit | Depends entirely on the caller's use | ML-KEM-768 or ML-KEM-1024 (FIPS 203) | **Yes** | The classical half of a hybrid pairing, if the caller adds one |
 | 4 | Payload a caller encrypts under an ML-KEM-derived key | Caller's to determine | The caller's AEAD, not ours | Symmetric, so Grover only | Key size is the caller's choice; this package does not perform the encryption |
-| 5 | Package delivery over TLS to npm or GitHub | **No** | Classical TLS | No | Confidentiality is irrelevant: the package is public. Integrity is the concern and ML-DSA-65 covers it |
-| 6 | Signatures, JWS, webhook envelopes | **No** | ML-DSA-65 or SLH-DSA, plus HMAC-SHA-256 on webhooks | Yes | Integrity risk, not HNDL. Recorded here only so its absence is deliberate |
+| 5 | Package delivery over TLS to npm or GitHub | **No** | Classical TLS | No | Confidentiality is irrelevant: the package is public. Integrity is the concern and ML-DSA-87 release signatures cover it |
+| 6 | Signatures, JWS, webhook envelopes | **No** | ML-DSA-87, ML-DSA-65 or SLH-DSA, plus HMAC-SHA-256 on webhooks | Yes | Integrity risk, not HNDL. Recorded here only so its absence is deliberate |
 | 7 | Evidence bundle and SBOM | **No** | Published deliberately | Not applicable | Public by design |
 | 8 | Keys held on a PKCS#11 token via `kxco-pq-hsm` | Yes, but outside this boundary | `CKA_EXTRACTABLE=false` | Hardware control | The vendor's channel to the token is the vendor's, per `BOUNDARY.md` |
 

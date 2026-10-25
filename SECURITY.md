@@ -27,11 +27,11 @@ In scope:
 - Kid fingerprint collision behaviour
 
 Out of scope (report upstream to https://github.com/paulmillr/noble-post-quantum):
-- Bugs in the underlying ML-DSA-65, ML-KEM-768, SLH-DSA-SHA2-192s, or HKDF primitives
+- Bugs in the underlying ML-DSA-87, ML-DSA-65, ML-KEM-1024, ML-KEM-768, SLH-DSA-SHA2-192s or HKDF primitives
 
 ## Algorithms used
-- ML-DSA-65 — NIST FIPS 204 (lattice signatures)
-- ML-KEM-768 — NIST FIPS 203 (key encapsulation)
+- ML-DSA-87 and ML-DSA-65: NIST FIPS 204 (lattice signatures)
+- ML-KEM-1024 and ML-KEM-768: NIST FIPS 203 (key encapsulation)
 - SLH-DSA-SHA2-192s — NIST FIPS 205 (hash-based signatures)
 - HMAC-SHA-256
 - HKDF-SHA-512 (RFC 5869)

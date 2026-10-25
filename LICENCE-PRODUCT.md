@@ -10,7 +10,7 @@ Apache-2.0. Use it commercially, fork it, ship it inside a product, never speak 
 
 | Package | What it does |
 |---|---|
-| [`kxco-post-quantum`](https://www.npmjs.com/package/kxco-post-quantum) | ML-DSA-65, ML-KEM-768, SLH-DSA, seed-form keys, compact JWS, deterministic derivation, kid fingerprints |
+| [`kxco-post-quantum`](https://www.npmjs.com/package/kxco-post-quantum) | ML-DSA-87 and ML-DSA-65, ML-KEM-1024 and ML-KEM-768, SLH-DSA, seed-form keys, compact JWS, deterministic derivation, kid fingerprints |
 | [`kxco-verify`](https://www.npmjs.com/package/kxco-verify) | Verify a site's deploy attestation, in a terminal or a browser |
 
 These are **chain-agnostic**. There is no chain id, no relay URL and no licence check anywhere in their source. They do not phone home. Signing and verification work with the network unplugged and keep working if KXCO stops existing, which is the only sense in which a signature is worth anything ten years from now.
@@ -85,14 +85,14 @@ The cryptography is NIST-standardised and the conformance is published, pinned a
 
 | | |
 |---|---|
-| Algorithms | ML-DSA-65 (FIPS 204), ML-KEM-768 (FIPS 203), SLH-DSA (FIPS 205) |
+| Algorithms | ML-DSA-87 and ML-DSA-65 (FIPS 204), ML-KEM-1024 and ML-KEM-768 (FIPS 203), SLH-DSA (FIPS 205) |
 | Category 5 | **ML-DSA-87 and ML-KEM-1024 are shipped** — the parameter sets CNSA 2.0 specifies. Available today via `mlDsa87` / `mlKem1024`, ACVP-checked like every other set. Compliance is a property of a deployment, not of a library, so we state the capability and leave the claim to the deployment |
 | Backend | OpenSSL 3.5 where the runtime provides it, `@noble/post-quantum` elsewhere. Identical on the wire, checked in both directions |
 | Conformance | 2,103 NIST ACVP vectors across FIPS 203, 204 and 205. Vectors pinned by digest |
 | Interoperability | 225 checks against OpenSSL 3.5, liboqs, Bouncy Castle and dilithium-py/kyber-py |
 | Supply chain | SLSA provenance attestation on every release since 1.4.0; CycloneDX SBOM; reproducible build |
 | Evidence bundle | `npm run evidence` regenerates all of it from source, on your machine |
-| On-chain verification | Armature L1 verifies ML-DSA-65 **in consensus** — `MLDSA65VerifyPrecompiledContract` at `0x0b`, executed by every validator, ~50,000 gas |
+| On-chain verification | Armature L1 verifies ML-DSA-87 and ML-DSA-65 **in consensus**, ML-DSA-87 at precompile `0x4b58434f00000000000000000000000000000087` and ML-DSA-65 through `MLDSA65VerifyPrecompiledContract` at `0x0b` (~50,000 gas), executed by every validator |
 | Accountability | Four **named** validators under QBFT proof-of-authority. Every block has an identified proposer and every write an accountable operator |
 
 **You do not have to take any of it on our word.** Every figure above comes from a command you can run yourself against the same commit, and the vectors are NIST's, not ours. A customer may re-run them at any time without asking us and without telling us. If your result differs from ours we want to know: `john@knightsbridgelaw.com`, acknowledged within 2 business days.

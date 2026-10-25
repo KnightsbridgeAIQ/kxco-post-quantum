@@ -1,10 +1,10 @@
-// Hybrid HMAC + ML-DSA-65 webhook signing — the production pattern used by
+// Hybrid HMAC + ML-DSA-87 or ML-DSA-65 webhook signing, the production pattern used by
 // KXCO Bank, KnightsVault, and every product on the KXCO platform.
 //
 // Why hybrid?
 //   - HMAC-SHA-256 is symmetric and post-quantum secure as a MAC. Receivers
 //     who share the secret can verify offline with no library dependencies.
-//   - ML-DSA-65 adds NON-REPUDIATION: a receiver who only verifies the PQ
+//   - ML-DSA-87 or ML-DSA-65 adds NON-REPUDIATION: a receiver who only verifies the PQ
 //     signature can prove the message came from the holder of the platform
 //     private key — even if the HMAC secret has been leaked to a third party.
 //
