@@ -62,7 +62,27 @@ const ML_KEM = ['ML-KEM-512', 'ML-KEM-768', 'ML-KEM-1024']
 const ML_DSA = ['ML-DSA-44', 'ML-DSA-65', 'ML-DSA-87']
 const SLH_DSA = Object.keys(REQUIRED).filter((k) => k.startsWith('SLH-DSA'))
 
+// The supporting algorithms inside kxco-post-quantum/fips. Whole-byte lengths
+// only and no large-data tests, which is what responders-fips.mjs registered()
+// accepts. HMAC_DRBG is registered as the module uses it: SHA-512, no
+// derivation function, no prediction resistance, reseed implemented.
+const BYTES = (min, max) => [{ min, max, increment: 8 }]
+const FIPS_REGISTRATIONS = {
+  'fips-sha2-256': { algorithm: 'SHA2-256', revision: '1.0', messageLength: BYTES(0, 65536) },
+  'fips-sha2-512': { algorithm: 'SHA2-512', revision: '1.0', messageLength: BYTES(0, 65536) },
+  'fips-sha3-256': { algorithm: 'SHA3-256', revision: '2.0', messageLength: BYTES(0, 65536) },
+  'fips-sha3-512': { algorithm: 'SHA3-512', revision: '2.0', messageLength: BYTES(0, 65536) },
+  'fips-shake-128': { algorithm: 'SHAKE-128', revision: 'FIPS202', messageLength: BYTES(0, 65536), outputLength: BYTES(16, 65536) },
+  'fips-shake-256': { algorithm: 'SHAKE-256', revision: 'FIPS202', messageLength: BYTES(0, 65536), outputLength: BYTES(16, 65536) },
+  'fips-hmac-sha2-512': { algorithm: 'HMAC-SHA2-512', revision: '2.0', keyLen: BYTES(8, 524288), macLen: BYTES(32, 512) },
+  'fips-hmac-drbg': {
+    algorithm: 'hmacDRBG', revision: '1.0', predResistanceEnabled: [false], reseedImplemented: true,
+    capabilities: [{ mode: 'SHA2-512', derFuncEnabled: false, entropyInputLen: [384], nonceLen: [256], persoStringLen: [0, 280], additionalInputLen: [0], returnedBitsLen: 2048 }],
+  },
+}
+
 export const REGISTRATIONS = {
+  ...FIPS_REGISTRATIONS,
   'ml-kem-keygen': {
     algorithm: 'ML-KEM',
     mode: 'keyGen',

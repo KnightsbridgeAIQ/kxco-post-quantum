@@ -17,7 +17,11 @@
     "hmacDRBG-1.0",
     "SHA2-256-1.0",
     "SHA2-512-1.0",
-    "HMAC-SHA2-512-2.0"
+    "HMAC-SHA2-512-2.0",
+    "SHA3-256-2.0",
+    "SHA3-512-2.0",
+    "SHAKE-128-FIPS202",
+    "SHAKE-256-FIPS202"
   ],
   "digests": {
     "ML-KEM-keyGen-FIPS203/prompt.json": "3f9ce34f6c836c77958bad2729e837c3b213f44ac36c3065976e7acca6389523",
@@ -43,6 +47,14 @@
     "SHA2-512-1.0/prompt.json": "02b393b7e6e0f09fa1f9ee1f5b16abcbfec3b0352a1642b211b77b757d17a88b",
     "SHA2-512-1.0/expectedResults.json": "1090b3c115b283f55e7d43596da631d1acb33dc7d9153104c5fbcfaf1e12bb8e",
     "HMAC-SHA2-512-2.0/prompt.json": "2c4623928673b6d2d564098c7468a332b4311f6feba66447b581a1378bbe68a1",
-    "HMAC-SHA2-512-2.0/expectedResults.json": "fadff25e07aab49182eec5fb8fed2fbc0fc1ef21c5b77bf2c732b86065e7631f"
+    "HMAC-SHA2-512-2.0/expectedResults.json": "fadff25e07aab49182eec5fb8fed2fbc0fc1ef21c5b77bf2c732b86065e7631f",
+    "SHA3-256-2.0/prompt.json": "1dd47c747b93dfdef583d62074a2097f207753d94969766a84ce3e917a1e1446",
+    "SHA3-256-2.0/expectedResults.json": "f3d600d1cd031bb339f8d32ff94e19a6ab5f4e82d3f6115e564ebbf521d22e70",
+    "SHA3-512-2.0/prompt.json": "670801995987d9f80ec2a124477020242bbfee51d02d799b60fd05fc9147c2df",
+    "SHA3-512-2.0/expectedResults.json": "a6bd247f6d0b45b0c41c11d6284fe8ac833c2bcfc8c9375361ee8493c2b56d82",
+    "SHAKE-128-FIPS202/prompt.json": "afebc2a6b0366ff77d87d6824af64c5ff44a7dc50300af3e0fed417d85eedaa1",
+    "SHAKE-128-FIPS202/expectedResults.json": "aa71446ad7a6f700b1f47a585d49b49ffbdca476c18a0f9a2dd37dbceeae1e9d",
+    "SHAKE-256-FIPS202/prompt.json": "b9d6e0e74cbfe485e7f3c0ccec98d21f3e68216678b1486d0ac49e821310d662",
+    "SHAKE-256-FIPS202/expectedResults.json": "7a346ad391c2e945d099eb8ad8fbb3d9d7f9526a3a2d094927c0055df8c0e068"
   }
 }

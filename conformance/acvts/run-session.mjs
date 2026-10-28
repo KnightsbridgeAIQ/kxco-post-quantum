@@ -14,7 +14,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { ACV_VERSION, call, login, payloadOf, refresh } from './client.mjs'
-import { respond } from './responders.mjs'
+import { respond as respondPq } from './responders.mjs'
+import { respond as respondFips, SUPPORTED as FIPS_SUPPORTED } from './responders-fips.mjs'
 import { REGISTRATIONS } from './registrations.mjs'
 
 const args = process.argv.slice(2)
@@ -125,7 +126,9 @@ for (const vsUrl of session.vectorSetUrls) {
     console.log(`  ${label}: reusing the kept answer`)
   } else {
     const started = Date.now()
-    answer = respond(prompt)
+    // SHA-2, SHA-3, SHAKE, HMAC and HMAC_DRBG are answered by the FIPS module's
+    // own code; the post-quantum algorithms by responders.mjs.
+    answer = FIPS_SUPPORTED.includes(prompt.algorithm) ? respondFips(prompt) : respondPq(prompt)
     ms = Date.now() - started
     keep(`${label}-response.json`, answer)
   }
