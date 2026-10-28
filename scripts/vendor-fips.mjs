@@ -14,7 +14,7 @@
 // A noble update is therefore: bump the pin, run this script, commit. CI runs
 // --check, so a vendor directory that has drifted from the pins fails the build.
 
-import { readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, statSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { dirname, join, relative, resolve, sep, posix } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -98,10 +98,10 @@ function build() {
 function existing(dir) {
   const out = new Map()
   let entries
-  try { entries = readdirSync(dir) } catch { return out }
-  for (const name of entries) {
-    const p = join(dir, name)
-    if (statSync(p).isDirectory()) for (const [k, v] of existing(p)) out.set(k, v)
+  try { entries = readdirSync(dir, { withFileTypes: true }) } catch { return out }
+  for (const entry of entries) {
+    const p = join(dir, entry.name)
+    if (entry.isDirectory()) for (const [k, v] of existing(p)) out.set(k, v)
     else out.set(p, readFileSync(p, 'utf8'))
   }
   return out
