@@ -391,6 +391,29 @@ backend()
 That `reason` keeps pinned and unavailable apart, so an evidence bundle records
 exactly which one applied.
 
+## `kxco-post-quantum/fips`: a self-contained module
+
+A separate entry point for deployments that want the cryptography inside one fixed, self-testing module. It is designed against the FIPS 140-3 Level 1 software requirements. It is not a validated module: no laboratory has tested it and NIST has issued no certificate for it.
+
+- **Fixed boundary.** `src/fips/` carries its own copy of the noble code and loads nothing from the rest of the package.
+- **Approved random bit generator.** HMAC_DRBG with SHA-512, seeded from `/dev/urandom`, supplies every random value.
+- **Integrity test first.** Every file is checked against a manifest signed with the ML-DSA-87 release key before any service loads.
+- **Self-tests.** The known answers come from NIST's own ACVP vectors, and a pairwise test runs on every generated key pair.
+- **Error state.** Any failure leaves every service refused until the process restarts.
+
+```js
+import * as fips from 'kxco-post-quantum/fips'
+
+if (fips.status().state !== 'operational') throw new Error(fips.status().reason)
+
+const { publicKey, secretKey, seed } = fips.generateKeypair('ML-DSA-87')   // store `seed`; it is the key
+const sig = fips.sign('ML-DSA-87', secretKey, 'message', { context: 'my-app' })
+fips.verify('ML-DSA-87', publicKey, 'message', sig, { context: 'my-app' })  // true
+fips.zeroize(secretKey, seed)
+```
+
+It offers ML-KEM-768 and ML-KEM-1024, and ML-DSA-65 and ML-DSA-87. It runs on Node.js on Linux and macOS, and needs `/dev/urandom`. [SECURITY-POLICY.md](SECURITY-POLICY.md) is the draft Security Policy, in NIST SP 800-140B structure.
+
 ## The KXCO post-quantum family
 
 This is the primitive layer: keys, signatures, encapsulation and fingerprints.
