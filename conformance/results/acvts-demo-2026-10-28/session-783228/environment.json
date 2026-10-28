@@ -1,0 +1,9 @@
+{
+  "node": "v26.12.1",
+  "platform": "linux",
+  "arch": "x64",
+  "os": "Debian GNU/Linux 13 (trixie)",
+  "kernel": "6.6.114.1-microsoft-standard-WSL2",
+  "implementation": "src/fips/vendor (the FIPS module's copy)",
+  "startedAt": "2026-10-28T16:43:09.810Z"
+}

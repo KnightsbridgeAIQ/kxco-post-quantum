@@ -193,7 +193,7 @@ test('a corrupted decapsulation key and a short ciphertext are refused without e
   // || H(ek) (32) || z (32), so with k = 4 H(ek) starts at byte 768k + 32 = 3104.
   const dk = kp.secretKey.slice()
   dk[3104] ^= 1
-  assert.throws(() => fips.decapsulate('ML-KEM-1024', cipherText, dk))
+  assert.throws(() => fips.decapsulate('ML-KEM-1024', cipherText, dk), /hash check failed/)
   assert.throws(() => fips.decapsulate('ML-KEM-1024', cipherText.subarray(0, 100), kp.secretKey))
   assert.equal(fips.status().state, 'operational')
 })

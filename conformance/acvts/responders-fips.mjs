@@ -90,6 +90,7 @@ function xofGroup(prompt, g) {
 
 function hmacGroup(prompt, g) {
   return g.tests.map((t) => {
+    if (!registered(prompt, g, t)) throw new Error(`tgId ${g.tgId} tcId ${t.tcId}: outside the registration`)
     const mac = hmac(sha512, bytes(t.key), bytes(t.msg))
     return { tcId: t.tcId, mac: hex(mac.subarray(0, t.macLen / 8)) }
   })

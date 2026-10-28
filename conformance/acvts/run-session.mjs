@@ -51,6 +51,23 @@ function ok(r, what) {
   throw new Error(`${what}: HTTP ${r.status} ${r.body.slice(0, 500)}`)
 }
 
+// Where this run executed. NIST's records name no operating environment, and a
+// Demo result covers only the environment it ran on, so the kept run records it
+// itself, read from the process and the operating system at the time.
+let osName = null
+try {
+  osName = readFileSync('/etc/os-release', 'utf8').match(/^PRETTY_NAME="?([^"\n]*)"?/m)?.[1] ?? null
+} catch {}
+keep('environment.json', {
+  node: process.version,
+  platform: process.platform,
+  arch: process.arch,
+  os: osName,
+  kernel: (await import('node:os')).release(),
+  implementation: process.env.KXCO_ACVTS_IMPL === 'vendor' ? 'src/fips/vendor (the FIPS module\'s copy)' : 'npm packages',
+  startedAt: new Date().toISOString(),
+})
+
 const token = await login()
 console.log('logged in to demo.acvts.nist.gov')
 

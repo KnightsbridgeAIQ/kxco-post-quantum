@@ -15,6 +15,8 @@
 
 `node conformance/run-acvp.mjs --impl vendor` grades the module's own copy of ML-KEM and ML-DSA on NIST's vectors: 788 passed, 0 failed, 67 skipped. The skips are the pre-hash pairings weaker than the parameter set, which the module does not offer.
 
+**NIST's Demo test server graded the module's own code** on 28 October 2026, in session 783228: all thirteen vector sets passed, covering HMAC_DRBG, SHA-2, SHA-3, SHAKE, HMAC-SHA2-512, ML-KEM and ML-DSA, on Node.js 26.12.1 on Linux. `conformance/acvts/` gains a responder for the supporting algorithms (`responders-fips.mjs`), an offline gate against NIST's sample files (`selftest-fips.mjs`), and a record of the environment each run executed on. NIST's verdicts are in `conformance/results/acvts-demo-2026-10-28/`. These are Demo results, not a CAVP validation, and the session has not been taken through the Demo certification step.
+
 ## 1.12.0 (2026-10-22)
 
 **`verify` takes the signature as raw bytes as well as hex.** `mlDsa87.verify`, `mlDsa.verify` and `slhDsa.verify` accept the signature as the hex string `sign` returns, exactly as before, or as a `Uint8Array` or `Buffer` holding the raw signature bytes. A signer that returns bytes, such as a hardware security module, no longer needs its signature converted to hex first. Until this release a byte signature returned `false` whatever it held, which read as a bad signature.

@@ -1,0 +1,23 @@
+{
+  "url": "/acvp/v1/testSessions/783228",
+  "createdOn": "2026-10-28T16:43:57Z",
+  "expiresOn": "2026-11-27T17:57:00Z",
+  "vectorSetUrls": [
+    "/acvp/v1/testSessions/783228/vectorSets/4113226",
+    "/acvp/v1/testSessions/783228/vectorSets/4113227",
+    "/acvp/v1/testSessions/783228/vectorSets/4113228",
+    "/acvp/v1/testSessions/783228/vectorSets/4113229",
+    "/acvp/v1/testSessions/783228/vectorSets/4113230",
+    "/acvp/v1/testSessions/783228/vectorSets/4113231",
+    "/acvp/v1/testSessions/783228/vectorSets/4113232",
+    "/acvp/v1/testSessions/783228/vectorSets/4113233",
+    "/acvp/v1/testSessions/783228/vectorSets/4113234",
+    "/acvp/v1/testSessions/783228/vectorSets/4113235",
+    "/acvp/v1/testSessions/783228/vectorSets/4113236",
+    "/acvp/v1/testSessions/783228/vectorSets/4113237",
+    "/acvp/v1/testSessions/783228/vectorSets/4113238"
+  ],
+  "publishable": true,
+  "passed": true,
+  "isSample": false
+}

@@ -51,11 +51,11 @@ The module has one mode, the approved mode. It offers no non-approved service, s
 
 **Algorithm certificates.** None. Demo results are not a CAVP validation, and none of the sessions below has been taken through the Demo certification step.
 
-**NIST's Demo test server.** On 28 October 2026, NIST's Demo server graded the module's own code, run on Node.js 26.12.1 on Debian 13 x86_64:
-- Session 783218: HMAC_DRBG with SHA-512, passed.
-- Session 783219: SHA2-256, SHA2-512, SHA3-256, SHA3-512, SHAKE-128, SHAKE-256 and HMAC-SHA2-512, each passed.
+**NIST's Demo test server.** On 28 October 2026, in session 783228, NIST's Demo server graded the module's own code for every algorithm in the table above. All thirteen vector sets passed: HMAC_DRBG, SHA2-256, SHA2-512, SHA3-256, SHA3-512, SHAKE-128, SHAKE-256, HMAC-SHA2-512, ML-KEM key generation and encapsulation/decapsulation, and ML-DSA key generation, signature generation and signature verification.
 
-Earlier, in September 2026, the Demo server graded the ML-KEM and ML-DSA code on another operating environment, Node.js 26.1.0 on Windows 10 (Demo certificate A11025). The registrations and the code that answers them are in `conformance/acvts/`.
+The run recorded its own environment: Node.js v26.12.1, Linux x64, Debian 13 (trixie), in a container on Docker Desktop's WSL2 kernel 6.6.114.1. NIST's verdict for each vector set, the registration and that environment record are in `conformance/results/acvts-demo-2026-10-28/session-783228/`. The registrations and the code that answers them are in `conformance/acvts/`.
+
+Earlier, in September 2026, the Demo server graded the ML-KEM and ML-DSA code on Node.js 26.1.0 on Windows 10 (Demo certificate A11025).
 
 **Our own runs of NIST's published vectors.** These use NIST's sample files at ACVP-Server commit 975de31e, pinned in `conformance/acvp-lock.json`.
 - The ML-KEM and ML-DSA sets on the module's own copy of the code give 788 passed, 0 failed and 67 skipped (`node conformance/run-acvp.mjs --impl vendor --set ML-KEM-keyGen-FIPS203,ML-KEM-encapDecap-FIPS203,ML-DSA-keyGen-FIPS204,ML-DSA-sigGen-FIPS204,ML-DSA-sigVer-FIPS204`). The 67 skips are HashML-DSA pairings whose pre-hash is weaker than the parameter set, which the code refuses and the module does not offer.
@@ -139,7 +139,7 @@ None.
 
 ### 4.5 External software and firmware loaded
 
-None. The module loads code only from its own boundary. The services, and the code only they use, load after the integrity test has passed. The code that performs the integrity test runs before it, because it must: `index.js`, `selftest.js`, `kat.js`, `release-key.js` and the vendored SHA-2 and ML-DSA code. The integrity test then checks those files as well.
+None. The module loads code only from its own boundary. Three files load only after the integrity test has passed: `module.js`, which holds the services, `drbg.js` and `entropy.js`. Every other code file loads before the test: `index.js`, `selftest.js`, `kat.js`, `release-key.js` and all 13 vendored files. Of that code, only the SHA-256 and ML-DSA-87 verification self-tests run before the integrity test. The integrity test then checks every file, those included.
 
 ## 5 Software and firmware security
 
@@ -152,7 +152,7 @@ At release, `scripts/build-fips-manifest.mjs` writes `integrity.json`, which hol
 
 The module also refuses to run from anything other than a local file.
 
-The code that performs this test, listed in section 4.5, runs before the test does, so the test cannot vouch for that code before it runs. It detects a change to any file, those files included, as soon as it runs. The manifest records the package version, but the module accepts any manifest the release key signed. So the test shows that the files are an unmodified KXCO release, not which release they are.
+The code loaded before this test, listed in section 4.5, is in memory before the test runs, so the test cannot vouch for that code before it runs. It detects a change to any file, those files included, as soon as it runs. The manifest records the package version, but the module accepts any manifest the release key signed. So the test shows that the files are an unmodified KXCO release, not which release they are.
 
 ### 5.2 Initiate on demand
 
