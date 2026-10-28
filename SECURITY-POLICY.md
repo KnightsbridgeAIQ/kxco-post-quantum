@@ -53,7 +53,7 @@ The module has one mode, the approved mode. It offers no non-approved service, s
 
 **NIST's Demo test server.** On 28 October 2026, in session 783228, NIST's Demo server graded the module's own code for every algorithm in the table above. All thirteen vector sets passed: HMAC_DRBG, SHA2-256, SHA2-512, SHA3-256, SHA3-512, SHAKE-128, SHAKE-256, HMAC-SHA2-512, ML-KEM key generation and encapsulation/decapsulation, and ML-DSA key generation, signature generation and signature verification.
 
-The run recorded its own environment: Node.js v26.12.1, Linux x64, Debian 13 (trixie), in a container on Docker Desktop's WSL2 kernel 6.6.114.1. NIST's verdict for each vector set, the registration and that environment record are in `conformance/results/acvts-demo-2026-10-28/session-783228/`. The registrations and the code that answers them are in `conformance/acvts/`.
+The run recorded its own environment in `environment.json`: Node.js v26.12.1, Linux x64, Debian GNU/Linux 13 (trixie), kernel 6.6.114.1-microsoft-standard-WSL2. NIST's verdict for each vector set, the registration and that environment record are in `conformance/results/acvts-demo-2026-10-28/session-783228/`. The registrations and the code that answers them are in `conformance/acvts/`.
 
 Earlier, in September 2026, the Demo server graded the ML-KEM and ML-DSA code on Node.js 26.1.0 on Windows 10 (Demo certificate A11025).
 
