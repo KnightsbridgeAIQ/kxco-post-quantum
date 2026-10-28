@@ -1,0 +1,3 @@
+# The FIPS module verifies its own files byte for byte, so its line endings
+# must not depend on the checkout platform.
+src/fips/** text eol=lf

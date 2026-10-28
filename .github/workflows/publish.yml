@@ -83,6 +83,29 @@ jobs:
           KXCO_PQ_BACKEND: javascript
         run: npm test
 
+      # The module at kxco-post-quantum/fips refuses to run without a manifest of
+      # its own files signed with the ML-DSA-87 release key. The manifest is built
+      # from this exact tree and signed here, immediately before publishing. The
+      # seed is visible to this one step only, and the step refuses to fall back
+      # to the ML-DSA-65 key, which the module would not accept.
+      - name: Sign the FIPS module's integrity manifest
+        env:
+          KXCO_RELEASE_SEED_87: ${{ secrets.KXCO_RELEASE_SEED_87 }}
+        run: |
+          test -n "$KXCO_RELEASE_SEED_87" || { echo "KXCO_RELEASE_SEED_87 is not set"; exit 1; }
+          node scripts/build-fips-manifest.mjs
+          node scripts/sign-release.mjs src/fips/integrity.json
+
+      # A signed module that cannot pass its own self-tests must not ship.
+      - name: Prove the signed FIPS module starts
+        run: |
+          node --input-type=module -e "
+            const fips = await import('./src/fips/index.js')
+            const s = fips.status()
+            console.log(JSON.stringify(s))
+            if (s.state !== 'operational') process.exit(1)
+          "
+
       - name: Publish (Trusted Publishing + provenance via OIDC)
         run: npm publish --provenance --access public
 
