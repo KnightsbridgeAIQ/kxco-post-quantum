@@ -7,7 +7,8 @@
 - **Boundary.** `src/fips/` carries its own copy of the noble code, generated from the pinned versions by `scripts/vendor-fips.mjs`, with only import lines changed. CI fails if the copy drifts.
 - **Random bits.** HMAC_DRBG with SHA-512 (SP 800-90A Rev. 1), seeded from `/dev/urandom`, supplies every random value the algorithms use. A test proves the module never calls `crypto.getRandomValues`.
 - **Keys.** `generateKeypair` draws the seed from the DRBG and runs a pairwise consistency test. `keypairFromSeed` re-expands a stored seed.
-- **Integrity test.** Before anything else loads, every file is checked against a manifest that `publish.yml` signs with the ML-DSA-87 release key immediately before publishing. A release whose module does not start is not published.
+- **Integrity test.** Before any service loads, every file is checked against a manifest that `publish.yml` signs with the ML-DSA-87 release key immediately before publishing. The code that runs the check loads first, and the check covers it too. A release whose module does not start is not published.
+- **Platform.** Node.js with `/dev/urandom`, tested on Linux. On Windows the module stays in its error state.
 - **Self-tests.** SHA-256, SHA-512, HMAC-SHA2-512, HMAC_DRBG, ML-KEM-1024 (implicit rejection included) and ML-DSA-87. The known answers are generated from NIST's ACVP vectors, pinned in `conformance/acvp-lock.json`.
 - **Error state.** Any failure refuses every service until restart. `test/fips.test.js` produces each failure and checks it.
 - **Security Policy.** [SECURITY-POLICY.md](SECURITY-POLICY.md) is the draft, in NIST SP 800-140B structure.

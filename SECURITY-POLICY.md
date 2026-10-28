@@ -2,7 +2,7 @@
 
 **Status of this document.** This is a draft written in the structure NIST SP 800-140B Rev. 1 sets for a FIPS 140-3 Security Policy. It describes the module at the `kxco-post-quantum/fips` entry point. No testing laboratory has tested the module, and NIST has issued no CAVP or CMVP certificate for it. Where a section needs a laboratory's or NIST's decision, it says so.
 
-Every statement below can be checked against the source in `src/fips/` or a test in `test/fips.test.js`.
+Every statement below can be checked against the code in `src/fips/`, the tests in `test/fips.test.js`, or the script or command named where the statement is made.
 
 ## 1 General
 
@@ -49,9 +49,17 @@ The module has one mode, the approved mode. It offers no non-approved service, s
 | SHA2-512 | FIPS 180-4 | inside HMAC_DRBG |
 | SHA3-256, SHA3-512, SHAKE128, SHAKE256 | FIPS 202 | inside ML-KEM and ML-DSA |
 
-**Algorithm certificates.** None. NIST's free Demo test server has graded the ML-KEM and ML-DSA implementations on another operating environment (Demo certificate A11025, Node.js 26.1.0 on Windows 10). Demo results are not a CAVP validation. The SHA-2, SHA-3, HMAC and HMAC_DRBG implementations have not yet been run on the Demo server.
+**Algorithm certificates.** None. Demo results are not a CAVP validation, and none of the sessions below has been taken through the Demo certification step.
 
-**Our own runs of NIST's published vectors.** On the module's own copy of the code, NIST's ML-KEM and ML-DSA vector files (ACVP-Server commit 975de31e) give 788 passed, 0 failed and 67 skipped (`node conformance/run-acvp.mjs --impl vendor`). The 67 skips are HashML-DSA pairings whose pre-hash is weaker than the parameter set, which the code refuses and the module does not offer. NIST's HMAC_DRBG SHA-512 vectors give 15 passed, 0 failed.
+**NIST's Demo test server.** On 28 October 2026, NIST's Demo server graded the module's own code, run on Node.js 26.12.1 on Debian 13 x86_64:
+- Session 783218: HMAC_DRBG with SHA-512, passed.
+- Session 783219: SHA2-256, SHA2-512, SHA3-256, SHA3-512, SHAKE-128, SHAKE-256 and HMAC-SHA2-512, each passed.
+
+Earlier, in September 2026, the Demo server graded the ML-KEM and ML-DSA code on another operating environment, Node.js 26.1.0 on Windows 10 (Demo certificate A11025). The registrations and the code that answers them are in `conformance/acvts/`.
+
+**Our own runs of NIST's published vectors.** These use NIST's sample files at ACVP-Server commit 975de31e, pinned in `conformance/acvp-lock.json`.
+- The ML-KEM and ML-DSA sets on the module's own copy of the code give 788 passed, 0 failed and 67 skipped (`node conformance/run-acvp.mjs --impl vendor --set ML-KEM-keyGen-FIPS203,ML-KEM-encapDecap-FIPS203,ML-DSA-keyGen-FIPS204,ML-DSA-sigGen-FIPS204,ML-DSA-sigVer-FIPS204`). The 67 skips are HashML-DSA pairings whose pre-hash is weaker than the parameter set, which the code refuses and the module does not offer.
+- The SHA-2, SHA-3, SHAKE, HMAC and HMAC_DRBG sets give 2,252 cases matched and 0 mismatched, 15 of them HMAC_DRBG SHA-512 (source: `node conformance/acvts/selftest-fips.mjs`, run 28 October 2026). Cases outside the registration, such as messages that are not whole bytes, are counted separately and not as passes.
 
 ### 2.6 Security function implementations
 
@@ -61,7 +69,7 @@ The module has one mode, the approved mode. It offers no non-approved service, s
 ### 2.7 Algorithm-specific information
 
 - **ML-DSA signing** is the hedged variant (FIPS 204 Algorithm 2). The 32 bytes of signing randomness come from the module's DRBG.
-- **ML-KEM inputs** are checked as FIPS 203 sections 7.2 and 7.3 require, by the noble implementation. A malformed key is refused with an exception and is not used. NIST's key-check vectors pass.
+- **ML-KEM inputs** are checked as FIPS 203 sections 7.2 and 7.3 require, by the noble implementation. A malformed key is refused with an exception and is not used. NIST's encapsulation-key and decapsulation-key check groups pass within the 788 above, and `test/fips.test.js` checks a malformed encapsulation key, a decapsulation key with a corrupted hash and a short ciphertext.
 - **A ciphertext that does not decapsulate correctly** returns the implicit-rejection secret that FIPS 203 specifies, not an error.
 
 ### 2.8 RBG and entropy
@@ -131,7 +139,7 @@ None.
 
 ### 4.5 External software and firmware loaded
 
-None. The module loads code only from its own boundary, and only after the integrity test has passed.
+None. The module loads code only from its own boundary. The services, and the code only they use, load after the integrity test has passed. The code that performs the integrity test runs before it, because it must: `index.js`, `selftest.js`, `kat.js`, `release-key.js` and the vendored SHA-2 and ML-DSA code. The integrity test then checks those files as well.
 
 ## 5 Software and firmware security
 
@@ -143,6 +151,8 @@ At release, `scripts/build-fips-manifest.mjs` writes `integrity.json`, which hol
 - no file is present that the manifest does not list.
 
 The module also refuses to run from anything other than a local file.
+
+The code that performs this test, listed in section 4.5, runs before the test does, so the test cannot vouch for that code before it runs. It detects a change to any file, those files included, as soon as it runs. The manifest records the package version, but the module accepts any manifest the release key signed. So the test shows that the files are an unmodified KXCO release, not which release they are.
 
 ### 5.2 Initiate on demand
 
@@ -156,10 +166,13 @@ The module is open source under Apache-2.0. The noble code it carries is MIT-lic
 
 ### 6.1 Type and requirements
 
-Modifiable. The module runs on Node.js and needs `/dev/urandom`, so it runs on Linux and macOS and stays in the error state on Windows.
+Modifiable. The module runs on Node.js and needs `/dev/urandom`. It has been tested on Linux only. On Windows, which has no `/dev/urandom`, it stays in the error state.
 
 - **First environment to claim:** Node.js 26 on Linux x86_64.
-- **Developer testing so far:** Node.js 26.12.1 and 22.23.4 on Debian 13 (trixie) x86_64, in the `node:26` and `node:22` container images, and GitHub's Ubuntu runners for Node.js 22, 24 and 26 in CI.
+- **Developer testing so far:**
+  - Node.js 26.12.1 on Debian 13 (trixie) x86_64, in the `node:26` container image;
+  - Node.js 22.23.4 on Debian 12 (bookworm) x86_64, in the `node:22` container image;
+  - GitHub's Ubuntu runners for Node.js 22, 24 and 26, in CI.
 
 ## 7 Physical security
 
@@ -236,7 +249,11 @@ The module has one error state. It enters it when any self-test fails, when the 
 
 In the error state, every cryptographic service throws an exception with code `ERR_KXCO_PQ_FIPS`, and the DRBG state is destroyed. `status()` reports `state: 'error'` and the reason. The module leaves the error state only when the process restarts.
 
-`test/fips.test.js` produces each failure and checks the result: a changed file, an extra file, a manifest signed by another key, a wrong known answer, and a failing pairwise test.
+`test/fips.test.js` produces each of these failures and checks the result:
+- a changed file, an extra file, and a manifest signed by another key;
+- a wrong known answer before the integrity test (SHA-256) and after it (ML-KEM-1024, HMAC_DRBG);
+- a failing ML-KEM pairwise test and a failing ML-DSA pairwise test;
+- a missing entropy source.
 
 ### 10.5 Operator initiation of self-tests
 

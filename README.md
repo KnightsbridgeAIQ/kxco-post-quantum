@@ -412,7 +412,7 @@ fips.verify('ML-DSA-87', publicKey, 'message', sig, { context: 'my-app' })  // t
 fips.zeroize(secretKey, seed)
 ```
 
-It offers ML-KEM-768 and ML-KEM-1024, and ML-DSA-65 and ML-DSA-87. It runs on Node.js on Linux and macOS, and needs `/dev/urandom`. [SECURITY-POLICY.md](SECURITY-POLICY.md) is the draft Security Policy, in NIST SP 800-140B structure.
+It offers ML-KEM-768 and ML-KEM-1024, and ML-DSA-65 and ML-DSA-87. It runs on Node.js, needs `/dev/urandom`, and has been tested on Linux. [SECURITY-POLICY.md](SECURITY-POLICY.md) is the draft Security Policy, in NIST SP 800-140B structure.
 
 ## The KXCO post-quantum family
 

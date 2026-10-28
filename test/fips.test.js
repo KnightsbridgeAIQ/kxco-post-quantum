@@ -153,6 +153,51 @@ test('a failing pairwise consistency test puts the module in the error state', n
   assert.throws(() => fips.generateKeypair('ML-DSA-87'), isFipsError, 'every service stays refused')
 })
 
+test('a failing self-test before the integrity test puts the module in the error state', needsEntropy, async () => {
+  const kat = (await import('../src/fips/kat.js')).KAT
+  const wrong = (kat.sha256.md[0] === '0' ? '1' : '0') + kat.sha256.md.slice(1)
+  const fips = await load(fixture({ beforeSign: (d) => replaceIn(d, 'kat.js', kat.sha256.md, wrong) }))
+  assert.equal(fips.status().state, 'error')
+  assert.match(fips.status().reason, /self-test failed: SHA-256/)
+})
+
+test('a failing DRBG self-test puts the module in the error state', needsEntropy, async () => {
+  const kat = (await import('../src/fips/kat.js')).KAT
+  const h = kat.hmacDrbg.returnedSha256
+  const wrong = (h[0] === '0' ? '1' : '0') + h.slice(1)
+  const fips = await load(fixture({ beforeSign: (d) => replaceIn(d, 'kat.js', h, wrong) }))
+  assert.equal(fips.status().state, 'error')
+  assert.match(fips.status().reason, /self-test failed: HMAC_DRBG SHA-512/)
+})
+
+test('a failing ML-DSA pairwise test puts the module in the error state', needsEntropy, async () => {
+  const fips = await load(fixture({
+    beforeSign: (d) => replaceIn(d, 'module.js', 'ok = dsa.verify(sig, PCT_MESSAGE, publicKey) === true', 'ok = dsa.verify(sig, PCT_MESSAGE, publicKey) === true && false'),
+  }))
+  assert.throws(() => fips.generateKeypair('ML-DSA-87'), isFipsError)
+  assert.equal(fips.status().state, 'error')
+  assert.match(fips.status().reason, /pairwise consistency test failed for a generated ML-DSA key pair/)
+})
+
+test('a missing entropy source puts the module in the error state', needsEntropy, async () => {
+  const fips = await load(fixture({ beforeSign: (d) => replaceIn(d, 'entropy.js', "'/dev/urandom'", "'/dev/kxco-no-such-device'") }))
+  assert.equal(fips.status().state, 'error')
+  assert.match(fips.status().reason, /DRBG instantiation failed/)
+})
+
+test('a corrupted decapsulation key and a short ciphertext are refused without entering the error state', needsEntropy, async () => {
+  const fips = await load(fixture())
+  const kp = fips.generateKeypair('ML-KEM-1024')
+  const { cipherText } = fips.encapsulate('ML-KEM-1024', kp.publicKey)
+  // FIPS 203 section 7.3 hash check. dk is dk_PKE (384k bytes) || ek (384k + 32)
+  // || H(ek) (32) || z (32), so with k = 4 H(ek) starts at byte 768k + 32 = 3104.
+  const dk = kp.secretKey.slice()
+  dk[3104] ^= 1
+  assert.throws(() => fips.decapsulate('ML-KEM-1024', cipherText, dk))
+  assert.throws(() => fips.decapsulate('ML-KEM-1024', cipherText.subarray(0, 100), kp.secretKey))
+  assert.equal(fips.status().state, 'operational')
+})
+
 test('nothing in the module calls crypto.getRandomValues', needsEntropy, () => {
   const dir = fixture()
   const script = `
