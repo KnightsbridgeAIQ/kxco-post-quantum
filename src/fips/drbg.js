@@ -99,17 +99,21 @@ export class HmacDrbg {
     return this.#K !== null
   }
 
-  // SP 800-90A section 10.1.2.2.
+  // SP 800-90A section 10.1.2.2. Each superseded K and V is overwritten as soon
+  // as it is replaced, so no earlier internal state outlives the update.
   #update(provided) {
-    const oldK = this.#K
-    this.#K = hmac(sha512, this.#K, concat(this.#V, [0x00], provided))
-    oldK.fill(0)
-    this.#V = hmac(sha512, this.#K, this.#V)
+    this.#step(0x00, provided)
     if (provided.length === 0) return
-    const k1 = this.#K
-    this.#K = hmac(sha512, this.#K, concat(this.#V, [0x01], provided))
-    k1.fill(0)
-    this.#V = hmac(sha512, this.#K, this.#V)
+    this.#step(0x01, provided)
+  }
+
+  #step(byte, provided) {
+    const oldK = this.#K
+    const oldV = this.#V
+    this.#K = hmac(sha512, oldK, concat(oldV, [byte], provided))
+    this.#V = hmac(sha512, this.#K, oldV)
+    oldK.fill(0)
+    oldV.fill(0)
   }
 
   #requireInstantiated() {

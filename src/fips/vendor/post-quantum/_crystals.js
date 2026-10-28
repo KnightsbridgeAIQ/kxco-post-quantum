@@ -220,7 +220,7 @@ export const XOF128 = /* @__PURE__ */ createXofShake(shake128);
  * @example
  * Build the ML-DSA SHAKE256 coefficient expander and read one block.
  * ```ts
- * import { randomBytes } from './utils.js';
+ * import { randomBytes } from '@noble/post-quantum/utils.js';
  * import { XOF256 } from '@noble/post-quantum/_crystals.js';
  * const reader = XOF256(randomBytes(32));
  * const block = reader.get(0, 0)();

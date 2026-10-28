@@ -29,7 +29,10 @@ const ENTRIES = [
   '@noble/hashes/sha2.js',
   '@noble/hashes/hmac.js',
 ]
-const SPECIFIER = /^(\s*(?:import|export)[^'"]*?from\s*['"])([^'"]+)(['"])/gm
+// An import or re-export statement starting in column 0, as noble's compiled
+// files write them. It may span lines but never crosses a quote or a `;`, so it
+// cannot run on from an earlier statement into an example inside a comment.
+const SPECIFIER = /^((?:import|export)\b[^'";]*?\bfrom\s*['"])([^'"]+)(['"])/gm
 
 const check = process.argv.includes('--check')
 

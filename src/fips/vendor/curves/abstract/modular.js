@@ -850,7 +850,7 @@ export function Field(ORDER, opts = {}) {
  * Select the odd square root when two roots exist.
  *
  * ```ts
- * import { Field, FpSqrtOdd } from './modular.js';
+ * import { Field, FpSqrtOdd } from '@noble/curves/abstract/modular.js';
  * const Fp = Field(17n);
  * const root = FpSqrtOdd(Fp, 4n);
  * ```

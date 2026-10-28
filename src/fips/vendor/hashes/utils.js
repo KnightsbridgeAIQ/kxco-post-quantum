@@ -115,7 +115,7 @@ export function copyBytes(bytes) {
  * @example
  * Validate a callable hash wrapper.
  * ```ts
- * import { ahash } from './utils.js';
+ * import { ahash } from '@noble/hashes/utils.js';
  * import { sha256 } from '@noble/hashes/sha2.js';
  * ahash(sha256);
  * ```

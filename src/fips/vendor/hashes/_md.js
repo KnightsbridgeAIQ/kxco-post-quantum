@@ -50,7 +50,7 @@ export function Maj(a, b, c) {
  * @example
  * Use a concrete subclass to get the shared Merkle-Damgard update/digest flow.
  * ```ts
- * import { _SHA1 } from './legacy.js';
+ * import { _SHA1 } from '@noble/hashes/legacy.js';
  * const hash = new _SHA1();
  * hash.update(new Uint8Array([97, 98, 99]));
  * hash.digest();
