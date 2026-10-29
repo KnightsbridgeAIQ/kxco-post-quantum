@@ -14,7 +14,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { ACV_VERSION, call, login, payloadOf, refresh } from './client.mjs'
-import { respond } from './responders.mjs'
+import { respond as respondPq } from './responders.mjs'
+import { respond as respondFips, SUPPORTED as FIPS_SUPPORTED } from './responders-fips.mjs'
 import { REGISTRATIONS } from './registrations.mjs'
 
 const args = process.argv.slice(2)
@@ -49,6 +50,23 @@ function ok(r, what) {
   if (r.status >= 200 && r.status < 300) return payloadOf(r.body)
   throw new Error(`${what}: HTTP ${r.status} ${r.body.slice(0, 500)}`)
 }
+
+// Where this run executed. NIST's records name no operating environment, and a
+// Demo result covers only the environment it ran on, so the kept run records it
+// itself, read from the process and the operating system at the time.
+let osName = null
+try {
+  osName = readFileSync('/etc/os-release', 'utf8').match(/^PRETTY_NAME="?([^"\n]*)"?/m)?.[1] ?? null
+} catch {}
+keep('environment.json', {
+  node: process.version,
+  platform: process.platform,
+  arch: process.arch,
+  os: osName,
+  kernel: (await import('node:os')).release(),
+  implementation: process.env.KXCO_ACVTS_IMPL === 'vendor' ? 'src/fips/vendor (the FIPS module\'s copy)' : 'npm packages',
+  startedAt: new Date().toISOString(),
+})
 
 const token = await login()
 console.log('logged in to demo.acvts.nist.gov')
@@ -125,7 +143,9 @@ for (const vsUrl of session.vectorSetUrls) {
     console.log(`  ${label}: reusing the kept answer`)
   } else {
     const started = Date.now()
-    answer = respond(prompt)
+    // SHA-2, SHA-3, SHAKE, HMAC and HMAC_DRBG are answered by the FIPS module's
+    // own code; the post-quantum algorithms by responders.mjs.
+    answer = FIPS_SUPPORTED.includes(prompt.algorithm) ? respondFips(prompt) : respondPq(prompt)
     ms = Date.now() - started
     keep(`${label}-response.json`, answer)
   }

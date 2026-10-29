@@ -3,7 +3,7 @@
     "repo": "usnistgov/ACVP-Server",
     "commit": "975de31eb83d87039ec88934fdc47d8c312b892d",
     "path": "gen-val/json-files",
-    "note": "NIST's own ACVP demo/sample vector files for FIPS 203, 204 and 205."
+    "note": "NIST's own ACVP demo/sample vector files: FIPS 203, 204 and 205, plus the SHA-2, HMAC and HMAC_DRBG sets the FIPS module's self-tests take their known answers from."
   },
   "sets": [
     "ML-KEM-keyGen-FIPS203",
@@ -13,7 +13,15 @@
     "ML-DSA-sigVer-FIPS204",
     "SLH-DSA-keyGen-FIPS205",
     "SLH-DSA-sigGen-FIPS205",
-    "SLH-DSA-sigVer-FIPS205"
+    "SLH-DSA-sigVer-FIPS205",
+    "hmacDRBG-1.0",
+    "SHA2-256-1.0",
+    "SHA2-512-1.0",
+    "HMAC-SHA2-512-2.0",
+    "SHA3-256-2.0",
+    "SHA3-512-2.0",
+    "SHAKE-128-FIPS202",
+    "SHAKE-256-FIPS202"
   ],
   "digests": {
     "ML-KEM-keyGen-FIPS203/prompt.json": "3f9ce34f6c836c77958bad2729e837c3b213f44ac36c3065976e7acca6389523",
@@ -31,6 +39,22 @@
     "SLH-DSA-sigGen-FIPS205/prompt.json": "afa673eacdf0aec53512a159159b7632684adfcd0d88f8640a7f6f5796aacdc8",
     "SLH-DSA-sigGen-FIPS205/expectedResults.json": "71e8e0f7e4b0cfd1747314299204d9d4d50968d200a4ae873921eaa7aabeaad1",
     "SLH-DSA-sigVer-FIPS205/prompt.json": "4e7beb1233e47baa0acdd36417c66c45811aa40a4e32ffdb1a35d93b13b289fb",
-    "SLH-DSA-sigVer-FIPS205/expectedResults.json": "259f5e2a0665de0adc0fefa45b5db3a2a6ed13c3c44d14bdaf64a80aee12c687"
+    "SLH-DSA-sigVer-FIPS205/expectedResults.json": "259f5e2a0665de0adc0fefa45b5db3a2a6ed13c3c44d14bdaf64a80aee12c687",
+    "hmacDRBG-1.0/prompt.json": "3613b3b990904ed9c98ea05ce223e660e29d45f370b03618e0e4cc8c0c43e004",
+    "hmacDRBG-1.0/expectedResults.json": "0d3a6e0d7bed5ef84ab9f2a27a0ad04b9478b38617ade7c9d9cd058a7a7f6598",
+    "SHA2-256-1.0/prompt.json": "9c4ec74e526cced84cd6dfdf130f2908e2d340b45ea5d9ea0a4019987ee49dac",
+    "SHA2-256-1.0/expectedResults.json": "776688ef7b6e4dd18ce203ee7d9ee45c6c597248f6c00ec70bdbd59176109e05",
+    "SHA2-512-1.0/prompt.json": "02b393b7e6e0f09fa1f9ee1f5b16abcbfec3b0352a1642b211b77b757d17a88b",
+    "SHA2-512-1.0/expectedResults.json": "1090b3c115b283f55e7d43596da631d1acb33dc7d9153104c5fbcfaf1e12bb8e",
+    "HMAC-SHA2-512-2.0/prompt.json": "2c4623928673b6d2d564098c7468a332b4311f6feba66447b581a1378bbe68a1",
+    "HMAC-SHA2-512-2.0/expectedResults.json": "fadff25e07aab49182eec5fb8fed2fbc0fc1ef21c5b77bf2c732b86065e7631f",
+    "SHA3-256-2.0/prompt.json": "1dd47c747b93dfdef583d62074a2097f207753d94969766a84ce3e917a1e1446",
+    "SHA3-256-2.0/expectedResults.json": "f3d600d1cd031bb339f8d32ff94e19a6ab5f4e82d3f6115e564ebbf521d22e70",
+    "SHA3-512-2.0/prompt.json": "670801995987d9f80ec2a124477020242bbfee51d02d799b60fd05fc9147c2df",
+    "SHA3-512-2.0/expectedResults.json": "a6bd247f6d0b45b0c41c11d6284fe8ac833c2bcfc8c9375361ee8493c2b56d82",
+    "SHAKE-128-FIPS202/prompt.json": "afebc2a6b0366ff77d87d6824af64c5ff44a7dc50300af3e0fed417d85eedaa1",
+    "SHAKE-128-FIPS202/expectedResults.json": "aa71446ad7a6f700b1f47a585d49b49ffbdca476c18a0f9a2dd37dbceeae1e9d",
+    "SHAKE-256-FIPS202/prompt.json": "b9d6e0e74cbfe485e7f3c0ccec98d21f3e68216678b1486d0ac49e821310d662",
+    "SHAKE-256-FIPS202/expectedResults.json": "7a346ad391c2e945d099eb8ad8fbb3d9d7f9526a3a2d094927c0055df8c0e068"
   }
 }

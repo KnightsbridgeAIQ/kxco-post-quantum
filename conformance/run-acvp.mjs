@@ -44,19 +44,30 @@ const quiet = args.includes('--quiet')
 const maxPerGroup = args.includes('--max-per-group')
   ? Number(args[args.indexOf('--max-per-group') + 1])
   : Infinity
+// --impl vendor grades the ML-KEM and ML-DSA copies inside the FIPS module
+// (src/fips/vendor/) instead of the npm packages. The copies differ from the
+// packages only in their import specifiers, but the module's own bytes are what
+// a validation would cover, so they are what this run grades.
+const vendored = args.includes('--impl') && args[args.indexOf('--impl') + 1] === 'vendor'
+const kemImpl = vendored
+  ? await import('../src/fips/vendor/post-quantum/ml-kem.js')
+  : { ml_kem512, ml_kem768, ml_kem1024 }
+const dsaImpl = vendored
+  ? await import('../src/fips/vendor/post-quantum/ml-dsa.js')
+  : { ml_dsa44, ml_dsa65, ml_dsa87 }
 
 // ---------------------------------------------------------------- primitives
 
 const KEM = {
-  'ML-KEM-512': ml_kem512,
-  'ML-KEM-768': ml_kem768,
-  'ML-KEM-1024': ml_kem1024,
+  'ML-KEM-512': kemImpl.ml_kem512,
+  'ML-KEM-768': kemImpl.ml_kem768,
+  'ML-KEM-1024': kemImpl.ml_kem1024,
 }
 
 const DSA = {
-  'ML-DSA-44': ml_dsa44,
-  'ML-DSA-65': ml_dsa65,
-  'ML-DSA-87': ml_dsa87,
+  'ML-DSA-44': dsaImpl.ml_dsa44,
+  'ML-DSA-65': dsaImpl.ml_dsa65,
+  'ML-DSA-87': dsaImpl.ml_dsa87,
 }
 
 const SLH = {
@@ -403,6 +414,7 @@ const report = {
     library: '@noble/post-quantum',
     version: pkg.dependencies['@noble/post-quantum'],
     note: 'the OpenSSL backend is covered by conformance/results/interop.json, not this report',
+    ...(vendored ? { copy: 'src/fips/vendor (ML-KEM and ML-DSA); SLH-DSA from the npm package' } : {}),
   },
   runtimeNativeBackend: native === null
     ? { available: false, reason: 'the runtime does not provide the FIPS primitives' }

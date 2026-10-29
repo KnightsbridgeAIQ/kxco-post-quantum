@@ -15,16 +15,23 @@ import * as slh from '@noble/post-quantum/slh-dsa.js'
 import { sha224, sha256, sha384, sha512, sha512_224, sha512_256 } from '@noble/hashes/sha2.js'
 import { sha3_224, sha3_256, sha3_384, sha3_512, shake128_32, shake256_64 } from '@noble/hashes/sha3.js'
 
+// KXCO_ACVTS_IMPL=vendor answers ML-KEM and ML-DSA with the copy inside the
+// FIPS module (src/fips/vendor/) rather than the npm packages, so a session run
+// that way is evidence about the module's own bytes.
+const vendored = process.env.KXCO_ACVTS_IMPL === 'vendor'
+const kemImpl = vendored ? await import('../../src/fips/vendor/post-quantum/ml-kem.js') : { ml_kem512, ml_kem768, ml_kem1024 }
+const dsaImpl = vendored ? await import('../../src/fips/vendor/post-quantum/ml-dsa.js') : { ml_dsa44, ml_dsa65, ml_dsa87 }
+
 const KEM = {
-  'ML-KEM-512': ml_kem512,
-  'ML-KEM-768': ml_kem768,
-  'ML-KEM-1024': ml_kem1024,
+  'ML-KEM-512': kemImpl.ml_kem512,
+  'ML-KEM-768': kemImpl.ml_kem768,
+  'ML-KEM-1024': kemImpl.ml_kem1024,
 }
 
 const DSA = {
-  'ML-DSA-44': ml_dsa44,
-  'ML-DSA-65': ml_dsa65,
-  'ML-DSA-87': ml_dsa87,
+  'ML-DSA-44': dsaImpl.ml_dsa44,
+  'ML-DSA-65': dsaImpl.ml_dsa65,
+  'ML-DSA-87': dsaImpl.ml_dsa87,
 }
 
 const SLH = {

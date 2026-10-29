@@ -85,6 +85,45 @@ jobs:
           name: acvp-report-${{ matrix.group.slug }}
           path: conformance/results/acvp-${{ matrix.group.slug }}.json
 
+  fips-module:
+    # The self-contained module at kxco-post-quantum/fips carries its own copy
+    # of the noble code and its own known answers. This proves both still trace
+    # to their sources: the known answers regenerate byte for byte from NIST's
+    # pinned vector files, and NIST's ML-KEM and ML-DSA vectors grade the
+    # module's own copy of the code rather than the npm packages.
+    name: FIPS module known answers and vendored code
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '26'
+
+      - run: npm ci
+
+      - name: Fetch and verify pinned ACVP vectors
+        run: node conformance/fetch-vectors.mjs
+
+      - name: The known answers match NIST's pinned vectors
+        run: node scripts/build-fips-kat.mjs --check
+
+      - name: The vendored code matches the pinned noble versions
+        run: node scripts/vendor-fips.mjs --check
+
+      - name: NIST's vectors grade the module's own ML-KEM and ML-DSA code
+        run: |
+          node conformance/run-acvp.mjs --impl vendor \
+            --set ML-KEM-keyGen-FIPS203,ML-KEM-encapDecap-FIPS203,ML-DSA-keyGen-FIPS204,ML-DSA-sigGen-FIPS204,ML-DSA-sigVer-FIPS204 \
+            --json conformance/results/acvp-fips-vendor.json
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: acvp-report-fips-vendor
+          path: conformance/results/acvp-fips-vendor.json
+
   reproduce:
     # Rebuild the published tarball from its own tag and require a bit-for-bit
     # match against what the registry is serving. A provenance attestation says
@@ -117,6 +156,32 @@ jobs:
           git clone --quiet --depth 1 --branch "v$VERSION"             "https://github.com/${GITHUB_REPOSITORY}.git" /tmp/src
           cd /tmp/src
           npm ci --silent
+
+          # From the release that added kxco-post-quantum/fips, the tarball also
+          # carries src/fips/integrity.json and its ML-DSA-87 signature, both made
+          # at publish time. The manifest is rebuilt here from the tag, which is
+          # deterministic. The signature is randomised and cannot be rebuilt, so
+          # it is taken from the published tarball and must verify under the
+          # release key over the rebuilt manifest before it is used. The tarball
+          # comparison below then covers it like every other byte.
+          if [ -f scripts/build-fips-manifest.mjs ]; then
+            node scripts/build-fips-manifest.mjs
+            mkdir -p /tmp/pub
+            (cd /tmp/pub && npm pack --silent "$NAME@$VERSION" >/dev/null && tar -xzf ./*.tgz)
+            cp /tmp/pub/package/src/fips/integrity.json.sig src/fips/integrity.json.sig
+            node --input-type=module -e "
+              import { readFileSync } from 'node:fs'
+              import { mlDsa87 } from './src/index.js'
+              const key = Buffer.from(readFileSync('release-signing-key-87.pub.hex', 'utf8').trim(), 'hex')
+              const sig = readFileSync('src/fips/integrity.json.sig', 'utf8').trim()
+              if (!mlDsa87.verify(key, readFileSync('src/fips/integrity.json'), sig)) {
+                console.error('::error::the published FIPS manifest signature does not verify over the rebuilt manifest')
+                process.exit(1)
+              }
+              console.log('FIPS manifest: rebuilt from the tag, published signature verifies')
+            "
+          fi
+
           REBUILT=$(npm pack --json | node -e             'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s)[0].integrity))')
 
           echo "published: $PUBLISHED"

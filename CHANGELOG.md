@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.13.0 (unreleased)
+
+**A self-contained module at `kxco-post-quantum/fips`.** A new entry point, designed against the FIPS 140-3 Level 1 software requirements. It is not a validated module: no laboratory has tested it and NIST has issued no certificate for it. Importing the main package does not load it, and nothing in the main package changes.
+
+- **Boundary.** `src/fips/` carries its own copy of the noble code, generated from the pinned versions by `scripts/vendor-fips.mjs`, with only import lines changed. CI fails if the copy drifts.
+- **Random bits.** HMAC_DRBG with SHA-512 (SP 800-90A Rev. 1), seeded from `/dev/urandom`, supplies every random value the algorithms use. A test proves the module never calls `crypto.getRandomValues`.
+- **Keys.** `generateKeypair` draws the seed from the DRBG and runs a pairwise consistency test. `keypairFromSeed` re-expands a stored seed.
+- **Integrity test.** Before any service loads, every file is checked against a manifest that `publish.yml` signs with the ML-DSA-87 release key immediately before publishing. The code that runs the check loads first, and the check covers it too. A release whose module does not start is not published.
+- **Platform.** Node.js with `/dev/urandom`, tested on Linux. On Windows the module stays in its error state.
+- **Self-tests.** SHA-256, SHA-512, HMAC-SHA2-512, HMAC_DRBG, ML-KEM-1024 (implicit rejection included) and ML-DSA-87. The known answers are generated from NIST's ACVP vectors, pinned in `conformance/acvp-lock.json`.
+- **Error state.** Any failure refuses every service until restart. `test/fips.test.js` produces each failure and checks it.
+- **Security Policy.** [SECURITY-POLICY.md](SECURITY-POLICY.md) is the draft, in NIST SP 800-140B structure.
+
+`node conformance/run-acvp.mjs --impl vendor` grades the module's own copy of ML-KEM and ML-DSA on NIST's vectors: 788 passed, 0 failed, 67 skipped. The skips are the pre-hash pairings weaker than the parameter set, which the module does not offer.
+
+**NIST's Demo test server graded the module's own code** on 28 October 2026, in session 783228: all thirteen vector sets passed, covering HMAC_DRBG, SHA-2, SHA-3, SHAKE, HMAC-SHA2-512, ML-KEM and ML-DSA, on Node.js 26.12.1 on Linux. `conformance/acvts/` gains a responder for the supporting algorithms (`responders-fips.mjs`), an offline gate against NIST's sample files (`selftest-fips.mjs`), and a record of the environment each run executed on. NIST's verdicts are in `conformance/results/acvts-demo-2026-10-28/`. These are Demo results, not a CAVP validation, and the session has not been taken through the Demo certification step.
+
 ## 1.12.0 (2026-10-22)
 
 **`verify` takes the signature as raw bytes as well as hex.** `mlDsa87.verify`, `mlDsa.verify` and `slhDsa.verify` accept the signature as the hex string `sign` returns, exactly as before, or as a `Uint8Array` or `Buffer` holding the raw signature bytes. A signer that returns bytes, such as a hardware security module, no longer needs its signature converted to hex first. Until this release a byte signature returned `false` whatever it held, which read as a bad signature.

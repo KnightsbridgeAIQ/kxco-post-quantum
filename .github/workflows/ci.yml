@@ -35,6 +35,10 @@ jobs:
       - run: npm ci
       - run: npm test
 
+      # The FIPS module's copy of noble must be exactly what the pinned versions
+      # produce, so a noble update cannot reach the module without a commit.
+      - run: node scripts/vendor-fips.mjs --check
+
       # Fuzz the parsing surfaces. Not the cryptography, which reviewed
       # implementations and 2,103 ACVP vectors already cover, but everything
       # that accepts bytes from somewhere else: JWS tokens, JWKs, PKCS#8 blobs,
