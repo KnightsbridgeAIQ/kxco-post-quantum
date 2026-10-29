@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.13.0 (unreleased)
+## 1.13.0 (2026-10-29)
 
 **A self-contained module at `kxco-post-quantum/fips`.** A new entry point, designed against the FIPS 140-3 Level 1 software requirements. It is not a validated module: no laboratory has tested it and NIST has issued no certificate for it. Importing the main package does not load it, and nothing in the main package changes.
 
