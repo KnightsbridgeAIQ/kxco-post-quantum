@@ -132,11 +132,11 @@
     },
     {
       "name": "fast-uri",
-      "version": "3.1.8",
+      "version": "3.1.9",
       "licence": "BSD-3-Clause",
       "why": "URI parsing and resolution for $id and $ref inside ajv.",
       "used": "Through ajv only.",
-      "provenance": "Registry signature; no SLSA provenance attestation on the registry. Repository fastify/fast-uri.",
+      "provenance": "Registry signature and, from 3.1.9, an SLSA provenance attestation. Repository fastify/fast-uri. 3.1.9 stops percent-decoding the scheme and rejects a host holding characters RFC 3986 does not allow.",
       "reachable": false
     },
     {
