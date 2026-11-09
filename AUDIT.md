@@ -41,7 +41,7 @@ What we have done:
 
 - **Internal review** by the KXCO engineering team and KXCO Cybersecurity (lead: Sean O'Coiligh, 30+ years cybersecurity, formerly led Offensive Cyber at the DTCC Cyber Threat Fusion Center)
 - **Reproducible test vectors** in `test/vectors.json` covering every primitive — anyone running `npm test` gets the same outputs the maintainers see
-- **Production deployment** across the KXCO platform (KnightsVault, KXCO Bank, KnightsBot, The Exchequer, Armature L1) since November 2025
+- **Production deployment** across the KXCO platform (KnightsVault, KXCO Bank, KnightsBot, The Exchequer, Armature L1) since June 2026: Armature L1 has checked post-quantum signatures since its first block, created on 12 June 2026. (Corrected 9 November 2026: this line said November 2025, which KXCO holds no record of.)
 - **Public verifiable proof** of the signing identity **on Armature L1**, not on a KXCO web endpoint. A published signature is anchored on chain and can be read back over public JSON-RPC by anyone, with no KXCO account, endpoint or cooperation in the path. Worked example in section 4.
 
 - **A self-contained module at `kxco-post-quantum/fips`** (1.13.0), designed against the FIPS 140-3 Level 1 software requirements. It has an approved DRBG, an integrity test, self-tests whose known answers come from NIST's ACVP vectors, and an error state. Its draft Security Policy is [SECURITY-POLICY.md](SECURITY-POLICY.md). No laboratory has tested it.
