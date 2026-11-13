@@ -265,6 +265,12 @@ as certified, or re-run against the current release, and what that costs.
    all, whatever the algorithm certificates say. Tell us if you read it
    differently, because it decides whether item 2 is a 2027 job or a later
    one.
+
+   Note, 9 November 2026: Chainguard's FIPS Provider for OpenSSL, FIPS 140-3
+   certificate #5523 (validated 15 September 2026), lists ML-KEM and ML-DSA
+   under Approved Algorithms, so a native path on that provider can sit
+   inside a validated module boundary. The OpenSSL Project's own FIPS
+   provider, certificate #4985, still lists neither.
 3. Whether you hold 17ACVT accreditation, CST, or both.
 4. What you need from us that is not in section 6.
 
