@@ -10,6 +10,7 @@
 [![CI](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/ci.yml/badge.svg)](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/ci.yml)
 [![conformance](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/conformance.yml/badge.svg)](https://github.com/KnightsbridgeAIQ/kxco-post-quantum/actions/workflows/conformance.yml)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue)](./LICENSE)
+[![KXCO Post-Quantum on StartupScores](https://startupscores.com/badge/kxco-post-quantum.svg?style=shield&v=combo&theme=dark)](https://startupscores.com/open-source/kxco-post-quantum)
 
 - **All three NIST standards.** ML-DSA-87 and ML-DSA-65 (FIPS 204), ML-KEM-1024 and ML-KEM-768 (FIPS 203) and SLH-DSA-SHA2-192s (FIPS 205). ML-DSA-87 and ML-KEM-1024 are the sets recommended for new keys, and ML-DSA-65 and ML-KEM-768 stay for keys that already exist.
 - **The CNSA 2.0 parameter sets ship.** ML-DSA-87 and ML-KEM-1024 at Category 5, with the same API as the Category 3 sets. KXCO does not claim CNSA 2.0 compliance.
