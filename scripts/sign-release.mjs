@@ -12,10 +12,9 @@
 // <file>.sig beside each input: the ML-DSA-87 signature over the file bytes, as
 // hex. The key is derived under the label 'kxco-release-signing-87-v1'.
 //
-// Until KXCO_RELEASE_SEED_87 is configured, the script signs with the original
-// ML-DSA-65 release key (KXCO_RELEASE_SEED), so a release is never left unsigned.
-// Releases signed before the switch stay verifiable against
-// release-signing-key.pub.hex.
+// If KXCO_RELEASE_SEED_87 is not set, the script refuses to sign. It never falls
+// back to the ML-DSA-65 key that signed releases before 1.9.0. Those releases
+// stay verifiable against release-signing-key.pub.hex.
 //
 // Verify an ML-DSA-87 signature with the public key in release-signing-key-87.pub.hex:
 //
@@ -23,7 +22,7 @@
 //   mlDsa87.verify(publicKeyBytes, fileBytes, sigHex)
 
 import { readFileSync, writeFileSync } from 'node:fs'
-import { mlDsa, mlDsa87 } from '../src/index.js'
+import { mlDsa87 } from '../src/index.js'
 
 const files = process.argv.slice(2)
 if (files.length === 0) {
@@ -31,21 +30,20 @@ if (files.length === 0) {
   process.exit(2)
 }
 
-const seed87 = (process.env.KXCO_RELEASE_SEED_87 ?? '').trim()
-const seed65 = (process.env.KXCO_RELEASE_SEED ?? '').trim()
-const use87 = seed87 !== ''
-const hex = use87 ? seed87 : seed65
+const hex = (process.env.KXCO_RELEASE_SEED_87 ?? '').trim()
+if (hex === '') {
+  console.error('KXCO_RELEASE_SEED_87 is not set; refusing to sign')
+  process.exit(2)
+}
 if (!/^[0-9a-f]{64}$/i.test(hex)) {
-  console.error(`${use87 ? 'KXCO_RELEASE_SEED_87' : 'KXCO_RELEASE_SEED'} must be 64 hex characters (a 32-byte master seed)`)
+  console.error('KXCO_RELEASE_SEED_87 must be 64 hex characters (a 32-byte master seed)')
   process.exit(2)
 }
 
-const set = use87 ? mlDsa87 : mlDsa
-const name = use87 ? 'ML-DSA-87' : 'ML-DSA-65'
-const pubFile = use87 ? '../release-signing-key-87.pub.hex' : '../release-signing-key.pub.hex'
-const kp = use87
-  ? mlDsa87.keypairFromMaster(Buffer.from(hex, 'hex'), 'kxco-release-signing-87-v1')
-  : mlDsa.keypairFromMaster(Buffer.from(hex, 'hex'))
+const set = mlDsa87
+const name = 'ML-DSA-87'
+const pubFile = '../release-signing-key-87.pub.hex'
+const kp = mlDsa87.keypairFromMaster(Buffer.from(hex, 'hex'), 'kxco-release-signing-87-v1')
 
 // The published public key is committed to the repository. If the seed in CI
 // ever stops matching it, every signature would verify against a key nobody

@@ -88,16 +88,13 @@ export const ASSETS = [
     implementedBy: [NOBLE_PQ, OPENSSL], sizes: sigSizes(ml_dsa65),
     purpose: 'Signature scheme kept for existing keys: signing and verification ' +
       '(mlDsa), JWS alg ML-DSA-65, which a 4032-byte ML-DSA-65 secret key selects, ' +
-      'the non-repudiation half of webhook delivery signing with an ML-DSA-65 key, ' +
-      'and the release signature over assets and evidence bundles when no ML-DSA-87 ' +
-      'release seed is configured.',
+      'and the non-repudiation half of webhook delivery signing with an ML-DSA-65 key.',
     context: 'Raw keys and signatures; RFC 9964 AKP JWK and seed-form PKCS#8; compact ' +
       'JWS; the X-KXCO-PQ-Signature webhook header, ml-dsa-65=<hex>.',
     occurrences: [
       at('src/ml-dsa.js', 'ml_dsa65'), at('src/seed.js', 'ml_dsa65'),
       at('src/jws.js', "'ML-DSA-65'"), at('src/webhook.js', 'mlDsaSign'),
       at('src/_native.node.js', "nodeName: 'ml-dsa-65'"),
-      at('scripts/sign-release.mjs', 'mlDsa.keypairFromMaster'),
     ],
   },
   {
@@ -108,7 +105,7 @@ export const ASSETS = [
       '(mlDsa87), JWS alg ML-DSA-87, the signJws default for any key that is not ' +
       'an ML-DSA-65 secret key, the non-repudiation half of webhook delivery signing ' +
       'with an ML-DSA-87 key, and the release signature over assets and evidence ' +
-      'bundles once the ML-DSA-87 release seed is configured (kid d35341d56b82c4bf).',
+      'bundles (kid d35341d56b82c4bf).',
     context: 'Raw keys and signatures; RFC 9964 AKP JWK and seed-form PKCS#8; compact ' +
       'JWS; the X-KXCO-PQ-Signature webhook header, ml-dsa-87=<hex>.',
     occurrences: [
