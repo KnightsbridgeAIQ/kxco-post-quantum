@@ -249,7 +249,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           KXCO_RELEASE_SEED_87: ${{ secrets.KXCO_RELEASE_SEED_87 }}
-          KXCO_RELEASE_SEED: ${{ secrets.KXCO_RELEASE_SEED }}
         run: |
           TAG="v$(node -p "require('./package.json').version")"
           node scripts/sign-release.mjs "evidence-node${{ matrix.node }}.zip"

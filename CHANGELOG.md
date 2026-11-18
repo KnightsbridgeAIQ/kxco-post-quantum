@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **Release signing uses ML-DSA-87 only.** `scripts/sign-release.mjs` refuses to sign when `KXCO_RELEASE_SEED_87` is not set, instead of falling back to the ML-DSA-65 key that signed releases before 1.9.0. Those earlier releases stay verifiable against `release-signing-key.pub.hex`. The evidence workflow no longer passes the ML-DSA-65 seed, and the CBOM no longer lists ML-DSA-65 as a release signature.
+
 ## 1.13.0 (2026-10-29)
 
 **A self-contained module at `kxco-post-quantum/fips`.** A new entry point, designed against the FIPS 140-3 Level 1 software requirements. It is not a validated module: no laboratory has tested it and NIST has issued no certificate for it. Importing the main package does not load it, and nothing in the main package changes.
